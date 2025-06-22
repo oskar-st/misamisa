@@ -1,0 +1,39 @@
+{% extends "page.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block page_content %}
+<section class="sklep-section">
+  <div class="sklep-header">
+    <h2>{% trans "Nasze produkty" %} 🍪</h2>
+    <div class="view-toggle">
+      <button onclick="setView('grid')">🟦 {% trans "Siatka" %}</button>
+      <button onclick="setView('list')">📃 {% trans "Lista" %}</button>
+    </div>
+  </div>
+
+  <div id="product-list" class="product-grid">
+    <!-- Example products -->
+    <div class="product-card">
+      <img src="{% static 'product1.jpg' %}" alt="Ciasteczko 1">
+      <h3>{% trans "Ciasteczko Klasyczne" %}</h3>
+      <p>5,99 zł</p>
+    </div>
+    <div class="product-card">
+      <img src="{% static 'product2.jpg' %}" alt="Ciasteczko 2">
+      <h3>{% trans "Ciasteczko Czekoladowe" %}</h3>
+      <p>6,49 zł</p>
+    </div>
+    <div class="product-card">
+      <img src="{% static 'product3.jpg' %}" alt="Ciasteczko 3">
+      <h3>{% trans "Ciasteczko Owsiane" %}</h3>
+      <p>4,99 zł</p>
+    </div>
+    <!-- Add more as needed -->
+  </div>
+
+  <div class="scroll-top-wrapper">
+    <button id="scroll-top" onclick="scrollToTop()">⬆️ {% trans "Do góry" %}</button>
+  </div>
+</section>
+{% endblock %}

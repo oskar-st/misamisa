@@ -1,0 +1,67 @@
+{% load static %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="pl" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <title>Misamisa</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <script src="{% static 'js/main.js' %}" defer></script>
+  <script src="{% static 'js/sklep.js' %}" defer></script>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="container header-inner">
+      <div class="header-left">
+        <a href="{% url 'home' %}" class="logo-link">
+          <img src="{% static 'logo.png' %}" alt="Misamisa logo" class="logo">
+        </a>
+      </div>
+      <div class="header-center">
+        <nav>
+          <a href="{% url 'sklep' %}">{% trans "Sklep" %}</a>
+          <a href="#onas">{% trans "O nas" %}</a>
+          <a href="#blog">{% trans "Blog" %}</a>
+        </nav>
+      </div>
+      <div class="header-right">
+        <div class="header-controls">
+          <button id="theme-toggle">☀️</button>
+          <form id="language-form" action="{% url 'set_language' %}" method="post">
+            {% csrf_token %}
+            <input name="next" type="hidden" value="{{ request.path }}">
+            <select id="language-switcher" name="language" onchange="this.form.submit()">
+              {% get_current_language as LANGUAGE_CODE %}
+              {% get_available_languages as LANGUAGES %}
+              {% for lang_code, lang_name in LANGUAGES %}
+                <option value="{{ lang_code }}" {% if lang_code == LANGUAGE_CODE %}selected{% endif %}>
+                  {{ lang_code|upper }}
+                </option>
+              {% endfor %}
+            </select>
+          </form>
+        </div>
+        <a href="#" class="cart-link">
+          <span class="cart-icon">🛒</span>
+          <span class="cart-text"> (0)</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  {% block content %}
+  <!-- Optional homepage default content -->
+  <section class="hero">
+    <div class="hero-inner container">
+      <h1>{% trans "Witamy w" %} <span class="highlight">Misamisa</span> 🍪</h1>
+      <p>{% trans "Twoje ulubione ciasteczka — świeże, słodkie i ręcznie robione z najlepszych składników!" %}</p>
+      <a href="#" class="cta-btn">{% trans "Zobacz ofertę" %}</a>
+    </div>
+  </section>
+  {% endblock %}
+
+</body>
+</html>

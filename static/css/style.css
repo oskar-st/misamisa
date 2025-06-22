@@ -1,0 +1,287 @@
+:root {
+  --background-color: #fffaf3;
+  --text-color: #333;
+  --header-bg: white;
+  --header-shadow: rgba(0,0,0,0.1);
+  --accent-color: #d77e00;
+  --hero-gradient-start: #ffe8cc;
+  --hero-gradient-end: #fff3e0;
+  --hero-text: #444;
+  --hero-highlight: #cc6600;
+  --button-bg: #cc6600;
+  --button-text: white;
+  --button-hover-bg: #a75300;
+  --card-bg: #fff;
+  --card-border: #ddd;
+  --select-bg: transparent;
+  --select-hover-bg: #f2ede4;
+  --option-bg: #ffffff;
+  --page-bg: #ffffff;
+  --shadow-sm: rgba(0,0,0,0.05);
+  --shadow-md: rgba(0,0,0,0.1);
+}
+
+html[data-theme=dark] {
+  --background-color: #1a1a1a;
+  --text-color: #f0f0f0;
+  --header-bg: #2a2a2a;
+  --header-shadow: rgba(255,255,255,0.1);
+  --accent-color: #ff9d2d;
+  --hero-gradient-start: #3a3a3a;
+  --hero-gradient-end: #2a2a2a;
+  --hero-text: #ccc;
+  --hero-highlight: #ff9d2d;
+  --button-bg: #ff9d2d;
+  --button-text: #1a1a1a;
+  --button-hover-bg: #ff8c00;
+  --card-bg: #2a2a2a;
+  --card-border: #555;
+  --select-bg: #3a3a3a;
+  --select-hover-bg: #2e2e2e;
+  --option-bg: #3a3a3a;
+  --page-bg: #2a2a2a;
+  --shadow-sm: rgba(255,255,255,0.05);
+  --shadow-md: rgba(255,255,255,0.1);
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+  background: var(--background-color);
+  color: var(--text-color);
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* --- HEADER --- */
+header {
+  background: var(--header-bg);
+  box-shadow: 0 2px 6px var(--header-shadow);
+  position: sticky;
+  top: 0;
+  z-index: 999;
+}
+
+.header-inner {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  padding: 0.5rem 0;
+  gap: 2rem;
+}
+
+.logo {
+  height: 135px;
+  width: auto;
+  display: block;
+  margin-top: -53px;
+  margin-bottom: -52px;
+}
+
+.header-center nav {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.header-center a,
+.header-right a {
+  text-decoration: none;
+  color: var(--text-color);
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.header-center a:hover,
+.header-right a:hover {
+  color: var(--accent-color);
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+#theme-toggle {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1.5rem;
+}
+
+#language-switcher {
+  border: 1px solid var(--card-border);
+  background: var(--select-bg);
+  color: var(--text-color);
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+#language-switcher:hover {
+  background-color: var(--select-hover-bg);
+}
+
+#language-switcher option {
+  /* 
+    Styling <option> elements is notoriously inconsistent across browsers.
+    This aims to provide a better experience where supported.
+  */
+  background: var(--option-bg);
+  color: var(--text-color);
+}
+
+/* --- HERO --- */
+.hero {
+  background: linear-gradient(to bottom right, var(--hero-gradient-start), var(--hero-gradient-end));
+  padding: 6rem 1rem 5rem;
+  box-shadow: inset 0 4px 10px var(--shadow-sm);
+}
+
+.hero-inner {
+  text-align: center;
+}
+
+.hero h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  color: var(--hero-highlight);
+}
+
+.hero p {
+  font-size: 1.3rem;
+  color: var(--hero-text);
+  max-width: 700px;
+  margin: 0 auto 2rem;
+}
+
+.cta-btn {
+  display: inline-block;
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  padding: 0.8rem 1.6rem;
+  border-radius: 999px;
+  font-weight: bold;
+  text-decoration: none;
+  box-shadow: 0 4px 10px var(--shadow-md);
+  transition: background 0.2s ease;
+}
+
+.cta-btn:hover {
+  background-color: var(--button-hover-bg);
+}
+
+.highlight {
+  font-weight: bold;
+  color: var(--hero-highlight);
+}
+
+.main-container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: var(--page-bg);
+  border-radius: 8px;
+  box-shadow: 0 4px 10px var(--shadow-md);
+}
+
+.news-feed .news-item {
+  margin-bottom: 2rem;
+}
+
+.news-item h2 {
+  margin-top: 0;
+}
+
+.news-item .post-meta {
+  font-size: 0.9rem;
+  color: var(--hero-text);
+  margin-bottom: 1rem;
+}
+
+.sklep-section {
+  /* Padding is now handled by .main-container */
+}
+
+.sklep-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.view-toggle button {
+  margin-left: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  border: 1px solid var(--card-border);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.view-toggle button:hover {
+  background-color: var(--button-hover-bg);
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.product-card {
+  border: 1px solid var(--card-border);
+  padding: 1rem;
+  background: var(--card-bg);
+  text-align: center;
+}
+
+.product-card img {
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 0.5rem;
+}
+
+.scroll-top-wrapper {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+#scroll-top {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  border: 1px solid var(--card-border);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#scroll-top:hover {
+  background-color: var(--button-hover-bg);
+}
+
+.cart-link {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.cart-icon {
+  font-size: 1.6rem;
+}
+
+/*# sourceMappingURL=style.css.map */
