@@ -328,10 +328,16 @@ body {
     background-color: var(--page-bg);
   }
 
-  .form-group .h-captcha {
+  .form-group .cf-turnstile {
     display: flex;
     justify-content: center;
     margin: 0.5rem 0;
+  }
+
+  /* Turnstile specific styling */
+  .form-group .cf-turnstile iframe {
+    border: none;
+    background: transparent;
   }
 
   .help-text {

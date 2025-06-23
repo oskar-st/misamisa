@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'home',
-    'hcaptcha',
+    'turnstile',
  #  'tailwind',
  #  'theme',       # You will create this app below
  #  'django_browser_reload',  # For auto-refresh
@@ -166,6 +166,6 @@ EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'oskar@pansol.pl')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', 'temetnosce^^')
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'oskar@pansol.pl')
 
-# hCaptcha Configuration
-HCAPTCHA_SITE_KEY = os.getenv('HCAPTCHA_SITE_KEY', '10000000-ffff-ffff-ffff-000000000001')
-HCAPTCHA_SECRET_KEY = os.getenv('HCAPTCHA_SECRET_KEY', '0x0000000000000000000000000000000000000000')
+# Cloudflare Turnstile Configuration
+TURNSTILE_SITE_KEY = os.getenv('TURNSTILE_SITE_KEY', '1x00000000000000000000AA')
+TURNSTILE_SECRET_KEY = os.getenv('TURNSTILE_SECRET_KEY', '1x0000000000000000000000000000000AA')
