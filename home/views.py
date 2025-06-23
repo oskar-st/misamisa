@@ -4,7 +4,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
 from django.core.mail import send_mail
-from django.http import JsonResponse
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.conf import settings
@@ -111,37 +110,3 @@ def logout_view(request):
 @login_required
 def profile_view(request):
     return render(request, 'registration/profile.html')
-
-def test_email(request):
-    """Test email configuration - only for development"""
-    if not request.user.is_superuser:
-        return JsonResponse({'error': 'Unauthorized'}, status=403)
-    
-    try:
-        send_mail(
-            'Test Email from Misamisa',
-            'This is a test email to verify Zoho SMTP configuration.',
-            None,  # Will use DEFAULT_FROM_EMAIL
-            [request.user.email],
-            fail_silently=False,
-        )
-        return JsonResponse({'success': 'Test email sent successfully!'})
-    except Exception as e:
-        return JsonResponse({'error': f'Failed to send email: {str(e)}'}, status=500)
-
-def test_email_simple(request):
-    """Simple email test - no authentication required (for development only)"""
-    if not settings.DEBUG:
-        return JsonResponse({'error': 'Only available in DEBUG mode'}, status=403)
-    
-    try:
-        send_mail(
-            'Test Email from Misamisa',
-            'This is a test email to verify Zoho SMTP configuration.',
-            None,  # Will use DEFAULT_FROM_EMAIL
-            ['os56@pm.me'],  # Updated to your email
-            fail_silently=False,
-        )
-        return JsonResponse({'success': 'Test email sent successfully! Check your email.'})
-    except Exception as e:
-        return JsonResponse({'error': f'Failed to send email: {str(e)}'}, status=500)
