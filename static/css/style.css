@@ -393,13 +393,13 @@ header {
   border-top: 1px solid var(--card-border);
 }
 
-.auth-links a {
+.auth-links a:not(.cta-btn) {
   color: var(--accent-color);
   text-decoration: none;
   font-weight: 600;
 }
 
-.auth-links a:hover {
+.auth-links a:not(.cta-btn):hover {
   text-decoration: underline;
 }
 
@@ -479,6 +479,21 @@ header {
 
 .help-text p {
   margin: 0.5rem 0;
+}
+
+/* --- FOOTER --- */
+footer {
+  background-color: var(--header-bg);
+  border-top: 1px solid var(--card-border);
+  padding: 1.5rem 0;
+  margin-top: 3rem;
+  text-align: center;
+}
+
+footer p {
+  margin: 0;
+  color: var(--hero-text);
+  font-size: 0.9rem;
 }
 
 /*# sourceMappingURL=style.css.map */
