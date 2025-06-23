@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+<div class="main-container">
+    <div class="auth-form">
+        <div class="success-message">
+            <h2>{% trans "Registration Successful!" %}</h2>
+            
+            <div class="success-icon">
+                ✉️
+            </div>
+            
+            <p>{% trans "Thank you for registering with Misamisa! We've sent a verification email to:" %}</p>
+            
+            <div class="email-display">
+                <strong>{{ email }}</strong>
+            </div>
+            
+            <div class="instructions">
+                <h3>{% trans "Next Steps:" %}</h3>
+                <ol>
+                    <li>{% trans "Check your email inbox (and spam folder)" %}</li>
+                    <li>{% trans "Click the verification link in the email" %}</li>
+                    <li>{% trans "Once verified, you can log in to your account" %}</li>
+                </ol>
+            </div>
+            
+            <div class="help-text">
+                <p><strong>{% trans "Didn't receive the email?" %}</strong></p>
+                <p>{% trans "Please check your spam folder. If you still don't see it, contact us at hi@misamisa.pl" %}</p>
+            </div>
+            
+            <div class="auth-links">
+                <a href="{% url 'login' %}" class="cta-btn">{% trans "Go to Login" %}</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

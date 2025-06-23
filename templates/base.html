@@ -43,10 +43,13 @@
             </select>
           </form>
         </div>
-        <a href="#" class="cart-link">
-          <span class="cart-icon">🛒</span>
-          <span class="cart-text"> (0)</span>
-        </a>
+        {% if user.is_authenticated %}
+          <a href="{% url 'profile' %}">{% trans "Profile" %}</a>
+          <a href="{% url 'logout' %}">{% trans "Logout" %}</a>
+        {% else %}
+          <a href="{% url 'login' %}">{% trans "Login" %}</a>
+          <a href="{% url 'register' %}">{% trans "Register" %}</a>
+        {% endif %}
       </div>
     </div>
   </header>

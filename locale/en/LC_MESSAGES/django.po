@@ -77,3 +77,144 @@ msgstr "Oatmeal Cookie"
 #: templates/sklep.html:35
 msgid "Do góry"
 msgstr "To the top"
+
+# Authentication translations
+msgid "Login"
+msgstr "Login"
+
+msgid "Register"
+msgstr "Register"
+
+msgid "Profile"
+msgstr "Profile"
+
+msgid "Logout"
+msgstr "Logout"
+
+msgid "Email"
+msgstr "Email"
+
+msgid "Password"
+msgstr "Password"
+
+msgid "Confirm Password"
+msgstr "Confirm Password"
+
+msgid "Enter your email"
+msgstr "Enter your email"
+
+msgid "Enter your password"
+msgstr "Enter your password"
+
+msgid "Confirm your password"
+msgstr "Confirm your password"
+
+msgid "Your password must be at least 6 characters long and contain at least one uppercase letter and one number."
+msgstr "Your password must be at least 6 characters long and contain at least one uppercase letter and one number."
+
+msgid "Account created successfully!"
+msgstr "Account created successfully!"
+
+msgid "Please correct the errors below."
+msgstr "Please correct the errors below."
+
+msgid "Logged in successfully!"
+msgstr "Logged in successfully!"
+
+msgid "Invalid email or password."
+msgstr "Invalid email or password."
+
+msgid "Logged out successfully!"
+msgstr "Logged out successfully!"
+
+msgid "Don't have an account?"
+msgstr "Don't have an account?"
+
+msgid "Register here"
+msgstr "Register here"
+
+msgid "Already have an account?"
+msgstr "Already have an account?"
+
+msgid "Login here"
+msgstr "Login here"
+
+msgid "Date Joined"
+msgstr "Date Joined"
+
+# CAPTCHA translations
+msgid "Security Check"
+msgstr "Security Check"
+
+msgid "Please complete the security check to verify you are human."
+msgstr "Please complete the security check to verify you are human."
+
+# Email verification translations
+msgid "Registration Successful!"
+msgstr "Registration Successful!"
+
+msgid "Thank you for registering with Misamisa! We've sent a verification email to:"
+msgstr "Thank you for registering with Misamisa! We've sent a verification email to:"
+
+msgid "Next Steps:"
+msgstr "Next Steps:"
+
+msgid "Check your email inbox (and spam folder)"
+msgstr "Check your email inbox (and spam folder)"
+
+msgid "Click the verification link in the email"
+msgstr "Click the verification link in the email"
+
+msgid "Once verified, you can log in to your account"
+msgstr "Once verified, you can log in to your account"
+
+msgid "Didn't receive the email?"
+msgstr "Didn't receive the email?"
+
+msgid "Please check your spam folder. If you still don't see it, contact us at hi@misamisa.pl"
+msgstr "Please check your spam folder. If you still don't see it, contact us at hi@misamisa.pl"
+
+msgid "Go to Login"
+msgstr "Go to Login"
+
+msgid "Verify Your Email - Misamisa"
+msgstr "Verify Your Email - Misamisa"
+
+msgid "Welcome to Misamisa!"
+msgstr "Welcome to Misamisa!"
+
+msgid "Thank you for registering with Misamisa. To complete your registration, please verify your email address by clicking the button below:"
+msgstr "Thank you for registering with Misamisa. To complete your registration, please verify your email address by clicking the button below:"
+
+msgid "Verify Email Address"
+msgstr "Verify Email Address"
+
+msgid "If the button doesn't work, you can copy and paste this link into your browser:"
+msgstr "If the button doesn't work, you can copy and paste this link into your browser:"
+
+msgid "This link will expire in 24 hours for security reasons."
+msgstr "This link will expire in 24 hours for security reasons."
+
+msgid "If you didn't create an account with Misamisa, you can safely ignore this email."
+msgstr "If you didn't create an account with Misamisa, you can safely ignore this email."
+
+msgid "Best regards,"
+msgstr "Best regards,"
+
+msgid "The Misamisa Team"
+msgstr "The Misamisa Team"
+
+msgid "This email was sent from hi@misamisa.pl"
+msgstr "This email was sent from hi@misamisa.pl"
+
+msgid "Email verified successfully! You can now log in."
+msgstr "Email verified successfully! You can now log in."
+
+msgid "Invalid verification link. Please check your email or contact support."
+msgstr "Invalid verification link. Please check your email or contact support."
+
+msgid "Please verify your email address before logging in. Check your inbox for the verification email."
+msgstr "Please verify your email address before logging in. Check your inbox for the verification email."
+
+msgid "Account created but verification email could not be sent. Please contact support."
+msgstr "Account created but verification email could not be sent. Please contact support."

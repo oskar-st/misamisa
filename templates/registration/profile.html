@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+<div class="main-container">
+    <div class="profile-container">
+        <h2>{% trans "Profile" %}</h2>
+        
+        <div class="profile-info">
+            <p><strong>{% trans "Email" %}:</strong> {{ user.email }}</p>
+            <p><strong>{% trans "Date Joined" %}:</strong> {{ user.date_joined|date:"F j, Y" }}</p>
+        </div>
+        
+        <div class="profile-actions">
+            <a href="{% url 'logout' %}" class="cta-btn">{% trans "Logout" %}</a>
+        </div>
+    </div>
+</div>
+{% endblock %} 
