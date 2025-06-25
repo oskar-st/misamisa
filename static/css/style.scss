@@ -197,6 +197,11 @@ body {
   }
 
   .news-feed .news-item {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px var(--shadow-sm);
+    padding: 2rem;
     margin-bottom: 2rem;
   }
 

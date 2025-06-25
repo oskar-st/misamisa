@@ -12,12 +12,26 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const currentTheme = localStorage.getItem('theme') || 'light';
   docElement.setAttribute('data-theme', currentTheme);
-  themeToggle.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+  if (currentTheme === 'dark') {
+    themeToggle.classList.add('active');
+  } else {
+    themeToggle.classList.remove('active');
+  }
+  // Prevent animation on page load, remove after theme is set
+  themeToggle.classList.add('no-animate');
+  setTimeout(() => {
+    themeToggle.classList.remove('no-animate');
+  }, 300);
 
-  themeToggle.addEventListener('click', () => {
+  themeToggle.addEventListener('click', (e) => {
+    e.stopPropagation(); // Prevent bubbling to document or other handlers
     let newTheme = docElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
     docElement.setAttribute('data-theme', newTheme);
     localStorage.setItem('theme', newTheme);
-    themeToggle.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+    if (newTheme === 'dark') {
+      themeToggle.classList.add('active');
+    } else {
+      themeToggle.classList.remove('active');
+    }
   });
 });

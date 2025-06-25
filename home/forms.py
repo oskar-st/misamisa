@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.utils.translation import gettext_lazy as _
-from .models import CustomUser
+from accounts.models import CustomUser
 from .validators import CustomPasswordValidator
 from turnstile.fields import TurnstileField
 

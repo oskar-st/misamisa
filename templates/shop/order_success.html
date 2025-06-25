@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block content %}
+<div class="order-success">
+  <h1>{% trans 'Thank you for your order!' %}</h1>
+  <p>{% trans 'Your order has been placed successfully. We will contact you soon.' %}</p>
+  <a href="{% url 'public_product_list' %}" class="btn btn-primary">{% trans 'Back to shop' %}</a>
+</div>
+{% endblock %} 

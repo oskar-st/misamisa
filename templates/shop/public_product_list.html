@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load i18n static %}
+
+{% block content %}
+<div class="container">
+    <h1 class="shop-title">{% trans 'Shop' %}</h1>
+    <div class="shop-filters" style="margin-bottom: 1.5em;">
+        <form method="get" action="" class="category-filter-form">
+            <label for="category-select">{% trans 'Category' %}:</label>
+            <select name="kategoria" id="category-select" onchange="this.form.submit()">
+                <option value="">{% trans 'All' %}</option>
+                {% for cat in categories %}
+                    <option value="{{ cat.slug }}" {% if category and cat == category %}selected{% endif %}>{{ cat.name }}</option>
+                {% endfor %}
+            </select>
+            <noscript><button type="submit">{% trans 'Filter' %}</button></noscript>
+        </form>
+    </div>
+    <div class="product-list-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 2em;">
+        {% for product in products %}
+        <div class="product-card" style="background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); padding: 1em; text-align: center;">
+            <a href="/produkt/{{ product.slug }}/" style="text-decoration: none; color: inherit;">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" style="max-width: 100%; max-height: 180px; object-fit: contain; margin-bottom: 1em;" />
+                {% else %}
+                    <div style="height: 180px; background: #f5f5f5; display: flex; align-items: center; justify-content: center; color: #bbb;">{% trans 'No image' %}</div>
+                {% endif %}
+                <h2 style="font-size: 1.1em; margin: 0.5em 0 0.2em 0;">{{ product.name }}</h2>
+                <div style="font-weight: bold; color: #417690; font-size: 1.1em;">
+                    {% if product.discount_price %}
+                        <span style="text-decoration: line-through; color: #888;">{{ product.price }} zł</span>
+                        <span style="color: #28a745;">{{ product.discount_price }} zł</span>
+                    {% else %}
+                        {{ product.price }} zł
+                    {% endif %}
+                </div>
+            </a>
+        </div>
+        {% empty %}
+        <div style="grid-column: 1 / -1; text-align: center; color: #888;">{% trans 'No products found.' %}</div>
+        {% endfor %}
+    </div>
+    <div class="pagination" style="margin-top: 2em; text-align: center;">
+        {% if page_obj.has_previous %}
+            <a href="?{% if category %}kategoria={{ category.slug }}&amp;{% endif %}page={{ page_obj.previous_page_number }}">&laquo; {% trans 'Previous' %}</a>
+        {% endif %}
+        <span style="margin: 0 1em;">{% trans 'Page' %} {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+            <a href="?{% if category %}kategoria={{ category.slug }}&amp;{% endif %}page={{ page_obj.next_page_number }}">{% trans 'Next' %} &raquo;</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 

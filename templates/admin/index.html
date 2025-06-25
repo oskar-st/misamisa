@@ -1,0 +1,20 @@
+{% extends "admin/index.html" %}
+{% load i18n %}
+
+{% block content_title %}{% endblock %}
+
+{% block content %}
+{% if show_dashboard_link %}
+    <div class="app-admin module">
+        <table>
+            <tbody>
+                <tr class="model-dashboard">
+                    <th scope="row"><a href="{% url 'admin:dashboard' %}">{% trans "Business Dashboard" %}</a></th>
+                    <td>{% trans "Overview of orders, revenue, customers, and more." %}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+{% endif %}
+{{ block.super }}
+{% endblock %} 

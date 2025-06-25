@@ -1,0 +1,8 @@
+{% extends "admin/base.html" %}
+
+{# Remove the site header/title block entirely #}
+{% block branding %}{% endblock %}
+
+{# Keep the rest of the admin site as normal #}
+{% block nav-global %}{{ block.super }}{% endblock %}
+{% block content %}{{ block.super }}{% endblock %} 

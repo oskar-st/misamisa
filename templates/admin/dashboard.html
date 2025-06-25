@@ -1,0 +1,296 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block extrastyle %}
+<style>
+    .dashboard-container {
+        padding: 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+    
+    .metric-card {
+        background: var(--primary);
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        border-left: 4px solid #417690;
+    }
+    
+    .metric-card h3 {
+        margin: 0 0 10px 0;
+        color: var(--body-fg);
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .metric-value {
+        font-size: 32px;
+        font-weight: bold;
+        color: #417690;
+        margin: 0;
+    }
+    
+    .metric-card.revenue .metric-value {
+        color: #28a745;
+    }
+    
+    .metric-card.orders .metric-value {
+        color: #007bff;
+    }
+    
+    .metric-card.customers .metric-value {
+        color: #ffc107;
+    }
+    
+    .metric-card.newsletter .metric-value {
+        color: #dc3545;
+    }
+    
+    .content-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 20px;
+    }
+    
+    .content-card {
+        background: var(--primary);
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .content-card h2 {
+        margin: 0 0 20px 0;
+        color: var(--body-fg);
+        border-bottom: 2px solid #417690;
+        padding-bottom: 10px;
+    }
+    
+    .recent-orders {
+        margin-bottom: 20px;
+    }
+    
+    .order-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--hairline-color);
+    }
+    
+    .order-item:last-child {
+        border-bottom: none;
+    }
+    
+    .order-info {
+        flex: 1;
+    }
+    
+    .order-id {
+        font-weight: bold;
+        color: #417690;
+    }
+    
+    .order-user {
+        color: var(--body-fg);
+        font-size: 14px;
+    }
+    
+    .order-status {
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+    
+    .status-pending { background: #fff3cd; color: #856404; }
+    .status-paid { background: #d4edda; color: #155724; }
+    .status-shipped { background: #cce5ff; color: #004085; }
+    .status-cancelled { background: #f8d7da; color: #721c24; }
+    
+    .top-products {
+        margin-bottom: 20px;
+    }
+    
+    .product-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--hairline-color);
+    }
+    
+    .product-item:last-child {
+        border-bottom: none;
+    }
+    
+    .product-name {
+        font-weight: 500;
+        color: var(--body-fg);
+    }
+    
+    .product-sales {
+        color: #28a745;
+        font-weight: bold;
+    }
+    
+    .monthly-revenue {
+        margin-top: 20px;
+    }
+    
+    .revenue-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--hairline-color);
+    }
+    
+    .revenue-item:last-child {
+        border-bottom: none;
+    }
+    
+    .revenue-month {
+        font-weight: 500;
+        color: var(--body-fg);
+    }
+    
+    .revenue-amount {
+        color: #28a745;
+        font-weight: bold;
+    }
+    
+    /* Dark mode specific overrides */
+    [data-theme="dark"] .metric-card {
+        background: var(--darkened-bg);
+        border-color: #5a9bd4;
+    }
+    
+    [data-theme="dark"] .content-card {
+        background: var(--darkened-bg);
+    }
+    
+    [data-theme="dark"] .metric-card h3,
+    [data-theme="dark"] .content-card h2,
+    [data-theme="dark"] .order-user,
+    [data-theme="dark"] .product-name,
+    [data-theme="dark"] .revenue-month {
+        color: var(--body-fg);
+    }
+    
+    [data-theme="dark"] .order-item,
+    [data-theme="dark"] .product-item,
+    [data-theme="dark"] .revenue-item {
+        border-bottom-color: var(--hairline-color);
+    }
+    
+    @media (max-width: 768px) {
+        .content-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .metrics-grid {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <h1>{% trans "Business Dashboard" %}</h1>
+    
+    <!-- Key Metrics -->
+    <div class="metrics-grid">
+        <div class="metric-card orders">
+            <h3>{% trans "New Orders Today" %}</h3>
+            <p class="metric-value">{{ new_orders_today }}</p>
+        </div>
+        
+        <div class="metric-card revenue">
+            <h3>{% trans "Total Revenue" %}</h3>
+            <p class="metric-value">${{ total_revenue|floatformat:2 }}</p>
+        </div>
+        
+        <div class="metric-card customers">
+            <h3>{% trans "Active Customers" %}</h3>
+            <p class="metric-value">{{ active_customers }}</p>
+        </div>
+        
+        <div class="metric-card newsletter">
+            <h3>{% trans "Newsletter Subscribers" %}</h3>
+            <p class="metric-value">{{ newsletter_subscribers }}</p>
+        </div>
+    </div>
+    
+    <!-- Content Grid -->
+    <div class="content-grid">
+        <!-- Recent Orders -->
+        <div class="content-card">
+            <h2>{% trans "Recent Orders" %}</h2>
+            <div class="recent-orders">
+                {% if recent_orders %}
+                    {% for order in recent_orders %}
+                    <div class="order-item">
+                        <div class="order-info">
+                            <div class="order-id">#{{ order.id }}</div>
+                            <div class="order-user">{{ order.user.email }}</div>
+                        </div>
+                        <span class="order-status status-{{ order.status }}">{{ order.get_status_display }}</span>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p>{% trans "No recent orders" %}</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Sidebar -->
+        <div>
+            <!-- Top Products -->
+            <div class="content-card">
+                <h2>{% trans "Top Products" %}</h2>
+                <div class="top-products">
+                    {% if top_products %}
+                        {% for product in top_products %}
+                        <div class="product-item">
+                            <span class="product-name">{{ product.product__name }}</span>
+                            <span class="product-sales">{{ product.total_sales }} sold</span>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p>{% trans "No sales data available" %}</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Monthly Revenue -->
+            <div class="content-card">
+                <h2>{% trans "Monthly Revenue" %}</h2>
+                <div class="monthly-revenue">
+                    {% if monthly_revenue %}
+                        {% for month in monthly_revenue %}
+                        <div class="revenue-item">
+                            <span class="revenue-month">{{ month.month }}</span>
+                            <span class="revenue-amount">${{ month.revenue|floatformat:2 }}</span>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p>{% trans "No revenue data available" %}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
