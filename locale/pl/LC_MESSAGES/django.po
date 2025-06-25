@@ -218,3 +218,6 @@ msgstr "Proszę zweryfikować swój adres email przed zalogowaniem. Sprawdź swo
 
 msgid "Account created but verification email could not be sent. Please contact support."
 msgstr "Konto zostało utworzone, ale email weryfikacyjny nie mógł zostać wysłany. Skontaktuj się z pomocą techniczną."
+
+msgid "Sign up"
+msgstr "Załóż konto"

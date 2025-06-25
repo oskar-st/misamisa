@@ -34,4 +34,20 @@ document.addEventListener('DOMContentLoaded', function () {
       themeToggle.classList.remove('active');
     }
   });
+
+  // User menu dropdown delay
+  const userMenu = document.querySelector('.user-menu');
+  const userDropdown = document.querySelector('.user-menu-dropdown');
+  let dropdownHideTimeout;
+  if (userMenu && userDropdown) {
+    userMenu.addEventListener('mouseenter', () => {
+      clearTimeout(dropdownHideTimeout);
+      userDropdown.style.display = 'block';
+    });
+    userMenu.addEventListener('mouseleave', () => {
+      dropdownHideTimeout = setTimeout(() => {
+        userDropdown.style.display = 'none';
+      }, 200);
+    });
+  }
 });

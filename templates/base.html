@@ -1,5 +1,6 @@
 {% load static %}
 {% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
 <!DOCTYPE html>
 <html lang="pl" data-theme="light">
 <head>
@@ -25,6 +26,14 @@
         <a href="#blog">{% trans "Blog" %}</a>
       </nav>
       <div class="header-right">
+        <form method="post" action="/i18n/setlang/" style="margin-right: 1rem;">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ request.path }}">
+          <select name="language" id="language-switcher" onchange="this.form.submit()">
+            <option value="pl" {% if LANGUAGE_CODE == 'pl' %}selected{% endif %}>PL</option>
+            <option value="en" {% if LANGUAGE_CODE == 'en' %}selected{% endif %}>EN</option>
+          </select>
+        </form>
         <button id="theme-toggle" aria-label="Toggle theme" class="theme-toggle-switch">
           <span class="theme-toggle-track">
             <span class="theme-toggle-thumb">
