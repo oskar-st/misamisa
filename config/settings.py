@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     'home',
     'accounts',  # New accounts app for custom user
     'shop',  # New shop app for e-commerce
-    'turnstile',
+    # 'turnstile',
  #  'tailwind',
  #  'theme',       # You will create this app below
  #  'django_browser_reload',  # For auto-refresh
@@ -147,6 +147,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / "static"]
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Media files (User uploaded content)
 MEDIA_URL = '/media/'
@@ -175,5 +176,5 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
 
 # Cloudflare Turnstile Configuration
-TURNSTILE_SITE_KEY = os.getenv('TURNSTILE_SITE_KEY')
-TURNSTILE_SECRET_KEY = os.getenv('TURNSTILE_SECRET_KEY')
+# TURNSTILE_SITE_KEY = os.getenv('TURNSTILE_SITE_KEY')
+# TURNSTILE_SECRET_KEY = os.getenv('TURNSTILE_SECRET_KEY')

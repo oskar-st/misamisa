@@ -9,9 +9,11 @@ from django.utils.html import strip_tags
 from django.conf import settings
 from .forms import CustomUserCreationForm, CustomAuthenticationForm
 from accounts.models import CustomUser
+from home.models import News
 
 def homepage(request):
-    return render(request, "home.html")
+    news_items = News.objects.all()
+    return render(request, "home.html", {"news_items": news_items})
 
 def sklep(request):
     return render(request, "sklep.html")
@@ -110,3 +112,34 @@ def logout_view(request):
 @login_required
 def profile_view(request):
     return render(request, 'registration/profile.html')
+
+def resend_verification_email(request):
+    from django.contrib.auth import get_user_model
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        User = get_user_model()
+        try:
+            user = User.objects.get(email=email)
+            if user.email_verified:
+                from django.contrib import messages
+                messages.info(request, _('Your email is already verified. You can log in.'))
+                return render(request, 'registration/resend_verification.html', {'email': email})
+            verification_url = request.build_absolute_uri(f'/verify-email/{user.email_verification_token}/')
+            html_message = render_to_string('registration/email_verification.html', {'verification_url': verification_url})
+            plain_message = strip_tags(html_message)
+            send_mail(
+                subject=_('Verify Your Email - Misamisa'),
+                message=plain_message,
+                from_email=None,
+                recipient_list=[user.email],
+                html_message=html_message,
+                fail_silently=False,
+            )
+            from django.contrib import messages
+            messages.success(request, _('Verification email resent. Please check your inbox.'))
+            return render(request, 'registration/resend_verification.html', {'email': email})
+        except User.DoesNotExist:
+            from django.contrib import messages
+            messages.error(request, _('No user found with that email address.'))
+            return render(request, 'registration/resend_verification.html', {'email': email})
+    return render(request, 'registration/resend_verification.html')

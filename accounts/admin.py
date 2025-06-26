@@ -15,9 +15,10 @@ class UserAdmin(BaseUserAdmin):
         (None, {'fields': ('email', 'password')}),
         ('Personal info', {'fields': ('first_name', 'last_name', 'newsletter_opt_in')}),
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
-        ('Important dates', {'fields': ('last_login', 'date_joined')}),
-        ('Verification', {'fields': ('email_verified', 'email_verification_token')}),
+        ('Important dates', {'fields': ('last_login',)}),
+        ('Verification', {'fields': ('email_verified',)}),
     )
+    readonly_fields = BaseUserAdmin.readonly_fields + ('date_joined', 'email_verification_token')
     
     add_fieldsets = (
         (None, {

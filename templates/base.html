@@ -6,11 +6,18 @@
 <head>
   <meta charset="UTF-8">
   <title>Misamisa</title>
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+  <link rel="shortcut icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+  <link rel="apple-touch-icon" sizes="180x180" href="{% static 'favicon.ico' %}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon.ico' %}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon.ico' %}">
   <link rel="stylesheet" href="{% static 'css/style.css' %}">
   <script src="{% static 'js/main.js' %}" defer></script>
   <script src="{% static 'js/sklep.js' %}" defer></script>
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,600,700&display=swap" rel="stylesheet">
 </head>
-<body>
+<body style="font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;">
 
   <!-- HEADER -->
   <header class="site-header">
@@ -21,8 +28,8 @@
         </a>
       </div>
       <nav class="header-center">
-        <a href="{% url 'public_product_list' %}">{% trans "Sklep" %}</a>
-        <a href="#onas">{% trans "O nas" %}</a>
+        <a href="{% url 'shop:public_product_list' %}">{% trans "Shop" %}</a>
+        <a href="#onas">{% trans "About us" %}</a>
         <a href="#blog">{% trans "Blog" %}</a>
       </nav>
       <div class="header-right">
@@ -50,7 +57,7 @@
           </div>
           <div class="user-menu-dropdown">
             {% if user.is_authenticated %}
-              <a href="{% url 'profile' %}" class="dropdown-item">{% trans 'My Account' %}</a>
+              <a href="{% url 'profile' %}" class="dropdown-item">{% trans 'My account' %}</a>
               <a href="{% url 'logout' %}" class="dropdown-item">{% trans 'Logout' %}</a>
             {% else %}
               <a href="{% url 'login' %}" class="dropdown-item dropdown-btn-primary">{% trans 'Login' %}</a>
@@ -82,9 +89,9 @@
   <!-- Optional homepage default content -->
   <section class="hero">
     <div class="hero-inner container">
-      <h1>{% trans "Witamy w" %} <span class="highlight">Misamisa</span> 🍪</h1>
-      <p>{% trans "Twoje ulubione ciasteczka — świeże, słodkie i ręcznie robione z najlepszych składników!" %}</p>
-      <a href="#" class="cta-btn">{% trans "Zobacz ofertę" %}</a>
+      <h1>{% trans "Welcome to" %} <span class="highlight">Misamisa</span> 🍪</h1>
+      <p>{% trans "Your favorite cookies — fresh, sweet, and handmade from the best ingredients!" %}</p>
+      <a href="#" class="cta-btn">{% trans "See our offer" %}</a>
     </div>
   </section>
   {% endblock %}

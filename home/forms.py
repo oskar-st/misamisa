@@ -3,7 +3,7 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.utils.translation import gettext_lazy as _
 from accounts.models import CustomUser
 from .validators import CustomPasswordValidator
-from turnstile.fields import TurnstileField
+# from turnstile.fields import TurnstileField
 
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(
@@ -20,10 +20,10 @@ class CustomUserCreationForm(UserCreationForm):
         label=_('Confirm Password'),
         widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': _('Confirm your password')})
     )
-    captcha = TurnstileField(
-        label=_('Security Check'),
-        help_text=_('Please complete the security check to verify you are human.')
-    )
+    # captcha = TurnstileField(
+    #     label=_('Security Check'),
+    #     help_text=_('Please complete the security check to verify you are human.')
+    # )
 
     class Meta:
         model = CustomUser

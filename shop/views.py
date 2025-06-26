@@ -53,13 +53,16 @@ def product_list_public(request):
     paginator = Paginator(products, 12)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    return render(request, 'shop/public_product_list.html', {
+    context = {
         'categories': categories,
         'category': category,
         'products': page_obj.object_list,
         'page_obj': page_obj,
         'title': _('Shop'),
-    })
+    }
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return render(request, 'shop/product_list.html', context, content_type='text/html')
+    return render(request, 'shop/product_list.html', context)
 
 def product_detail_public(request, slug):
     product = get_object_or_404(Product, slug=slug, is_active=True)

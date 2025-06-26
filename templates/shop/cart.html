@@ -2,49 +2,47 @@
 {% load i18n static %}
 
 {% block content %}
-<div class="container" style="max-width: 800px; margin: 2em auto;">
+<div class="main-container">
     <h1>{% trans 'Your Cart' %}</h1>
     {% if message %}
-        <div style="background: #e6f7e6; color: #155724; border: 1px solid #b2dfb2; padding: 0.7em 1em; border-radius: 4px; margin-bottom: 1.5em;">{{ message }}</div>
+        <div class="alert alert-success">{{ message }}</div>
     {% endif %}
     {% if cart_items %}
     <form method="post" action="">
         {% csrf_token %}
-        <table style="width: 100%; border-collapse: collapse;">
+        <table class="cart-table">
             <thead>
-                <tr style="background: #f5f5f5;">
-                    <th style="padding: 0.7em; text-align: left;">{% trans 'Product' %}</th>
-                    <th style="padding: 0.7em;">{% trans 'Price' %}</th>
-                    <th style="padding: 0.7em;">{% trans 'Quantity' %}</th>
-                    <th style="padding: 0.7em;">{% trans 'Subtotal' %}</th>
-                    <th style="padding: 0.7em;"></th>
+                <tr>
+                    <th>{% trans 'Product' %}</th>
+                    <th>{% trans 'Price' %}</th>
+                    <th>{% trans 'Quantity' %}</th>
+                    <th>{% trans 'Subtotal' %}</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
                 {% for item in cart_items %}
-                <tr style="border-bottom: 1px solid #eee;">
-                    <td style="padding: 0.7em;">
-                        <a href="/produkt/{{ item.product.slug }}/" style="color: #417690; font-weight: bold;">{{ item.product.name }}</a>
+                <tr>
+                    <td>
+                        <a href="{% url 'public_product_detail' item.product.slug %}" class="cart-product-link">{{ item.product.name }}</a>
                     </td>
-                    <td style="padding: 0.7em; white-space: nowrap;">
-                        {{ item.price }} zł
-                    </td>
-                    <td style="padding: 0.7em;">
-                        <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock }}" style="width: 60px;" form="update-{{ item.product.id }}" />
-                    </td>
-                    <td style="padding: 0.7em; font-weight: bold;">{{ item.subtotal }} zł</td>
-                    <td style="padding: 0.7em;">
-                        <form method="post" action="" id="update-{{ item.product.id }}" style="display: inline;">
+                    <td class="nowrap">{{ item.price }} zł</td>
+                    <td>
+                        <form method="post" action="" id="update-{{ item.product.id }}" class="inline-form">
                             {% csrf_token %}
                             <input type="hidden" name="product_id" value="{{ item.product.id }}" />
                             <input type="hidden" name="action" value="update" />
-                            <button type="submit" class="btn btn-sm" style="background: #417690; color: white; border: none; border-radius: 3px; padding: 0.3em 0.8em;">{% trans 'Update' %}</button>
+                            <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock }}" class="cart-qty-input" />
+                            <button type="submit" class="cta-btn btn-sm">{% trans 'Update' %}</button>
                         </form>
-                        <form method="post" action="" style="display: inline; margin-left: 0.5em;">
+                    </td>
+                    <td class="bold">{{ item.subtotal }} zł</td>
+                    <td>
+                        <form method="post" action="" class="inline-form" style="margin-left: 0.5em;">
                             {% csrf_token %}
                             <input type="hidden" name="product_id" value="{{ item.product.id }}" />
                             <input type="hidden" name="action" value="remove" />
-                            <button type="submit" class="btn btn-sm" style="background: #dc3545; color: white; border: none; border-radius: 3px; padding: 0.3em 0.8em;">{% trans 'Remove' %}</button>
+                            <button type="submit" class="cta-btn btn-sm" style="background: #dc3545;">{% trans 'Remove' %}</button>
                         </form>
                     </td>
                 </tr>
@@ -52,16 +50,16 @@
             </tbody>
         </table>
     </form>
-    <div style="text-align: right; margin-top: 1.5em; font-size: 1.2em;">
+    <div class="cart-total-row">
         <strong>{% trans 'Total' %}: {{ total }} zł</strong>
     </div>
-    <div style="margin-top: 2em; text-align: right;">
-        <a href="/zamowienie/" class="btn btn-primary" style="background: #28a745; color: white; padding: 0.7em 2em; border-radius: 4px; text-decoration: none; font-weight: bold;">{% trans 'Proceed to checkout' %}</a>
+    <div class="cart-checkout-row">
+        <a href="/zamowienie/" class="cta-btn btn-primary">{% trans 'Proceed to checkout' %}</a>
     </div>
     {% else %}
-    <div style="color: #888; text-align: center; margin: 3em 0;">{% trans 'Your cart is empty.' %}</div>
-    <div style="text-align: center; margin-top: 2em;">
-        <a href="{% url 'public_product_list' %}" style="color: #417690; text-decoration: underline;">&larr; {% trans 'Back to shop' %}</a>
+    <div class="empty-cart-msg">{% trans 'Your cart is empty.' %}</div>
+    <div class="cart-back-link">
+        <a href="{% url 'public_product_list' %}">&larr; {% trans 'Back to shop' %}</a>
     </div>
     {% endif %}
 </div>

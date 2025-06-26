@@ -1,223 +1,113 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# This file is distributed under the same license as the Django package.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: django\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-22 10:34+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"POT-Creation-Date: 2025-06-26 13:18+0000\n"
+"PO-Revision-Date: 2025-06-26 13:18+0000\n"
+"Language-Team: Polish\n"
+"Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && "
-"(n%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && "
-"n%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
+"Plural-Forms: nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && (n%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && n%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
 
-#: templates/base.html:24
-msgid "Sklep"
+msgid "Shop"
 msgstr "Sklep"
-
-#: templates/base.html:25
-msgid "O nas"
+msgid "About us"
 msgstr "O nas"
-
-#: templates/base.html:26
 msgid "Blog"
 msgstr "Blog"
-
-#: templates/base.html:46
-msgid "Koszyk"
-msgstr ""
-
-#: templates/base.html:56
-msgid "Witamy w"
-msgstr "Witamy w"
-
-#: templates/base.html:57
-msgid ""
-"Twoje ulubione ciasteczka — świeże, słodkie i ręcznie robione z najlepszych "
-"składników!"
-msgstr "Twoje ulubione ciasteczka — świeże, słodkie i ręcznie robione z najlepszych składników!"
-
-#: templates/base.html:58
-msgid "Zobacz ofertę"
-msgstr "Zobacz ofertę"
-
-#: templates/sklep.html:8
-msgid "Nasze produkty"
-msgstr ""
-
-#: templates/sklep.html:10
-msgid "Siatka"
-msgstr ""
-
-#: templates/sklep.html:11
-msgid "Lista"
-msgstr ""
-
-#: templates/sklep.html:19
-msgid "Ciasteczko Klasyczne"
-msgstr ""
-
-#: templates/sklep.html:24
-msgid "Ciasteczko Czekoladowe"
-msgstr ""
-
-#: templates/sklep.html:29
-msgid "Ciasteczko Owsiane"
-msgstr ""
-
-#: templates/sklep.html:36
-msgid "Do góry"
-msgstr ""
-
-# Authentication translations
-msgid "Login"
-msgstr "Zaloguj się"
-
-msgid "Register"
-msgstr "Zarejestruj się"
-
-msgid "Profile"
-msgstr "Profil"
-
+msgid "My account"
+msgstr "Moje konto"
 msgid "Logout"
 msgstr "Wyloguj się"
-
-msgid "Email"
-msgstr "Email"
-
-msgid "Password"
-msgstr "Hasło"
-
-msgid "Confirm Password"
-msgstr "Potwierdź hasło"
-
-msgid "Enter your email"
-msgstr "Wprowadź swój email"
-
-msgid "Enter your password"
-msgstr "Wprowadź swoje hasło"
-
-msgid "Confirm your password"
-msgstr "Potwierdź swoje hasło"
-
-msgid "Your password must be at least 6 characters long and contain at least one uppercase letter and one number."
-msgstr "Twoje hasło musi mieć co najmniej 6 znaków i zawierać co najmniej jedną wielką literę i jedną cyfrę."
-
-msgid "Account created successfully!"
-msgstr "Konto zostało utworzone pomyślnie!"
-
-msgid "Please correct the errors below."
-msgstr "Proszę poprawić błędy poniżej."
-
-msgid "Logged in successfully!"
-msgstr "Zalogowano pomyślnie!"
-
-msgid "Invalid email or password."
-msgstr "Nieprawidłowy email lub hasło."
-
-msgid "Logged out successfully!"
-msgstr "Wylogowano pomyślnie!"
-
-msgid "Don't have an account?"
-msgstr "Nie masz konta?"
-
-msgid "Register here"
-msgstr "Zarejestruj się tutaj"
-
-msgid "Already have an account?"
-msgstr "Masz już konto?"
-
-msgid "Login here"
-msgstr "Zaloguj się tutaj"
-
-msgid "Date Joined"
-msgstr "Data dołączenia"
-
-# CAPTCHA translations
-msgid "Security Check"
-msgstr "Weryfikacja bezpieczeństwa"
-
-msgid "Please complete the security check to verify you are human."
-msgstr "Proszę ukończyć weryfikację bezpieczeństwa, aby potwierdzić, że jesteś człowiekiem."
-
-# Email verification translations
-msgid "Registration Successful!"
-msgstr "Rejestracja udana!"
-
-msgid "Thank you for registering with Misamisa! We've sent a verification email to:"
-msgstr "Dziękujemy za rejestrację w Misamisa! Wysłaliśmy email weryfikacyjny na adres:"
-
-msgid "Next Steps:"
-msgstr "Następne kroki:"
-
-msgid "Check your email inbox (and spam folder)"
-msgstr "Sprawdź swoją skrzynkę email (i folder spam)"
-
-msgid "Click the verification link in the email"
-msgstr "Kliknij link weryfikacyjny w emailu"
-
-msgid "Once verified, you can log in to your account"
-msgstr "Po weryfikacji możesz zalogować się do swojego konta"
-
-msgid "Didn't receive the email?"
-msgstr "Nie otrzymałeś emaila?"
-
-msgid "Please check your spam folder. If you still don't see it, contact us at hi@misamisa.pl"
-msgstr "Sprawdź folder spam. Jeśli nadal go nie widzisz, skontaktuj się z nami pod adresem hi@misamisa.pl"
-
-msgid "Go to Login"
-msgstr "Przejdź do logowania"
-
-msgid "Verify Your Email - Misamisa"
-msgstr "Zweryfikuj swój email - Misamisa"
-
-msgid "Welcome to Misamisa!"
-msgstr "Witamy w Misamisa!"
-
-msgid "Thank you for registering with Misamisa. To complete your registration, please verify your email address by clicking the button below:"
-msgstr "Dziękujemy za rejestrację w Misamisa. Aby ukończyć rejestrację, zweryfikuj swój adres email klikając przycisk poniżej:"
-
-msgid "Verify Email Address"
-msgstr "Zweryfikuj adres email"
-
-msgid "If the button doesn't work, you can copy and paste this link into your browser:"
-msgstr "Jeśli przycisk nie działa, możesz skopiować i wkleić ten link do przeglądarki:"
-
-msgid "This link will expire in 24 hours for security reasons."
-msgstr "Ten link wygaśnie za 24 godziny ze względów bezpieczeństwa."
-
-msgid "If you didn't create an account with Misamisa, you can safely ignore this email."
-msgstr "Jeśli nie utworzyłeś konta w Misamisa, możesz bezpiecznie zignorować ten email."
-
-msgid "Best regards,"
-msgstr "Z poważaniem,"
-
-msgid "The Misamisa Team"
-msgstr "Zespół Misamisa"
-
-msgid "This email was sent from hi@misamisa.pl"
-msgstr "Ten email został wysłany z hi@misamisa.pl"
-
-msgid "Email verified successfully! You can now log in."
-msgstr "Email zweryfikowany pomyślnie! Możesz się teraz zalogować."
-
-msgid "Invalid verification link. Please check your email or contact support."
-msgstr "Nieprawidłowy link weryfikacyjny. Sprawdź swój email lub skontaktuj się z pomocą techniczną."
-
-msgid "Please verify your email address before logging in. Check your inbox for the verification email."
-msgstr "Proszę zweryfikować swój adres email przed zalogowaniem. Sprawdź swoją skrzynkę email w poszukiwaniu emaila weryfikacyjnego."
-
-msgid "Account created but verification email could not be sent. Please contact support."
-msgstr "Konto zostało utworzone, ale email weryfikacyjny nie mógł zostać wysłany. Skontaktuj się z pomocą techniczną."
-
+msgid "Login"
+msgstr "Zaloguj się"
 msgid "Sign up"
-msgstr "Załóż konto"
+msgstr "Zarejestruj się"
+msgid "Welcome to"
+msgstr "Witamy w"
+msgid "Your favorite cookies — fresh, sweet, and handmade from the best ingredients!"
+msgstr "Twoje ulubione ciasteczka — świeże, słodkie i ręcznie robione z najlepszych składników!"
+msgid "See our offer"
+msgstr "Zobacz ofertę"
+msgid "Your Cart"
+msgstr "Twój koszyk"
+msgid "Product"
+msgstr "Produkt"
+msgid "Price"
+msgstr "Cena"
+msgid "Quantity"
+msgstr "Ilość"
+msgid "Subtotal"
+msgstr "Suma częściowa"
+msgid "Update"
+msgstr "Aktualizuj"
+msgid "Remove"
+msgstr "Usuń"
+msgid "Total"
+msgstr "Razem"
+msgid "Proceed to checkout"
+msgstr "Przejdź do zamówienia"
+msgid "Your cart is empty."
+msgstr "Twój koszyk jest pusty."
+msgid "Back to shop"
+msgstr "Powrót do sklepu"
+msgid "Checkout"
+msgstr "Zamówienie"
+msgid "Shipping & Billing Address"
+msgstr "Adres dostawy i rozliczeniowy"
+msgid "Full name"
+msgstr "Imię i nazwisko"
+msgid "Street"
+msgstr "Ulica"
+msgid "City"
+msgstr "Miasto"
+msgid "Postcode"
+msgstr "Kod pocztowy"
+msgid "Country"
+msgstr "Kraj"
+msgid "Phone"
+msgstr "Telefon"
+msgid "Shipping Method"
+msgstr "Metoda dostawy"
+msgid "No shipping methods available."
+msgstr "Brak dostępnych metod dostawy."
+msgid "Payment Method"
+msgstr "Metoda płatności"
+msgid "No payment methods available."
+msgstr "Brak dostępnych metod płatności."
+msgid "Order Summary"
+msgstr "Podsumowanie zamówienia"
+msgid "Qty"
+msgstr "Szt."
+msgid "Place Order"
+msgstr "Złóż zamówienie"
+msgid "Thank you for your order!"
+msgstr "Dziękujemy za zamówienie!"
+msgid "Your order has been placed successfully. We will contact you soon."
+msgstr "Twoje zamówienie zostało złożone pomyślnie. Skontaktujemy się z Tobą wkrótce."
+msgid "Category"
+msgstr "Kategoria"
+msgid "All"
+msgstr "Wszystkie"
+msgid "Filter"
+msgstr "Filtruj"
+msgid "No products found."
+msgstr "Nie znaleziono produktów."
+msgid "Previous"
+msgstr "Poprzednia"
+msgid "Page"
+msgstr "Strona"
+msgid "Next"
+msgstr "Następna"
+msgid "No image"
+msgstr "Brak zdjęcia"
+msgid "Out of stock"
+msgstr "Brak w magazynie"
+msgid "Add to cart"
+msgstr "Dodaj do koszyka"
+msgid "Stock"
+msgstr "Stan magazynowy"

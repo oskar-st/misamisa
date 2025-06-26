@@ -3,19 +3,18 @@
 {% block content %}
 <div class="main-container">
   <div class="news-feed">
-      <div class="news-item">
-          <h2>Witaj na naszym nowym blogu!</h2>
-          <p class="post-meta">Opublikowano 22 czerwca 2025</p>
-          <p>Z radością witamy na nowej odsłonie naszej strony! Znajdziesz tutaj najświeższe informacje o naszych produktach, promocjach i wiele więcej. Zapraszamy do czytania!</p>
+    {% if news_items %}
+      {% for news in news_items %}
+        <div class="news-item">
+          <h2>{{ news.title }}</h2>
+          <p class="post-meta">Opublikowano {{ news.created_at|date:"j E Y" }}</p>
+          <p>{{ news.content }}</p>
           <a href="#" class="cta-btn">Czytaj więcej</a>
-      </div>
-
-      <div class="news-item">
-          <h2>Letnia promocja na ciasteczka!</h2>
-          <p class="post-meta">Opublikowano 21 czerwca 2025</p>
-          <p>Słońce świeci, a my mamy dla Was coś specjalnego! Przez cały lipiec wszystkie nasze ciasteczka czekoladowe 15% taniej. Nie przegap okazji!</p>
-          <a href="#" class="cta-btn">Sprawdź promocję</a>
-      </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p>Brak aktualności do wyświetlenia.</p>
+    {% endif %}
   </div>
 </div>
 {% endblock %} 

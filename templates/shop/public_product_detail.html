@@ -2,34 +2,34 @@
 {% load i18n static %}
 
 {% block content %}
-<div class="container" style="max-width: 700px; margin: 2em auto;">
-    <div class="product-detail-card" style="background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); padding: 2em; display: flex; gap: 2em; flex-wrap: wrap;">
-        <div style="flex: 1 1 250px; min-width: 220px; text-align: center;">
+<div class="main-container">
+    <div class="product-detail-card">
+        <div class="product-detail-image-col">
             {% if product.image %}
-                <img src="{{ product.image.url }}" alt="{{ product.name }}" style="max-width: 100%; max-height: 320px; object-fit: contain; margin-bottom: 1em;" />
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-detail-image" />
             {% else %}
-                <div style="height: 320px; background: #f5f5f5; display: flex; align-items: center; justify-content: center; color: #bbb;">{% trans 'No image' %}</div>
+                <div class="no-image">{% trans 'No image' %}</div>
             {% endif %}
         </div>
-        <div style="flex: 2 1 350px; min-width: 250px;">
-            <h1 style="margin-top: 0;">{{ product.name }}</h1>
-            <div style="font-weight: bold; color: #417690; font-size: 1.2em; margin-bottom: 0.5em;">
+        <div class="product-detail-info-col">
+            <h1 class="product-detail-title">{{ product.name }}</h1>
+            <div class="product-detail-price">
                 {% if product.discount_price %}
-                    <span style="text-decoration: line-through; color: #888;">{{ product.price }} zł</span>
-                    <span style="color: #28a745;">{{ product.discount_price }} zł</span>
+                    <span class="old-price">{{ product.price }} zł</span>
+                    <span class="discount-price">{{ product.discount_price }} zł</span>
                 {% else %}
                     {{ product.price }} zł
                 {% endif %}
             </div>
-            <div style="margin-bottom: 1.5em; color: #444;">
+            <div class="product-detail-desc">
                 {{ product.description|linebreaksbr }}
             </div>
-            <form method="post" action="/koszyk/">
+            <form method="post" action="{% url 'cart_view' %}" class="product-detail-form">
                 {% csrf_token %}
                 <input type="hidden" name="product_id" value="{{ product.id }}" />
                 <label for="quantity">{% trans 'Quantity' %}:</label>
-                <input type="number" name="quantity" id="quantity" value="1" min="1" max="{{ product.stock }}" style="width: 60px; margin-right: 1em;" {% if product.stock == 0 %}disabled{% endif %} />
-                <button type="submit" class="btn btn-primary" {% if product.stock == 0 %}disabled{% endif %}>
+                <input type="number" name="quantity" id="quantity" value="1" min="1" max="{{ product.stock }}" class="product-detail-qty" {% if product.stock == 0 %}disabled{% endif %} />
+                <button type="submit" class="cta-btn btn-primary" {% if product.stock == 0 %}disabled{% endif %}>
                     {% if product.stock == 0 %}
                         {% trans 'Out of stock' %}
                     {% else %}
@@ -37,13 +37,13 @@
                     {% endif %}
                 </button>
             </form>
-            <div style="margin-top: 1em; color: #888; font-size: 0.95em;">
+            <div class="product-detail-stock">
                 {% trans 'Stock' %}: {{ product.stock }}
             </div>
         </div>
     </div>
-    <div style="margin-top: 2em;">
-        <a href="{% url 'public_product_list' %}" style="color: #417690; text-decoration: underline;">&larr; {% trans 'Back to shop' %}</a>
+    <div class="product-detail-back">
+        <a href="{% url 'shop:public_product_list' %}" class="product-detail-back-link">&larr; {% trans 'Back to shop' %}</a>
     </div>
 </div>
 {% endblock %} 
