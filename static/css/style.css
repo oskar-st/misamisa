@@ -986,8 +986,8 @@ footer p {
 .view-toggle {
   display: flex;
   gap: 0.5em;
-  margin-bottom: 1.5em;
   justify-content: flex-end;
+  flex-shrink: 0;
 }
 
 .view-btn {
@@ -1297,3 +1297,136 @@ footer p {
 [data-theme=dark] .product-detail-stock {
   color: #aaa;
 }
+
+.pagination-bar {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: 0.5em !important;
+  margin: 0.5em 0 !important;
+  z-index: 10 !important;
+  width: 100% !important;
+  min-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.pagination-left {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 0.5em !important;
+  flex: 1 !important;
+}
+
+.sticky-pagination {
+  position: sticky !important;
+  top: 0 !important;
+  background: var(--page-bg) !important;
+  padding: 0.5em 0 !important;
+  z-index: 100 !important;
+  width: 100% !important;
+  min-width: 100% !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+}
+
+.pagination-bar .pagination-link {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-decoration: none !important;
+  color: var(--text-color) !important;
+  transition: all 0.2s !important;
+  flex-shrink: 0 !important;
+}
+
+.pagination-bar .pagination-link.page-arrow {
+  border-radius: 8px !important;
+  overflow: hidden !important;
+  flex-shrink: 0 !important;
+}
+
+.pagination-bar .pagination-link.page-arrow.disabled {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+}
+
+.pagination-bar .pagination-link.page-arrow.disabled .arrow-bg {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+}
+
+.pagination-bar .pagination-jump-form {
+  display: flex !important;
+  align-items: center !important;
+  margin: 0 !important;
+  gap: 0.5em !important;
+  flex-shrink: 0 !important;
+}
+
+.pagination-bar .pagination-jump-input {
+  width: 48px !important;
+  height: 38px !important;
+  border-radius: 12px !important;
+  border: 1.5px solid var(--card-border) !important;
+  text-align: center !important;
+  font-size: 1.1em !important;
+  font-weight: 600 !important;
+  background: var(--card-bg) !important;
+  color: var(--text-color) !important;
+  padding: 0 !important;
+  flex-shrink: 0 !important;
+}
+
+.pagination-bar .pagination-jump-input:focus {
+  outline: none !important;
+  border-color: var(--accent-color) !important;
+  box-shadow: 0 0 0 2px rgba(204, 102, 0, 0.2) !important;
+}
+
+.pagination-bar .pagination-total {
+  color: #888 !important;
+  font-size: 1.1em !important;
+  flex-shrink: 0 !important;
+}
+
+.pagination-bar .arrow-bg {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 38px !important;
+  height: 38px !important;
+  border-radius: 8px !important;
+  background: #f2ede4 !important;
+  transition: background 0.2s !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  flex-shrink: 0 !important;
+}
+
+.pagination-bar .arrow-bg svg {
+  width: 20px !important;
+  height: 20px !important;
+  display: block !important;
+}
+
+html[data-theme=dark] .pagination-bar .arrow-bg {
+  background: #232323 !important;
+}
+
+.pagination-bar .pagination-link.page-arrow:hover .arrow-bg {
+  background: rgba(215, 126, 0, 0.18) !important;
+}
+
+html[data-theme=dark] .pagination-bar .pagination-link.page-arrow:hover .arrow-bg {
+  background: rgba(255, 157, 45, 0.18) !important;
+}
+
+/*# sourceMappingURL=style.css.map */

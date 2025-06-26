@@ -24,7 +24,7 @@
                 {% for item in cart_items %}
                 <tr>
                     <td>
-                        <a href="{% url 'public_product_detail' item.product.slug %}" class="cart-product-link">{{ item.product.name }}</a>
+                        <a href="{% url 'shop:public_product_detail' item.product.slug %}" class="cart-product-link">{{ item.product.name }}</a>
                     </td>
                     <td class="nowrap">{{ item.price }} zł</td>
                     <td>
@@ -59,7 +59,7 @@
     {% else %}
     <div class="empty-cart-msg">{% trans 'Your cart is empty.' %}</div>
     <div class="cart-back-link">
-        <a href="{% url 'public_product_list' %}">&larr; {% trans 'Back to shop' %}</a>
+        <a href="{% url 'shop:public_product_list' %}">&larr; {% trans 'Back to shop' %}</a>
     </div>
     {% endif %}
 </div>

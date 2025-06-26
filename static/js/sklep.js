@@ -50,10 +50,47 @@ function setupAjaxPagination() {
   });
 }
 
+function setupPaginationJump() {
+  document.querySelectorAll('.pagination-jump-form').forEach(form => {
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const input = form.querySelector('.pagination-jump-input');
+      const page = parseInt(input.value, 10);
+      const min = parseInt(input.getAttribute('min'), 10);
+      const max = parseInt(input.getAttribute('max'), 10);
+      if (isNaN(page) || page < min || page > max) {
+        input.focus();
+        input.classList.add('error');
+        setTimeout(() => input.classList.remove('error'), 1000);
+        return;
+      }
+      const url = new URL(window.location);
+      url.searchParams.set('page', page);
+      fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+        .then(response => response.text())
+        .then(html => {
+          const temp = document.createElement('div');
+          temp.innerHTML = html;
+          const newContainer = temp.querySelector('#product-list-container');
+          if (newContainer) {
+            document.getElementById('product-list-container').replaceWith(newContainer);
+            applyViewFromContainer();
+            setupAjaxPagination();
+            setupPaginationJump();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          } else {
+            window.location = url;
+          }
+        });
+    });
+  });
+}
+
 // On page load, set the view based on the query parameter (for initial render only)
 window.addEventListener('DOMContentLoaded', function() {
   applyViewFromContainer();
   setupAjaxPagination();
+  setupPaginationJump();
 });
 
 function scrollToTop() {

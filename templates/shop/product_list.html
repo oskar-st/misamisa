@@ -4,76 +4,51 @@
 {% block content %}
 <div class="main-container">
     <h1 class="shop-title">{% trans 'Shop' %}</h1>
-    <div class="shop-filters" style="margin-bottom: 1.5em;">
-        <form method="get" action="" class="category-filter-form">
-            <label for="category-select">{% trans 'Category' %}:</label>
-            <select name="kategoria" id="category-select" onchange="this.form.submit()">
-                <option value="">{% trans 'All' %}</option>
-                {% for cat in categories %}
-                    <option value="{{ cat.slug }}" {% if category and cat == category %}selected{% endif %}>{{ cat.name }}</option>
-                {% endfor %}
-            </select>
-            <input type="hidden" name="view" id="view-mode-input" value="{{ request.GET.view|default:'grid' }}">
-            <noscript><button type="submit">{% trans 'Filter' %}</button></noscript>
-        </form>
-        <div class="view-toggle">
-            <button type="button" class="view-btn active" id="grid-btn" onclick="setView('grid')" aria-label="Grid view">
-                <svg width="20" height="20" viewBox="0 0 20 20"><rect x="2" y="2" width="6" height="6" rx="2"/><rect x="12" y="2" width="6" height="6" rx="2"/><rect x="2" y="12" width="6" height="6" rx="2"/><rect x="12" y="12" width="6" height="6" rx="2"/></svg>
-            </button>
-            <button type="button" class="view-btn" id="list-btn" onclick="setView('list')" aria-label="List view">
-                <svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="4" width="14" height="2" rx="1"/><rect x="3" y="9" width="14" height="2" rx="1"/><rect x="3" y="14" width="14" height="2" rx="1"/></svg>
-            </button>
-        </div>
-    </div>
+    <form method="get" action="" class="category-filter-form">
+        <label for="category-select">{% trans 'Category' %}:</label>
+        <select name="kategoria" id="category-select" onchange="this.form.submit()">
+            <option value="">{% trans 'All' %}</option>
+            {% for cat in categories %}
+                <option value="{{ cat.slug }}" {% if category and cat == category %}selected{% endif %}>{{ cat.name }}</option>
+            {% endfor %}
+        </select>
+        <input type="hidden" name="view" id="view-mode-input" value="{{ request.GET.view|default:'grid' }}">
+        <noscript><button type="submit">{% trans 'Filter' %}</button></noscript>
+    </form>
+    
     <div id="product-list-container" data-view="{{ request.GET.view|default:'grid' }}">
-    {% if page_obj.paginator.num_pages > 1 %}
-    <div class="pagination" style="margin-bottom: 2em; text-align: center;">
-        {% if page_obj.has_previous %}
-            <a href="?{% if category %}kategoria={{ category.slug }}&amp;{% endif %}page={{ page_obj.previous_page_number }}{% if request.GET.view %}&amp;view={{ request.GET.view }}{% endif %}" class="pagination-link">&laquo; {% trans 'Previous' %}</a>
+        {% if page_obj.paginator.num_pages > 1 %}
+            {% include 'shop/pagination_bar.html' %}
         {% endif %}
-        <span style="margin: 0 1em;">{% trans 'Page' %} {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
-        {% if page_obj.has_next %}
-            <a href="?{% if category %}kategoria={{ category.slug }}&amp;{% endif %}page={{ page_obj.next_page_number }}{% if request.GET.view %}&amp;view={{ request.GET.view }}{% endif %}" class="pagination-link">{% trans 'Next' %} &raquo;</a>
-        {% endif %}
-    </div>
-    {% endif %}
-    <div id="product-list" class="product-list-grid product-grid">
-        {% for product in products %}
-        <div class="product-card product-row">
-            <a href="{% url 'public_product_detail' product.slug %}" class="product-link">
-                {% if product.image %}
-                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image" />
-                {% else %}
-                    <div class="no-image">{% trans 'No image' %}</div>
-                {% endif %}
-                <span class="product-info">
-                  <h2 class="product-title">{{ product.name }}</h2>
-                  <span class="product-price">
-                    {% if product.discount_price %}
-                        <span class="old-price">{{ product.price }} zł</span>
-                        <span class="discount-price">{{ product.discount_price }} zł</span>
+        <div id="product-list" class="product-list-grid product-grid">
+            {% for product in products %}
+            <div class="product-card product-row">
+                <a href="{% url 'shop:public_product_detail' product.slug %}" class="product-link">
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image" />
                     {% else %}
-                        {{ product.price }} zł
+                        <div class="no-image">{% trans 'No image' %}</div>
                     {% endif %}
-                  </span>
-                </span>
-            </a>
+                    <span class="product-info">
+                      <h2 class="product-title">{{ product.name }}</h2>
+                      <span class="product-price">
+                        {% if product.discount_price %}
+                            <span class="old-price">{{ product.price }} zł</span>
+                            <span class="discount-price">{{ product.discount_price }} zł</span>
+                        {% else %}
+                            {{ product.price }} zł
+                        {% endif %}
+                      </span>
+                    </span>
+                </a>
+            </div>
+            {% empty %}
+            <div class="no-products">{% trans 'No products found.' %}</div>
+            {% endfor %}
         </div>
-        {% empty %}
-        <div class="no-products">{% trans 'No products found.' %}</div>
-        {% endfor %}
-    </div>
-    {% if page_obj.paginator.num_pages > 1 %}
-    <div class="pagination" style="margin-top: 2em; text-align: center;">
-        {% if page_obj.has_previous %}
-            <a href="?{% if category %}kategoria={{ category.slug }}&amp;{% endif %}page={{ page_obj.previous_page_number }}{% if request.GET.view %}&amp;view={{ request.GET.view }}{% endif %}" class="pagination-link">&laquo; {% trans 'Previous' %}</a>
+        {% if page_obj.paginator.num_pages > 1 %}
+            {% include 'shop/pagination_bar.html' %}
         {% endif %}
-        <span style="margin: 0 1em;">{% trans 'Page' %} {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
-        {% if page_obj.has_next %}
-            <a href="?{% if category %}kategoria={{ category.slug }}&amp;{% endif %}page={{ page_obj.next_page_number }}{% if request.GET.view %}&amp;view={{ request.GET.view }}{% endif %}" class="pagination-link">{% trans 'Next' %} &raquo;</a>
-        {% endif %}
-    </div>
-    {% endif %}
     </div>
 </div>
 {% endblock %} 

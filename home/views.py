@@ -15,9 +15,6 @@ def homepage(request):
     news_items = News.objects.all()
     return render(request, "home.html", {"news_items": news_items})
 
-def sklep(request):
-    return render(request, "sklep.html")
-
 def register_view(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)

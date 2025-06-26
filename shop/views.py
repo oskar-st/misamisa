@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.utils.translation import gettext_lazy as _
 from .models import Category, Product
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from shop.models import ShippingMethod, PaymentMethod, Order, OrderItem
@@ -18,7 +18,7 @@ def product_list(request):
     return render(request, 'shop/product_list.html', context)
 
 def category_detail(request, slug):
-    """Display products in a specific category (admin view)"""
+    """Display products in a specific category"""
     category = get_object_or_404(Category, slug=slug, is_active=True)
     products = Product.objects.filter(
         category=category,
@@ -34,12 +34,8 @@ def category_detail(request, slug):
 
 def product_detail(request, slug):
     """Display a specific product (admin view)"""
-    product = get_object_or_404(Product, slug=slug, is_active=True)
-    context = {
-        'product': product,
-        'title': product.name
-    }
-    return render(request, 'shop/product_detail.html', context)
+    # This function is removed as per the instructions
+    pass
 
 # --- PUBLIC VIEWS ---
 def product_list_public(request):
@@ -52,6 +48,7 @@ def product_list_public(request):
         products = products.filter(category=category)
     paginator = Paginator(products, 12)
     page_number = request.GET.get('page')
+    # Use get_page to always return a valid page (never raises EmptyPage)
     page_obj = paginator.get_page(page_number)
     context = {
         'categories': categories,

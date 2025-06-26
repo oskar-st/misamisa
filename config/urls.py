@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from home.views import homepage, sklep, register_view, login_view, logout_view, profile_view, verify_email, resend_verification_email
+from home.views import homepage, register_view, login_view, logout_view, profile_view, verify_email, resend_verification_email
 from .admin import admin_site
 from shop.views import product_list_public, product_detail_public, cart_view, checkout_view
 
