@@ -1,3 +1,43 @@
+/* --- GLOBAL CURSOR RULES --- */
+button, 
+input[type="submit"], 
+input[type="button"], 
+.cta-btn, 
+.btn, 
+.qty-btn, 
+.view-btn, 
+a.cta-btn {
+  cursor: pointer !important;
+}
+
+button:hover, 
+input[type="submit"]:hover, 
+input[type="button"]:hover, 
+.cta-btn:hover, 
+.btn:hover, 
+.qty-btn:hover, 
+.view-btn:hover, 
+a.cta-btn:hover {
+  cursor: pointer !important;
+}
+
+button:disabled, 
+input[type="submit"]:disabled, 
+input[type="button"]:disabled, 
+.cta-btn:disabled, 
+.btn:disabled, 
+.qty-btn:disabled, 
+.view-btn:disabled {
+  cursor: not-allowed !important;
+}
+
+/* Force cursor on all interactive elements */
+*[onclick], 
+*[onclick]:hover {
+  cursor: pointer !important;
+}
+
+/* --- VARIABLES --- */
 :root {
   --background-color: #fffaf3;
   --text-color: #333;
@@ -445,6 +485,7 @@ body {
     padding: 0 1.2em;
     line-height: 1.1;
     box-shadow: none;
+    cursor: pointer !important;
   }
   
   .cta-btn:hover, .cta-btn:focus {
@@ -453,6 +494,7 @@ body {
     box-shadow: 0 6px 16px var(--shadow-md);
     text-decoration: none;
     outline: none;
+    cursor: pointer !important;
   }
   
   .cta-btn:active {
@@ -467,6 +509,63 @@ body {
     cursor: not-allowed;
     box-shadow: none;
     opacity: 0.7;
+  }
+  
+  /* Add to cart button styling */
+  .cta-btn.btn-primary {
+    background: var(--accent-color);
+    color: var(--button-text);
+    border: 1px solid var(--accent-color);
+    transition: all 0.2s ease;
+  }
+  
+  .cta-btn.btn-primary:hover {
+    background: var(--button-hover-bg);
+    border-color: var(--button-hover-bg);
+    color: var(--button-text);
+    box-shadow: 0 6px 16px var(--shadow-md);
+  }
+  
+  .cta-btn.btn-primary:active {
+    background: var(--button-hover-bg);
+    border-color: var(--button-hover-bg);
+    box-shadow: 0 2px 6px var(--shadow-sm);
+  }
+  
+  /* Proceed to checkout button styling (higher, bigger font) */
+  .cta-btn.btn-primary.checkout-btn {
+    height: 30px;
+    min-height: 30px;
+    max-height: 30px;
+    font-size: 1.1rem;
+    padding: 0 1.5em;
+    line-height: 30px;
+    font-weight: 600;
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+  }
+  
+  /* Remove button styling */
+  .cta-btn.btn-sm.remove-btn {
+    background: #dc3545 !important;
+    border-color: #dc3545 !important;
+    color: white !important;
+  }
+  
+  .cta-btn.btn-sm.remove-btn:hover {
+    background: #c82333 !important;
+    border-color: #c82333 !important;
+  }
+  
+  /* Remove button styling (smaller, lower height, trimmed sides) */
+  .cta-btn.btn-sm {
+    height: 26px;
+    min-height: 26px;
+    max-height: 26px;
+    font-size: 0.85rem;
+    padding: 0 0.8em;
+    line-height: 1.1;
   }
   
   .highlight {
@@ -801,16 +900,52 @@ body {
     box-shadow: 0 2px 8px var(--shadow-sm);
     margin-bottom: 2rem;
   }
+  
   .cart-table th, .cart-table td {
     padding: 0.7em 1em;
     border-bottom: 1px solid var(--card-border);
     color: var(--text-color);
     background: var(--card-bg);
+    text-align: left;
+    vertical-align: middle;
   }
+  
+  /* Column-specific alignment */
+  .cart-table th:nth-child(1), .cart-table td:nth-child(1) {
+    /* Product name - left aligned, takes most space */
+    width: 35%;
+    text-align: left;
+  }
+  
+  .cart-table th:nth-child(2), .cart-table td:nth-child(2) {
+    /* Price - center aligned, fixed width */
+    width: 15%;
+    text-align: center;
+  }
+  
+  .cart-table th:nth-child(3), .cart-table td:nth-child(3) {
+    /* Quantity - center aligned, fixed width */
+    width: 20%;
+    text-align: center;
+  }
+  
+  .cart-table th:nth-child(4), .cart-table td:nth-child(4) {
+    /* Subtotal - center aligned, fixed width */
+    width: 15%;
+    text-align: center;
+  }
+  
+  .cart-table th:nth-child(5), .cart-table td:nth-child(5) {
+    /* Remove button - center aligned, fixed width */
+    width: 15%;
+    text-align: center;
+  }
+  
   .cart-table th {
     background: var(--select-hover-bg);
     font-weight: 600;
   }
+  
   .cart-table tr:last-child td {
     border-bottom: none;
   }
@@ -875,7 +1010,7 @@ body {
   [data-theme="dark"] .cart-qty-input {
     background: var(--page-bg);
     color: var(--text-color);
-    border: 1px solid var(--card-border);
+    border: none;
   }
   [data-theme="dark"] .empty-cart-msg {
     color: #bbb;
@@ -924,7 +1059,7 @@ body {
     border: 1.5px solid var(--card-border);
     border-radius: 6px;
     padding: 0.5em 0.9em;
-    cursor: pointer;
+    cursor: pointer !important;
     transition: border-color 0.2s, background 0.2s, color 0.2s;
     display: flex;
     align-items: center;
@@ -1151,15 +1286,77 @@ body {
     gap: 1em;
     margin-bottom: 1em;
   }
+  
+  .quantity-control {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--card-border);
+    border-radius: 6px;
+    background: var(--page-bg);
+    overflow: hidden;
+    width: fit-content;
+  }
+  
+  .qty-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 38px;
+    background: var(--card-bg);
+    border: none;
+    color: var(--text-color);
+    cursor: pointer !important;
+    transition: all 0.2s;
+    padding: 0;
+  }
+  
+  .qty-btn:hover {
+    background: var(--accent-color);
+    color: var(--button-text);
+    cursor: pointer !important;
+  }
+  
+  .qty-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed !important;
+  }
+  
+  .qty-btn:disabled:hover {
+    background: var(--card-bg);
+    color: var(--text-color);
+    cursor: not-allowed !important;
+  }
+  
   .product-detail-qty {
     width: 60px;
     padding: 0.5em;
-    border: 1px solid var(--card-border);
-    border-radius: 4px;
+    border: none;
     background: var(--page-bg);
     color: var(--text-color);
     font-size: 1em;
+    text-align: center;
+    outline: none;
   }
+  
+  .product-detail-qty:focus {
+    outline: none;
+  }
+  
+  .cart-qty-input {
+    width: 60px;
+    padding: 0.4em 0.6em;
+    border: none;
+    background: var(--page-bg);
+    color: var(--text-color);
+    text-align: center;
+    outline: none;
+  }
+  
+  .cart-qty-input:focus {
+    outline: none;
+  }
+
   .product-detail-stock {
     color: #888;
     font-size: 0.95em;
@@ -1318,4 +1515,70 @@ body {
   }
   html[data-theme="dark"] .pagination-bar .pagination-link.page-arrow:hover .arrow-bg {
     background: rgba(255, 157, 45, 0.18) !important;
+  }
+
+  [data-theme="dark"] .quantity-control {
+    background: var(--page-bg);
+    border-color: var(--card-border);
+  }
+  
+  [data-theme="dark"] .qty-btn {
+    background: var(--card-bg);
+    color: var(--text-color);
+  }
+  
+  [data-theme="dark"] .qty-btn:hover {
+    background: var(--accent-color);
+    color: var(--button-text);
+  }
+  
+  [data-theme="dark"] .qty-btn:disabled:hover {
+    background: var(--card-bg);
+    color: var(--text-color);
+  }
+
+  /* Remove number input spinners completely */
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button,
+  .cart-qty-input::-webkit-inner-spin-button,
+  .cart-qty-input::-webkit-outer-spin-button,
+  .product-detail-qty::-webkit-inner-spin-button,
+  .product-detail-qty::-webkit-outer-spin-button {
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    margin: 0 !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    display: none !important;
+  }
+
+  /* Firefox specific */
+  input[type="number"],
+  .cart-qty-input,
+  .product-detail-qty {
+    -moz-appearance: textfield !important;
+    appearance: textfield !important;
+  }
+
+  /* Remove spinners on focus as well */
+  input[type="number"]:focus::-webkit-inner-spin-button,
+  input[type="number"]:focus::-webkit-outer-spin-button,
+  .cart-qty-input:focus::-webkit-inner-spin-button,
+  .cart-qty-input:focus::-webkit-outer-spin-button,
+  .product-detail-qty:focus::-webkit-inner-spin-button,
+  .product-detail-qty:focus::-webkit-outer-spin-button {
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    margin: 0 !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    display: none !important;
+  }
+
+  /* Firefox focus state */
+  input[type="number"]:focus,
+  .cart-qty-input:focus,
+  .product-detail-qty:focus {
+    -moz-appearance: textfield !important;
+    appearance: textfield !important;
   } 

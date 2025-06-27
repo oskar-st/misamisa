@@ -2,11 +2,14 @@ from django.shortcuts import render, get_object_or_404
 from django.utils.translation import gettext_lazy as _
 from .models import Category, Product
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from shop.models import ShippingMethod, PaymentMethod, Order, OrderItem
 from accounts.models import Address, CustomUser
 from django.utils import timezone
+from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
+import json
 
 def product_list(request):
     """Display all active products (admin view)"""
@@ -216,3 +219,60 @@ def checkout_view(request):
         'error': error,
         'title': _('Checkout'),
     })
+
+@require_POST
+@csrf_exempt
+def update_cart_ajax(request):
+    """AJAX endpoint for updating cart quantities"""
+    try:
+        data = json.loads(request.body)
+        product_id = data.get('product_id')
+        quantity = int(data.get('quantity', 1))
+        action = data.get('action', 'update')
+        
+        cart = request.session.get('cart', {})
+        
+        try:
+            product = Product.objects.get(pk=product_id, is_active=True)
+        except (Product.DoesNotExist, ValueError, TypeError):
+            return JsonResponse({'success': False, 'error': 'Product not found'}, status=400)
+        
+        if action == 'update':
+            if quantity > 0:
+                cart[product_id] = quantity
+            else:
+                cart.pop(product_id, None)
+        elif action == 'remove':
+            cart.pop(product_id, None)
+        
+        request.session['cart'] = cart
+        
+        # Recalculate cart totals
+        product_ids = list(cart.keys())
+        products = Product.objects.filter(id__in=product_ids, is_active=True)
+        cart_items = []
+        total = 0
+        for product in products:
+            qty = cart.get(str(product.id), 0)
+            price = product.discount_price or product.price
+            subtotal = price * qty
+            total += subtotal
+            cart_items.append({
+                'product_id': product.id,
+                'quantity': qty,
+                'price': float(price),
+                'subtotal': float(subtotal),
+            })
+        
+        return JsonResponse({
+            'success': True,
+            'cart_items': cart_items,
+            'total': float(total),
+            'cart_count': sum(cart.values()),
+            'message': 'Cart updated successfully'
+        })
+        
+    except (json.JSONDecodeError, ValueError) as e:
+        return JsonResponse({'success': False, 'error': 'Invalid data'}, status=400)
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)

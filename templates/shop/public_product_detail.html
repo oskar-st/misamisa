@@ -28,7 +28,19 @@
                 {% csrf_token %}
                 <input type="hidden" name="product_id" value="{{ product.id }}" />
                 <label for="quantity">{% trans 'Quantity' %}:</label>
-                <input type="number" name="quantity" id="quantity" value="1" min="1" max="{{ product.stock }}" class="product-detail-qty" {% if product.stock == 0 %}disabled{% endif %} />
+                <div class="quantity-control">
+                    <button type="button" class="qty-btn qty-down" onclick="changeQuantity('quantity', -1, {{ product.stock }})" {% if product.stock == 0 %}disabled{% endif %}>
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <path d="M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                    <input type="text" name="quantity" id="quantity" value="1" min="1" max="{{ product.stock }}" class="product-detail-qty" {% if product.stock == 0 %}disabled{% endif %} oninput="validateQuantity(this, {{ product.stock }})" />
+                    <button type="button" class="qty-btn qty-up" onclick="changeQuantity('quantity', 1, {{ product.stock }})" {% if product.stock == 0 %}disabled{% endif %}>
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                </div>
                 <button type="submit" class="cta-btn btn-primary" {% if product.stock == 0 %}disabled{% endif %}>
                     {% if product.stock == 0 %}
                         {% trans 'Out of stock' %}
@@ -46,4 +58,25 @@
         <a href="{% url 'shop:public_product_list' %}" class="product-detail-back-link">&larr; {% trans 'Back to shop' %}</a>
     </div>
 </div>
+
+<script>
+function changeQuantity(inputId, change, maxStock) {
+    const input = document.getElementById(inputId);
+    const currentValue = parseInt(input.value) || 1;
+    const newValue = Math.max(1, Math.min(maxStock, currentValue + change));
+    input.value = newValue;
+}
+
+function validateQuantity(input, maxStock) {
+    let value = input.value.replace(/[^0-9]/g, '');
+    if (value === '') {
+        value = 1;
+    } else {
+        value = parseInt(value);
+        if (value < 1) value = 1;
+        if (value > maxStock) value = maxStock;
+    }
+    input.value = value;
+}
+</script>
 {% endblock %} 
