@@ -85,23 +85,25 @@ def cart_view(request):
         except (Product.DoesNotExist, ValueError, TypeError):
             product = None
         if product:
+            # Convert product_id to string for consistency
+            product_id_str = str(product_id)
             if action == 'add':
                 qty = int(request.POST.get('quantity', 1))
-                if product_id in cart:
-                    cart[product_id] += qty
+                if product_id_str in cart:
+                    cart[product_id_str] += qty
                 else:
-                    cart[product_id] = qty
+                    cart[product_id_str] = qty
                 message = _('Added to cart.')
             elif action == 'update':
                 qty = int(request.POST.get('quantity', 1))
                 if qty > 0:
-                    cart[product_id] = qty
+                    cart[product_id_str] = qty
                     message = _('Cart updated.')
                 else:
-                    cart.pop(product_id, None)
+                    cart.pop(product_id_str, None)
                     message = _('Item removed.')
             elif action == 'remove':
-                cart.pop(product_id, None)
+                cart.pop(product_id_str, None)
                 message = _('Item removed.')
         request.session['cart'] = cart
         return HttpResponseRedirect(reverse('cart_view'))
@@ -230,6 +232,9 @@ def update_cart_ajax(request):
         quantity = int(data.get('quantity', 1))
         action = data.get('action', 'update')
         
+        # Convert product_id to string for consistency
+        product_id_str = str(product_id)
+        
         cart = request.session.get('cart', {})
         
         try:
@@ -239,11 +244,11 @@ def update_cart_ajax(request):
         
         if action == 'update':
             if quantity > 0:
-                cart[product_id] = quantity
+                cart[product_id_str] = quantity
             else:
-                cart.pop(product_id, None)
+                cart.pop(product_id_str, None)
         elif action == 'remove':
-            cart.pop(product_id, None)
+            cart.pop(product_id_str, None)
         
         request.session['cart'] = cart
         

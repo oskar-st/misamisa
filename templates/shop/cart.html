@@ -1,6 +1,9 @@
 {% extends 'base.html' %}
 {% load i18n static %}
 
+<!-- Add CSRF token for AJAX requests -->
+{% csrf_token %}
+
 {% block content %}
 <div class="main-container">
     <h1>{% trans 'Your Cart' %}</h1>
@@ -91,12 +94,14 @@ function updateCartQuantity(productId, change, maxStock, newValue = null) {
     const input = document.getElementById(`cart-qty-${productId}`);
     input.value = quantity;
     
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    
     // Send AJAX request
     fetch('{% url "shop:update_cart_ajax" %}', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            'X-CSRFToken': csrfToken
         },
         body: JSON.stringify({
             product_id: productId,
@@ -117,7 +122,10 @@ function updateCartQuantity(productId, change, maxStock, newValue = null) {
             }
             
             // Update total
-            document.getElementById('cart-total').textContent = data.total.toFixed(2);
+            const cartTotalElement = document.getElementById('cart-total');
+            if (cartTotalElement) {
+                cartTotalElement.textContent = data.total.toFixed(2);
+            }
             
             // Update cart badge in header
             const cartBadge = document.querySelector('.cart-badge');
@@ -154,17 +162,19 @@ function updateCartQuantity(productId, change, maxStock, newValue = null) {
         }
     })
     .catch(error => {
-        console.error('Error:', error);
+        console.error('Fetch error:', error);
         alert('Error updating cart. Please try again.');
     });
 }
 
 function removeFromCart(productId) {
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    
     fetch('{% url "shop:update_cart_ajax" %}', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            'X-CSRFToken': csrfToken
         },
         body: JSON.stringify({
             product_id: productId,
@@ -181,7 +191,10 @@ function removeFromCart(productId) {
             }
             
             // Update total
-            document.getElementById('cart-total').textContent = data.total.toFixed(2);
+            const cartTotalElement = document.getElementById('cart-total');
+            if (cartTotalElement) {
+                cartTotalElement.textContent = data.total.toFixed(2);
+            }
             
             // Update cart badge in header
             const cartBadge = document.querySelector('.cart-badge');
@@ -210,12 +223,9 @@ function removeFromCart(productId) {
         }
     })
     .catch(error => {
-        console.error('Error:', error);
+        console.error('Fetch error:', error);
         alert('Error removing item. Please try again.');
     });
 }
 </script>
-
-<!-- Add CSRF token for AJAX requests -->
-{% csrf_token %}
 {% endblock %} 
