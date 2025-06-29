@@ -1,0 +1,154 @@
+{% extends 'admin/base_site.html' %}
+{% load static %}
+
+{% block title %}Module Downloads{% endblock %}
+
+{% block extrahead %}
+<style>
+.downloads-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.download-item {
+    background: var(--primary);
+    border: 1px solid var(--hairline-color);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.download-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--primary-fg);
+    margin-bottom: 10px;
+}
+
+.download-description {
+    color: var(--secondary-fg);
+    margin-bottom: 15px;
+}
+
+.download-link {
+    display: inline-block;
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: 500;
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+.download-link:hover {
+    background-color: #0056b3;
+    color: white;
+    text-decoration: none;
+}
+
+.download-link.final {
+    background-color: #28a745;
+}
+
+.download-link.final:hover {
+    background-color: #218838;
+}
+
+.back-link {
+    display: inline-block;
+    margin-bottom: 20px;
+    color: var(--link-fg);
+    text-decoration: none;
+}
+
+.back-link:hover {
+    color: var(--link-hover-color);
+    text-decoration: underline;
+}
+
+.file-list {
+    list-style: none;
+    padding: 0;
+}
+
+.file-list li {
+    padding: 5px 0;
+    border-bottom: 1px solid var(--hairline-color);
+}
+
+.file-list li:last-child {
+    border-bottom: none;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+    <div class="downloads-container">
+        <a href="{% url 'modules:module_list' %}" class="back-link">
+            <i class="fas fa-arrow-left"></i> Back to Modules
+        </a>
+        
+        <h1>Module Downloads</h1>
+        
+        <div class="download-item">
+            <div class="download-title">🎯 Stripe Payment Module - Final Version (RECOMMENDED)</div>
+            <div class="download-description">
+                Complete Stripe payment module with all fixes applied:
+                <ul>
+                    <li>✅ Fixed URL patterns (enable/disable instead of activate/deactivate)</li>
+                    <li>✅ Fixed button styling (light blue instead of blue on blue)</li>
+                    <li>✅ Added Configure button with admin configuration template</li>
+                    <li>✅ Added admin_config: true to manifest</li>
+                    <li>✅ Lazy imports for Stripe package</li>
+                    <li>✅ Proper directory structure</li>
+                    <li>✅ All required files included</li>
+                </ul>
+            </div>
+            <a href="/downloads/stripe_payment_module_final.zip" class="download-link final">
+                <i class="fas fa-download"></i> Download Final Version (126KB)
+            </a>
+            <a href="{% url 'modules:public_download_stripe' %}" class="download-link">
+                <i class="fas fa-download"></i> Download via API
+            </a>
+        </div>
+        
+        <div class="download-item">
+            <div class="download-title">📦 All Available Versions</div>
+            <div class="download-description">
+                All available ZIP files in the downloads directory:
+            </div>
+            <ul class="file-list">
+                <li>
+                    <a href="/downloads/stripe_payment_module_final.zip" class="download-link final">
+                        <i class="fas fa-download"></i> stripe_payment_module_final.zip (126KB) - FINAL VERSION
+                    </a>
+                </li>
+                <li>
+                    <a href="/downloads/stripe_payment_module_working.zip" class="download-link">
+                        <i class="fas fa-download"></i> stripe_payment_module_working.zip (62KB)
+                    </a>
+                </li>
+                <li>
+                    <a href="/downloads/stripe_payment_module_full_path_fixed.zip" class="download-link">
+                        <i class="fas fa-download"></i> stripe_payment_module_full_path_fixed.zip (31KB)
+                    </a>
+                </li>
+                <li>
+                    <a href="/downloads/stripe_payment_module_template_fixed.zip" class="download-link">
+                        <i class="fas fa-download"></i> stripe_payment_module_template_fixed.zip (15KB)
+                    </a>
+                </li>
+                <li>
+                    <a href="/downloads/stripe_payment_module_final_working.zip" class="download-link">
+                        <i class="fas fa-download"></i> stripe_payment_module_final_working.zip (15KB)
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %} 

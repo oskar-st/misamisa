@@ -1,48 +1,400 @@
 {% extends 'base.html' %}
+{% load static %}
 {% load i18n %}
+
+{% block title %}{% trans 'Checkout' %}{% endblock %}
+
 {% block content %}
-<h1>{% trans 'Checkout' %}</h1>
-{% if error %}<div class="alert alert-danger">{{ error }}</div>{% endif %}
-<form method="post" novalidate>
-  {% csrf_token %}
-  <fieldset>
-    <legend>{% trans 'Shipping & Billing Address' %}</legend>
-    <div><label>{% trans 'Full name' %}*<br><input type="text" name="name" required value="{{ request.POST.name|default:'' }}"></label></div>
-    <div><label>{% trans 'Street' %}*<br><input type="text" name="street" required value="{{ request.POST.street|default:'' }}"></label></div>
-    <div><label>{% trans 'City' %}*<br><input type="text" name="city" required value="{{ request.POST.city|default:'' }}"></label></div>
-    <div><label>{% trans 'Postcode' %}*<br><input type="text" name="postcode" required value="{{ request.POST.postcode|default:'' }}"></label></div>
-    <div><label>{% trans 'Country' %}*<br><input type="text" name="country" required value="{{ request.POST.country|default:'' }}"></label></div>
-    <div><label>{% trans 'Phone' %}*<br><input type="text" name="phone" required value="{{ request.POST.phone|default:'' }}"></label></div>
-  </fieldset>
-  <fieldset>
-    <legend>{% trans 'Shipping Method' %}</legend>
-    {% for method in shipping_methods %}
-      <div><label><input type="radio" name="shipping_method" value="{{ method.id }}" {% if request.POST.shipping_method == method.id|stringformat:'s' %}checked{% endif %} required> {{ method.name }} ({{ method.price }} PLN)</label></div>
-    {% empty %}<div>{% trans 'No shipping methods available.' %}</div>{% endfor %}
-  </fieldset>
-  <fieldset>
-    <legend>{% trans 'Payment Method' %}</legend>
-    {% for method in payment_methods %}
-      <div><label><input type="radio" name="payment_method" value="{{ method.id }}" {% if request.POST.payment_method == method.id|stringformat:'s' %}checked{% endif %} required> {{ method.name }}</label></div>
-    {% empty %}<div>{% trans 'No payment methods available.' %}</div>{% endfor %}
-  </fieldset>
-  <fieldset>
-    <legend>{% trans 'Order Summary' %}</legend>
-    <table class="table">
-      <thead><tr><th>{% trans 'Product' %}</th><th>{% trans 'Qty' %}</th><th>{% trans 'Price' %}</th><th>{% trans 'Subtotal' %}</th></tr></thead>
-      <tbody>
-        {% for item in cart_items %}
-        <tr>
-          <td>{{ item.product.name }}</td>
-          <td>{{ item.quantity }}</td>
-          <td>{{ item.price }} PLN</td>
-          <td>{{ item.subtotal }} PLN</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-      <tfoot><tr><th colspan="3">{% trans 'Total' %}</th><th>{{ total }} PLN</th></tr></tfoot>
-    </table>
-  </fieldset>
-  <button type="submit" class="btn btn-primary">{% trans 'Place Order' %}</button>
-</form>
+<div class="main-container">
+    <h1>{% trans 'Checkout' %}</h1>
+    
+    {% if cart_items %}
+        <div class="checkout-content">
+            <!-- Order Summary -->
+            <div class="order-summary">
+                <h3>{% trans 'Order Summary' %}</h3>
+                
+                <div class="order-items">
+                    {% for item in cart_items %}
+                    <div class="order-item">
+                        <div class="item-details">
+                            <h4>{{ item.product.name }}</h4>
+                            <div class="item-info">
+                                <span class="quantity">{% trans 'Quantity' %}: {{ item.quantity }}</span>
+                                <span class="price">{% trans 'Price' %}: ${{ item.price }}</span>
+                                <span class="subtotal">{% trans 'Subtotal' %}: ${{ item.subtotal }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="order-total">
+                    <h4>{% trans 'Total' %}: ${{ total }}</h4>
+                </div>
+            </div>
+            
+            <!-- Customer Information -->
+            <div class="customer-info-section">
+                <h3>{% trans 'Customer Information' %}</h3>
+                
+                <form method="post" action="{% url 'place_order' %}" id="checkout-form">
+                    {% csrf_token %}
+                    
+                    <div class="customer-form">
+                        <div class="form-group">
+                            <label for="customer_name">{% trans 'Full Name' %} *</label>
+                            <input type="text" id="customer_name" name="customer_name" required 
+                                   placeholder="{% trans 'Enter your full name' %}" class="form-control">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="customer_email">{% trans 'Email Address' %} *</label>
+                            <input type="email" id="customer_email" name="customer_email" required 
+                                   placeholder="{% trans 'Enter your email address' %}" class="form-control">
+                            <small class="form-text">{% trans 'We\'ll send your order confirmation to this email' %}</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Payment Methods -->
+                    <div class="payment-section">
+                        <h3>{% trans 'Payment Method' %}</h3>
+                        
+                        {% if payment_methods %}
+                            <div class="payment-methods">
+                                {% for payment_method in payment_methods %}
+                                <div class="payment-method-option">
+                                    <input type="radio" 
+                                           name="payment_method" 
+                                           id="payment_{{ payment_method.info.code }}" 
+                                           value="{{ payment_method.info.code }}"
+                                           {% if forloop.first %}checked{% endif %}
+                                           required>
+                                    <label for="payment_{{ payment_method.info.code }}" class="payment-method-label">
+                                        <div class="payment-method-info">
+                                            <div class="payment-icon" style="color: {{ payment_method.info.color }}">
+                                                <i class="{{ payment_method.info.icon }}"></i>
+                                            </div>
+                                            <div class="payment-details">
+                                                <h4>{{ payment_method.info.name }}</h4>
+                                                <p>{{ payment_method.info.description }}</p>
+                                            </div>
+                                        </div>
+                                    </label>
+                                    
+                                    <!-- Payment form for this method -->
+                                    <div class="payment-form-container" 
+                                         data-payment-method="{{ payment_method.info.code }}"
+                                         {% if not forloop.first %}style="display: none;"{% endif %}>
+                                        {% if payment_method.form %}
+                                            {% include payment_method.template_path %}
+                                        {% else %}
+                                            <div class="payment-no-form">
+                                                <p>{% trans 'No additional information required for this payment method.' %}</p>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            
+                            <div class="checkout-actions">
+                                <a href="{% url 'cart_view' %}" class="cta-btn btn-secondary">
+                                    <i class="fas fa-arrow-left"></i> {% trans 'Back to Cart' %}
+                                </a>
+                                <button type="submit" class="cta-btn btn-primary checkout-btn">
+                                    <i class="fas fa-credit-card"></i> {% trans 'Place Order' %}
+                                </button>
+                            </div>
+                        {% else %}
+                            <div class="no-payment-methods">
+                                <div class="alert alert-warning">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <strong>{% trans 'No Payment Methods Available' %}</strong>
+                                    <p>{% trans 'There are currently no payment methods available. Please contact the administrator.' %}</p>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    {% else %}
+        <div class="empty-cart">
+            <p>{% trans 'Your cart is empty.' %}</p>
+            <a href="{% url 'shop' %}" class="cta-btn btn-primary">
+                {% trans 'Continue Shopping' %}
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+.checkout-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.order-summary {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.order-summary h3 {
+    margin: 0 0 1.5rem 0;
+    color: var(--text-color);
+    border-bottom: 2px solid var(--accent-color);
+    padding-bottom: 0.5rem;
+}
+
+.order-items {
+    margin-bottom: 1.5rem;
+}
+
+.order-item {
+    background: var(--page-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 4px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.order-item:last-child {
+    margin-bottom: 0;
+}
+
+.order-item h4 {
+    margin: 0 0 0.5rem 0;
+    color: var(--text-color);
+}
+
+.item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    color: var(--hero-text);
+    font-size: 0.9rem;
+}
+
+.order-total {
+    border-top: 2px solid var(--card-border);
+    padding-top: 1rem;
+    text-align: right;
+}
+
+.order-total h4 {
+    margin: 0;
+    color: var(--text-color);
+    font-size: 1.2rem;
+}
+
+.customer-info-section {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.customer-info-section h3 {
+    margin: 0 0 1.5rem 0;
+    color: var(--text-color);
+    border-bottom: 2px solid var(--accent-color);
+    padding-bottom: 0.5rem;
+}
+
+.customer-form {
+    margin-bottom: 2rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--card-border);
+    border-radius: 4px;
+    font-size: 1rem;
+    background: var(--page-bg);
+    color: var(--text-color);
+    transition: border-color 0.3s ease;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 2px rgba(204, 102, 0, 0.1);
+}
+
+.form-text {
+    font-size: 0.875rem;
+    color: var(--hero-text);
+    margin-top: 0.25rem;
+}
+
+.payment-section {
+    border-top: 1px solid var(--card-border);
+    padding-top: 1.5rem;
+}
+
+.payment-section h3 {
+    margin: 0 0 1.5rem 0;
+    color: var(--text-color);
+    border-bottom: 2px solid var(--accent-color);
+    padding-bottom: 0.5rem;
+}
+
+.payment-methods {
+    margin-bottom: 2rem;
+}
+
+.payment-method-option {
+    margin-bottom: 1.5rem;
+}
+
+.payment-method-option input[type="radio"] {
+    display: none;
+}
+
+.payment-method-label {
+    display: block;
+    background: var(--page-bg);
+    border: 2px solid var(--card-border);
+    border-radius: 8px;
+    padding: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.payment-method-label:hover {
+    border-color: var(--accent-color);
+}
+
+.payment-method-option input[type="radio"]:checked + .payment-method-label {
+    border-color: var(--accent-color);
+    background: rgba(204, 102, 0, 0.05);
+}
+
+.payment-method-info {
+    display: flex;
+    align-items: center;
+}
+
+.payment-icon {
+    font-size: 2rem;
+    margin-right: 1rem;
+}
+
+.payment-details h4 {
+    margin: 0 0 0.5rem 0;
+    color: var(--text-color);
+}
+
+.payment-details p {
+    margin: 0;
+    color: var(--hero-text);
+    font-size: 0.9rem;
+}
+
+.payment-form-container {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 4px;
+}
+
+.payment-no-form {
+    text-align: center;
+    color: var(--hero-text);
+    font-style: italic;
+}
+
+.checkout-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.checkout-btn {
+    min-width: 150px;
+}
+
+.no-payment-methods .alert {
+    background: rgba(255, 193, 7, 0.1);
+    border: 1px solid rgba(255, 193, 7, 0.2);
+    color: var(--text-color);
+    padding: 1rem;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.no-payment-methods .alert i {
+    color: #ffc107;
+    margin-right: 0.5rem;
+}
+
+.empty-cart {
+    text-align: center;
+    padding: 3rem;
+    color: var(--hero-text);
+}
+
+.empty-cart p {
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+    .checkout-content {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .checkout-actions {
+        flex-direction: column;
+    }
+    
+    .checkout-actions .cta-btn {
+        width: 100%;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle payment method selection
+    const paymentRadios = document.querySelectorAll('input[name="payment_method"]');
+    const paymentForms = document.querySelectorAll('.payment-form-container');
+    
+    paymentRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            // Hide all payment forms
+            paymentForms.forEach(form => {
+                form.style.display = 'none';
+            });
+            
+            // Show selected payment form
+            const selectedMethod = this.value;
+            const selectedForm = document.querySelector(`[data-payment-method="${selectedMethod}"]`);
+            if (selectedForm) {
+                selectedForm.style.display = 'block';
+            }
+        });
+    });
+});
+</script>
 {% endblock %} 

@@ -1,0 +1,189 @@
+{% extends 'admin/base_site.html' %}
+{% load static %}
+
+{% block title %}Stripe Configuration{% endblock %}
+
+{% block extrahead %}
+<style>
+.config-form {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: var(--primary-fg);
+}
+
+.form-group input[type="text"],
+.form-group input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--hairline-color);
+    border-radius: 4px;
+    background: var(--primary);
+    color: var(--primary-fg);
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="password"]:focus {
+    outline: none;
+    border-color: var(--link-fg);
+    box-shadow: 0 0 0 2px rgba(103, 114, 229, 0.2);
+}
+
+.form-group .help-text {
+    font-size: 12px;
+    color: var(--secondary-fg);
+    margin-top: 5px;
+}
+
+.btn-save {
+    background-color: var(--button-bg);
+    color: var(--button-fg);
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-save:hover {
+    background-color: var(--button-hover-bg);
+}
+
+.payment-methods-info {
+    background: var(--message-success-bg);
+    border: 1px solid var(--message-success-border);
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.payment-methods-info h3 {
+    margin-top: 0;
+    color: var(--message-success-fg);
+}
+
+.payment-methods-list {
+    list-style: none;
+    padding: 0;
+}
+
+.payment-methods-list li {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--hairline-color);
+}
+
+.payment-methods-list li:last-child {
+    border-bottom: none;
+}
+
+.payment-methods-list i {
+    margin-right: 10px;
+    color: #6772e5;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="config-form">
+    <h1>Stripe Payment Configuration</h1>
+    
+    <div class="payment-methods-info">
+        <h3>Supported Payment Methods</h3>
+        <p>This module supports the following payment methods for your cookies website:</p>
+        <ul class="payment-methods-list">
+            <li><i class="fas fa-credit-card"></i> <strong>Credit/Debit Cards:</strong> Visa, Mastercard, and other major cards</li>
+            <li><i class="fas fa-university"></i> <strong>Przelewy24:</strong> Bank transfer payments popular in Poland</li>
+            <li><i class="fas fa-mobile-alt"></i> <strong>BLIK:</strong> Real-time mobile payments</li>
+        </ul>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="stripe_public_key">Stripe Publishable Key *</label>
+            <input type="text" id="stripe_public_key" name="stripe_public_key" 
+                   value="{{ config.stripe_public_key|default:'' }}" required>
+            <div class="help-text">
+                Your Stripe publishable key (starts with 'pk_test_' for testing, 'pk_live_' for production)
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="stripe_secret_key">Stripe Secret Key *</label>
+            <input type="password" id="stripe_secret_key" name="stripe_secret_key" 
+                   value="{{ config.stripe_secret_key|default:'' }}" required>
+            <div class="help-text">
+                Your Stripe secret key (starts with 'sk_test_' for testing, 'sk_live_' for production)
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="stripe_webhook_secret">Stripe Webhook Secret</label>
+            <input type="password" id="stripe_webhook_secret" name="stripe_webhook_secret" 
+                   value="{{ config.stripe_webhook_secret|default:'' }}">
+            <div class="help-text">
+                Webhook endpoint secret for payment confirmation (optional but recommended)
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="currency">Default Currency</label>
+            <select id="currency" name="currency" class="form-control">
+                <option value="pln" {% if config.currency == 'pln' %}selected{% endif %}>PLN (Polish Złoty)</option>
+                <option value="eur" {% if config.currency == 'eur' %}selected{% endif %}>EUR (Euro)</option>
+                <option value="usd" {% if config.currency == 'usd' %}selected{% endif %}>USD (US Dollar)</option>
+            </select>
+            <div class="help-text">
+                Default currency for payments (PLN recommended for Polish customers)
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>
+                <input type="checkbox" name="enable_test_mode" 
+                       {% if config.enable_test_mode %}checked{% endif %}>
+                Enable Test Mode
+            </label>
+            <div class="help-text">
+                Use test keys and test payment methods (recommended for development)
+            </div>
+        </div>
+
+        <div class="form-group">
+            <button type="submit" class="btn-save">
+                <i class="fas fa-save"></i> Save Configuration
+            </button>
+        </div>
+    </form>
+
+    <div class="help-section">
+        <h3>Getting Started with Stripe</h3>
+        <ol>
+            <li>Create a <a href="https://dashboard.stripe.com/register" target="_blank">Stripe account</a></li>
+            <li>Go to the <a href="https://dashboard.stripe.com/apikeys" target="_blank">API Keys section</a></li>
+            <li>Copy your Publishable Key and Secret Key</li>
+            <li>For webhooks, go to <a href="https://dashboard.stripe.com/webhooks" target="_blank">Webhooks</a> and add endpoint: <code>{{ request.scheme }}://{{ request.get_host }}/modules/stripe_payment/webhook/</code></li>
+            <li>Copy the webhook signing secret</li>
+            <li>Save the configuration above</li>
+        </ol>
+        
+        <h3>Test Payment Methods</h3>
+        <ul>
+            <li><strong>Cards:</strong> Use <code>4242 4242 4242 4242</code> for successful payments</li>
+            <li><strong>Przelewy24:</strong> Use test bank credentials from Stripe docs</li>
+            <li><strong>BLIK:</strong> Use test BLIK codes from Stripe docs</li>
+        </ul>
+    </div>
+</div>
+{% endblock %} 

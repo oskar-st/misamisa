@@ -2,8 +2,13 @@
     <div class="pagination-left">
         {% with page=page_obj.number num_pages=page_obj.paginator.num_pages %}
             {% if page_obj.has_previous %}
-                <a href="?{% if category %}kategoria={{ category.slug }}&amp;{% endif %}page={{ page_obj.previous_page_number }}{% if request.GET.view %}&amp;view={{ request.GET.view }}{% endif %}"
-                   class="pagination-link page-arrow" aria-label="Previous page">
+                {% if category %}
+                    <a href="/{{ category.slug }}/?page={{ page_obj.previous_page_number }}{% if request.GET.view %}&amp;view={{ request.GET.view }}{% endif %}"
+                       class="pagination-link page-arrow" aria-label="Previous page">
+                {% else %}
+                    <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.view %}&amp;view={{ request.GET.view }}{% endif %}"
+                       class="pagination-link page-arrow" aria-label="Previous page">
+                {% endif %}
                     <span class="arrow-bg">
                       <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                         <path d="M12.354 14.646a.5.5 0 0 1-.708.708l-5-5a.5.5 0 0 1 0-.708l5-5a.5.5 0 0 1 .708.708L7.707 10l4.647 4.646z" fill="currentColor"/>
@@ -25,8 +30,13 @@
                 <span class="pagination-total">z {{ num_pages }}</span>
             </form>
             {% if page_obj.has_next %}
-                <a href="?{% if category %}kategoria={{ category.slug }}&amp;{% endif %}page={{ page_obj.next_page_number }}{% if request.GET.view %}&amp;view={{ request.GET.view }}{% endif %}"
-                   class="pagination-link page-arrow" aria-label="Next page">
+                {% if category %}
+                    <a href="/{{ category.slug }}/?page={{ page_obj.next_page_number }}{% if request.GET.view %}&amp;view={{ request.GET.view }}{% endif %}"
+                       class="pagination-link page-arrow" aria-label="Next page">
+                {% else %}
+                    <a href="?page={{ page_obj.next_page_number }}{% if request.GET.view %}&amp;view={{ request.GET.view }}{% endif %}"
+                       class="pagination-link page-arrow" aria-label="Next page">
+                {% endif %}
                     <span class="arrow-bg">
                       <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style="transform: scaleX(-1);">
                         <path d="M12.354 14.646a.5.5 0 0 1-.708.708l-5-5a.5.5 0 0 1 0-.708l5-5a.5.5 0 0 1 .708.708L7.707 10l4.647 4.646z" fill="currentColor"/>

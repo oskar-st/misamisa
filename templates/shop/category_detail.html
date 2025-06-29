@@ -16,7 +16,7 @@
             <div id="product-list" class="product-list-grid product-grid">
                 {% for product in products %}
                 <div class="product-card product-row">
-                    <a href="{% url 'shop:public_product_detail' product.slug %}" class="product-link">
+                    <a href="{% url 'category_or_product' product.slug %}" class="product-link">
                         {% if product.image %}
                             <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image" />
                         {% else %}

@@ -41,6 +41,7 @@ function setupAjaxPagination() {
             document.getElementById('product-list-container').replaceWith(newContainer);
             applyViewFromContainer();
             setupAjaxPagination(); // Re-attach listeners
+            setupPaginationJump(); // Re-attach jump input listener
             window.scrollTo({ top: 0, behavior: 'smooth' });
           } else {
             window.location = link.href; // fallback

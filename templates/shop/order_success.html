@@ -1,9 +1,74 @@
 {% extends 'base.html' %}
 {% load i18n %}
+
+{% block title %}{% trans 'Order Success' %}{% endblock %}
+
 {% block content %}
-<div class="order-success">
-  <h1>{% trans 'Thank you for your order!' %}</h1>
-  <p>{% trans 'Your order has been placed successfully. We will contact you soon.' %}</p>
-  <a href="{% url 'public_product_list' %}" class="btn btn-primary">{% trans 'Back to shop' %}</a>
+<div class="container">
+    <div class="success-message">
+        {% if order %}
+            <h1>{% trans 'Order Placed Successfully!' %}</h1>
+            <p>{% trans 'Thank you for your order. Your order has been received and is being processed.' %}</p>
+        {% else %}
+            <h1>{% trans 'Payment Successful!' %}</h1>
+            <p>{% trans 'Your payment has been processed successfully. Thank you for your purchase!' %}</p>
+            {% if payment_intent %}
+                <p><strong>{% trans 'Payment ID' %}:</strong> {{ payment_intent }}</p>
+            {% endif %}
+        {% endif %}
+    </div>
+    
+    {% if order %}
+    <div class="order-details">
+        <h2>{% trans 'Order Details' %}</h2>
+        <div class="order-info">
+            <p><strong>{% trans 'Order ID' %}:</strong> #{{ order.id }}</p>
+            <p><strong>{% trans 'Order Date' %}:</strong> {{ order.created_at|date:"F j, Y" }}</p>
+            <p><strong>{% trans 'Status' %}:</strong> {{ order.get_status_display }}</p>
+            <p><strong>{% trans 'Total Amount' %}:</strong> ${{ order.total_amount }}</p>
+        </div>
+        
+        <div class="customer-info">
+            <h3>{% trans 'Customer Information' %}</h3>
+            <p><strong>{% trans 'Name' %}:</strong> {{ order.customer_name }}</p>
+            <p><strong>{% trans 'Email' %}:</strong> {{ order.customer_email }}</p>
+            {% if order.customer_phone %}
+                <p><strong>{% trans 'Phone' %}:</strong> {{ order.customer_phone }}</p>
+            {% endif %}
+            {% if order.shipping_address %}
+                <p><strong>{% trans 'Shipping Address' %}:</strong> {{ order.shipping_address }}</p>
+            {% endif %}
+        </div>
+        
+        <div class="order-items">
+            <h3>{% trans 'Order Items' %}</h3>
+            {% for item in order_items %}
+            <div class="order-item">
+                {% if item.product.image %}
+                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+                {% endif %}
+                <div class="item-details">
+                    <h4>{{ item.product.name }}</h4>
+                    <p>{% trans 'Quantity' %}: {{ item.quantity }}</p>
+                    <p>{% trans 'Price' %}: ${{ item.price }}</p>
+                    <p>{% trans 'Subtotal' %}: ${{ item.subtotal }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="payment-info">
+            <h3>{% trans 'Payment Information' %}</h3>
+            <p><strong>{% trans 'Payment Method' %}:</strong> {{ order.payment_method_name }}</p>
+            {% if payment_intent %}
+                <p><strong>{% trans 'Payment ID' %}:</strong> {{ payment_intent }}</p>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+    
+    <div class="actions">
+        <a href="{% url 'home' %}" class="btn btn-primary">{% trans 'Continue Shopping' %}</a>
+    </div>
 </div>
 {% endblock %} 

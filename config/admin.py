@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.admin.views.decorators import staff_member_required
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.db.models import Sum
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -19,6 +19,7 @@ class CustomAdminSite(admin.AdminSite):
         urls = super().get_urls()
         custom_urls = [
             path('dashboard/', self.admin_view(self.dashboard_view), name='dashboard'),
+            path('modules/', self.admin_view(self.module_management_view), name='module_management'),
         ]
         return custom_urls + urls
     
@@ -26,6 +27,7 @@ class CustomAdminSite(admin.AdminSite):
         """Override the admin index to add dashboard link"""
         extra_context = extra_context or {}
         extra_context['show_dashboard_link'] = True
+        extra_context['show_module_management'] = True
         return super().index(request, extra_context)
     
     def dashboard_view(self, request):
@@ -93,6 +95,10 @@ class CustomAdminSite(admin.AdminSite):
         }
         
         return render(request, 'admin/dashboard.html', context)
+    
+    def module_management_view(self, request):
+        """Redirect to module management interface"""
+        return redirect('modules:module_list')
 
 # Create custom admin site instance
 admin_site = CustomAdminSite(name='custom_admin')

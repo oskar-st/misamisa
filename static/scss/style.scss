@@ -171,7 +171,7 @@ body {
     background: var(--card-bg);
     border: 1px solid var(--card-border);
     border-radius: 8px;
-    box-shadow: 0 5px 15px var(--shadow-md);
+    box-shadow: 0 2px 8px var(--shadow-sm);
     padding: 0.75rem;
     width: 200px;
     z-index: 1000;
@@ -189,6 +189,7 @@ body {
     margin-bottom: 0.5rem;
     font-weight: 500;
     transition: background-color 0.2s, color 0.2s;
+    box-shadow: none !important;
   }
   .dropdown-item:last-child {
     margin-bottom: 0;
@@ -197,19 +198,23 @@ body {
     background: var(--accent-color);
     color: var(--button-text);
     border: 1px solid var(--accent-color);
+    box-shadow: none !important;
   }
   .dropdown-btn-primary:hover {
     background: var(--button-hover-bg);
     border-color: var(--button-hover-bg);
     color: var(--button-text);
+    box-shadow: 0 2px 4px var(--shadow-md) !important;
   }
   .dropdown-btn-secondary {
     background: transparent;
     border: 1px solid var(--card-border);
+    box-shadow: none !important;
   }
   .dropdown-btn-secondary:hover {
     background: var(--select-hover-bg);
     border-color: var(--select-hover-bg);
+    box-shadow: 0 2px 4px var(--shadow-md) !important;
   }
   .cart-link {
     display: flex;
@@ -491,7 +496,7 @@ body {
   .cta-btn:hover, .cta-btn:focus {
     background-color: var(--button-hover-bg);
     color: var(--button-text);
-    box-shadow: 0 6px 16px var(--shadow-md);
+    box-shadow: 0 2px 4px var(--shadow-md);
     text-decoration: none;
     outline: none;
     cursor: pointer !important;
@@ -500,7 +505,7 @@ body {
   .cta-btn:active {
     background-color: var(--accent-color);
     color: var(--button-text);
-    box-shadow: 0 2px 6px var(--shadow-sm);
+    box-shadow: 0 1px 2px var(--shadow-sm);
   }
   
   .cta-btn:disabled, .cta-btn[aria-disabled="true"] {
@@ -523,13 +528,13 @@ body {
     background: var(--button-hover-bg);
     border-color: var(--button-hover-bg);
     color: var(--button-text);
-    box-shadow: 0 6px 16px var(--shadow-md);
+    box-shadow: 0 2px 4px var(--shadow-md);
   }
   
   .cta-btn.btn-primary:active {
     background: var(--button-hover-bg);
     border-color: var(--button-hover-bg);
-    box-shadow: 0 2px 6px var(--shadow-sm);
+    box-shadow: 0 2px 4px var(--shadow-md);
   }
   
   /* Proceed to checkout button styling (higher, bigger font) */
@@ -1581,4 +1586,7 @@ body {
   .product-detail-qty:focus {
     -moz-appearance: textfield !important;
     appearance: textfield !important;
-  } 
+  }
+
+// Import module management styles
+@import 'modules/module-management'; 

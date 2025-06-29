@@ -156,19 +156,25 @@ class Order(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name='orders',
-        verbose_name=_('user')
+        verbose_name=_('user'),
+        null=True,
+        blank=True
     )
     shipping_address = models.ForeignKey(
         'accounts.Address',
         on_delete=models.PROTECT,
         related_name='shipping_orders',
-        verbose_name=_('shipping address')
+        verbose_name=_('shipping address'),
+        null=True,
+        blank=True
     )
     billing_address = models.ForeignKey(
         'accounts.Address',
         on_delete=models.PROTECT,
         related_name='billing_orders',
-        verbose_name=_('billing address')
+        verbose_name=_('billing address'),
+        null=True,
+        blank=True
     )
     status = models.CharField(
         _('status'),
@@ -176,6 +182,41 @@ class Order(models.Model):
         choices=STATUS_CHOICES,
         default='pending'
     )
+    
+    # Customer information
+    customer_name = models.CharField(
+        _('customer name'),
+        max_length=200,
+        blank=True
+    )
+    customer_email = models.EmailField(
+        _('customer email'),
+        blank=True
+    )
+    
+    # Payment information
+    payment_method_name = models.CharField(
+        _('payment method'),
+        max_length=100,
+        blank=True
+    )
+    payment_transaction_id = models.CharField(
+        _('transaction ID'),
+        max_length=100,
+        blank=True
+    )
+    payment_status = models.CharField(
+        _('payment status'),
+        max_length=50,
+        default='pending'
+    )
+    total_amount = models.DecimalField(
+        _('total amount'),
+        max_digits=10,
+        decimal_places=2,
+        default=0
+    )
+    
     created_at = models.DateTimeField(_('created at'), auto_now_add=True)
     updated_at = models.DateTimeField(_('updated at'), auto_now=True)
 
@@ -185,11 +226,13 @@ class Order(models.Model):
         ordering = ['-created_at']
 
     def __str__(self):
-        return f"Order #{self.id} - {self.user.email} ({self.get_status_display()})"
+        if self.user:
+            return f"Order #{self.id} - {self.user.email} ({self.get_status_display()})"
+        return f"Order #{self.id} - Guest ({self.get_status_display()})"
 
     @property
-    def total_amount(self):
-        """Calculate the total amount of the order"""
+    def calculated_total_amount(self):
+        """Calculate the total amount of the order from items"""
         return sum(item.total_price for item in self.items.all())
 
     @property

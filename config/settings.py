@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'home',
     'accounts',  # New accounts app for custom user
     'shop',  # New shop app for e-commerce
+    'modules',  # Module management system
     # 'turnstile',
  #  'tailwind',
  #  'theme',       # You will create this app below
@@ -68,7 +69,10 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / "templates"],  # ✅ modern, pathlib-style
+        'DIRS': [
+            BASE_DIR / "templates",
+            BASE_DIR / "modules",  # Add modules directory for module templates
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -153,6 +157,10 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+# Downloads directory for module files
+DOWNLOADS_URL = '/downloads/'
+DOWNLOADS_ROOT = BASE_DIR / 'downloads'
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
@@ -178,3 +186,12 @@ DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
 # Cloudflare Turnstile Configuration
 # TURNSTILE_SITE_KEY = os.getenv('TURNSTILE_SITE_KEY')
 # TURNSTILE_SECRET_KEY = os.getenv('TURNSTILE_SECRET_KEY')
+
+# Module system configuration
+MODULE_SETTINGS = {
+    'AUTO_DISCOVER': True,
+    'AUTO_LOAD': True,
+    'MODULES_PATH': BASE_DIR / 'modules',
+    'ENABLE_DASHBOARD': True,
+    'ENABLE_API': True,
+}

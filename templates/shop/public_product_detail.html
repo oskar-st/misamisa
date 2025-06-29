@@ -3,6 +3,11 @@
 
 {% block content %}
 <div class="main-container">
+    <!-- BREADCRUMBS -->
+    {% if breadcrumbs %}
+        {% include 'components/breadcrumbs.html' %}
+    {% endif %}
+    
     <div class="product-detail-card">
         <div class="product-detail-image-col">
             {% if product.image %}

@@ -25,7 +25,7 @@
             {% for item in cart_items %}
             <tr data-product-id="{{ item.product.id }}">
                 <td>
-                    <a href="{% url 'shop:public_product_detail' item.product.slug %}" class="cart-product-link">{{ item.product.name }}</a>
+                    <a href="{% url 'category_or_product' item.product.slug %}" class="cart-product-link">{{ item.product.name }}</a>
                 </td>
                 <td class="nowrap">{{ item.price }} zł</td>
                 <td>

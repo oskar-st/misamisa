@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module Downloads</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .download-item {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .download-item.latest {
+            border: 2px solid #28a745;
+            background: linear-gradient(135deg, #f8fff9 0%, #ffffff 100%);
+        }
+        .download-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .download-description {
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        .download-link {
+            display: inline-block;
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        .download-link:hover {
+            background-color: #0056b3;
+            text-decoration: none;
+            color: white;
+        }
+        .download-link.recommended {
+            background-color: #28a745;
+        }
+        .download-link.recommended:hover {
+            background-color: #218838;
+        }
+        .file-info {
+            font-size: 12px;
+            color: #888;
+            margin-top: 10px;
+        }
+        .features-list {
+            list-style: none;
+            padding: 0;
+            margin: 15px 0;
+        }
+        .features-list li {
+            padding: 5px 0;
+            color: #666;
+        }
+        .features-list li:before {
+            content: "✓ ";
+            color: #28a745;
+            font-weight: bold;
+        }
+        .recommended-badge {
+            background: #28a745;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Stripe Payment Module Downloads</h1>
+        
+        <!-- NEWEST VERSION - Clean Core Version 4 -->
+        <div class="download-item latest">
+            <div class="download-title">
+                🚀 Stripe Payment Module - Clean Core Version 4 (NEWEST)
+                <span class="recommended-badge">LATEST</span>
+            </div>
+            <div class="download-description">
+                <strong>Latest version with completely clean core system integration. Fixed validation - should upload successfully:</strong>
+                <ul class="features-list">
+                    <li>✅ Fixed module validation (static directories are now optional)</li>
+                    <li>✅ No hardcoded Stripe code in core system files</li>
+                    <li>✅ No hardcoded Stripe settings in modules/views.py</li>
+                    <li>✅ No hardcoded Stripe references in shop/views.py</li>
+                    <li>✅ No hardcoded Stripe URLs in modules/urls.py</li>
+                    <li>✅ No hardcoded Stripe dependencies in modules/manager.py</li>
+                    <li>✅ Module handles its own configuration</li>
+                    <li>✅ Module manages its own settings</li>
+                    <li>✅ Module provides its own payment form</li>
+                    <li>✅ Module handles its own API keys</li>
+                    <li>✅ True modular architecture</li>
+                    <li>✅ Fixed "Loading payment form..." issue</li>
+                    <li>✅ Removed phone number field as requested</li>
+                    <li>✅ Customer information moved to checkout level</li>
+                    <li>✅ Payment form only shows when Stripe is selected</li>
+                    <li>✅ Better integration with checkout flow</li>
+                    <li>✅ Improved error handling and user feedback</li>
+                    <li>✅ Latest Stripe API compatibility</li>
+                    <li>✅ Enhanced admin configuration</li>
+                    <li>✅ Multiple payment methods support (Card, Przelewy24, BLIK)</li>
+                    <li>✅ Stripe Embedded Checkout integration</li>
+                    <li>✅ Webhook support for payment confirmation</li>
+                    <li>✅ Configuration saving and loading</li>
+                    <li>✅ Proper URL routing for payment endpoints</li>
+                </ul>
+            </div>
+            <a href="/downloads/stripe_payment_module_clean_core_v4.zip" class="download-link recommended">
+                <i class="fas fa-download"></i> Download Latest Version (40KB)
+            </a>
+            <div class="file-info">Latest version with fixed validation - SHOULD UPLOAD SUCCESSFULLY</div>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px; color: #666;">
+            <p><strong>Instructions:</strong></p>
+            <ol style="text-align: left; display: inline-block;">
+                <li>Download the latest version above</li>
+                <li>Go to <a href="/modules/upload/">Module Upload</a></li>
+                <li>Upload the ZIP file</li>
+                <li>Enable the module</li>
+                <li>Configure your Stripe API keys</li>
+            </ol>
+        </div>
+    </div>
+</body>
+</html> 

@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.translation import gettext_lazy as _
 from .models import Category, Product
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -10,6 +10,38 @@ from django.utils import timezone
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 import json
+from django.contrib import messages
+from django.urls import reverse
+from django.contrib.auth.decorators import login_required
+from django.db.models import Q
+from modules.manager import module_manager
+from django.conf import settings
+
+def get_cart_items(request):
+    """Get cart items from session."""
+    cart = request.session.get('cart', {})
+    product_ids = list(cart.keys())
+    products = Product.objects.filter(id__in=product_ids, is_active=True)
+    cart_items = []
+    
+    for product in products:
+        qty = cart.get(str(product.id), 0)
+        price = product.discount_price or product.price
+        subtotal = price * qty
+        cart_items.append({
+            'product': product,
+            'quantity': qty,
+            'price': price,
+            'subtotal': subtotal,
+        })
+    
+    return cart_items
+
+
+def clear_cart(request):
+    """Clear the cart from session."""
+    request.session['cart'] = {}
+
 
 def product_list(request):
     """Display all active products (admin view)"""
@@ -41,24 +73,49 @@ def product_detail(request, slug):
     pass
 
 # --- PUBLIC VIEWS ---
-def product_list_public(request):
-    category_slug = request.GET.get('kategoria')
+def product_list_public(request, category_slug=None):
+    """Display products with support for flat category URLs."""
     category = None
     categories = Category.objects.filter(is_active=True)
     products = Product.objects.filter(is_active=True)
+    
+    # Handle category from URL path (flat category URLs)
     if category_slug:
-        category = get_object_or_404(Category, slug=category_slug, is_active=True)
+        try:
+            category = Category.objects.get(slug=category_slug, is_active=True)
+            products = products.filter(category=category)
+        except Category.DoesNotExist:
+            # If category doesn't exist, return 404
+            from django.http import Http404
+            raise Http404("Category not found")
+    
+    # Handle category from query parameter (backward compatibility)
+    elif request.GET.get('kategoria'):
+        category_slug_param = request.GET.get('kategoria')
+        category = get_object_or_404(Category, slug=category_slug_param, is_active=True)
         products = products.filter(category=category)
+    
     paginator = Paginator(products, 12)
     page_number = request.GET.get('page')
     # Use get_page to always return a valid page (never raises EmptyPage)
     page_obj = paginator.get_page(page_number)
+    
+    # Generate breadcrumbs
+    breadcrumbs = generate_breadcrumbs(request, category=category)
+    
+    # Set appropriate title
+    if category:
+        title = category.name
+    else:
+        title = _('Shop')
+    
     context = {
         'categories': categories,
         'category': category,
         'products': page_obj.object_list,
         'page_obj': page_obj,
-        'title': _('Shop'),
+        'title': title,
+        'breadcrumbs': breadcrumbs,
     }
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         return render(request, 'shop/product_list.html', context, content_type='text/html')
@@ -66,10 +123,15 @@ def product_list_public(request):
 
 def product_detail_public(request, slug):
     product = get_object_or_404(Product, slug=slug, is_active=True)
+    
+    # Generate breadcrumbs
+    breadcrumbs = generate_breadcrumbs(request, product=product)
+    
     # For now, just show product info and a simple add-to-cart form (no JS)
     return render(request, 'shop/public_product_detail.html', {
         'product': product,
         'title': product.name,
+        'breadcrumbs': breadcrumbs,
     })
 
 def cart_view(request):
@@ -130,97 +192,221 @@ def cart_view(request):
         'title': _('Cart'),
     })
 
-def checkout_view(request):
-    cart = request.session.get('cart', {})
-    if not cart:
-        return HttpResponseRedirect(reverse('cart_view'))
-    # Prepare cart items
-    product_ids = list(cart.keys())
-    products = Product.objects.filter(id__in=product_ids, is_active=True)
-    cart_items = []
-    total = 0
-    for product in products:
-        qty = cart.get(str(product.id), 0)
-        price = product.discount_price or product.price
-        subtotal = price * qty
-        total += subtotal
-        cart_items.append({
-            'product': product,
-            'quantity': qty,
-            'price': price,
-            'subtotal': subtotal,
-        })
-    shipping_methods = ShippingMethod.objects.filter(is_active=True).order_by('price')
-    payment_methods = PaymentMethod.objects.filter(is_active=True).order_by('name')
-    error = None
-    if request.method == 'POST':
-        # Collect form data
-        name = request.POST.get('name', '').strip()
-        street = request.POST.get('street', '').strip()
-        city = request.POST.get('city', '').strip()
-        postcode = request.POST.get('postcode', '').strip()
-        country = request.POST.get('country', '').strip()
-        phone = request.POST.get('phone', '').strip()
-        shipping_method_id = request.POST.get('shipping_method')
-        payment_method_id = request.POST.get('payment_method')
-        # Basic validation
-        if not all([name, street, city, postcode, country, phone, shipping_method_id, payment_method_id]):
-            error = _('Please fill in all required fields.')
-        else:
-            shipping_method = ShippingMethod.objects.filter(id=shipping_method_id, is_active=True).first()
-            payment_method = PaymentMethod.objects.filter(id=payment_method_id, is_active=True).first()
-            if not shipping_method or not payment_method:
-                error = _('Invalid shipping or payment method.')
-        if not error:
-            # Create guest user (or use anonymous)
-            user = None
-            if request.user.is_authenticated:
-                user = request.user
-            else:
-                user = CustomUser.objects.filter(email='guest@misamisa.pl').first()
-                if not user:
-                    user = CustomUser.objects.create(email='guest@misamisa.pl', first_name='Guest', is_active=False)
-            # Create address (for both shipping and billing for now)
-            address = Address.objects.create(
-                user=user,
-                address_type='shipping',
-                is_default=False,
-                name=name,
-                street=street,
-                city=city,
-                postcode=postcode,
-                country=country,
-                phone=phone,
-            )
-            # Create order
-            order = Order.objects.create(
-                user=user,
-                shipping_address=address,
-                billing_address=address,
-                status='pending',
-                created_at=timezone.now(),
-                updated_at=timezone.now(),
-            )
-            # Create order items
-            for item in cart_items:
-                OrderItem.objects.create(
-                    order=order,
-                    product=item['product'],
-                    quantity=item['quantity'],
-                    price=item['price'],
-                )
-            # Optionally: store shipping/payment method in order (extend model if needed)
-            # Clear cart
-            request.session['cart'] = {}
-            return HttpResponseRedirect(reverse('order_success'))
-    return render(request, 'shop/checkout.html', {
+def checkout(request):
+    """Checkout view with modular payment methods."""
+    cart_items = get_cart_items(request)
+    
+    if not cart_items:
+        messages.error(request, 'Your cart is empty.')
+        return redirect('cart_view')
+    
+    total = sum(item['subtotal'] for item in cart_items)
+    
+    # Get available payment modules
+    payment_modules = module_manager.get_payment_modules()
+    
+    # Prepare payment methods for template
+    payment_methods = []
+    
+    for module_name, module in payment_modules.items():
+        if module.is_installed and module.is_enabled:
+            payment_form = module.get_payment_form()
+            
+            # Get payment method info from module
+            payment_info = {
+                'code': module_name,
+                'name': getattr(module, 'display_name', module_name.title()),
+                'description': getattr(module, 'description', 'Payment via ' + module_name.title()),
+                'color': getattr(module, 'color', '#007bff'),  # Default blue color
+                'icon': getattr(module, 'icon', 'fas fa-credit-card'),  # Default icon
+            }
+            
+            # Get module-specific configuration if available
+            module_config = {}
+            if hasattr(module, 'get_public_config'):
+                module_config = module.get_public_config()
+            
+            payment_methods.append({
+                'module_name': module_name,
+                'module': module,
+                'info': payment_info,
+                'form': payment_form() if payment_form else None,
+                'template_path': module.get_payment_template(),
+                'config': module_config,
+            })
+    
+    context = {
         'cart_items': cart_items,
         'total': total,
-        'shipping_methods': shipping_methods,
         'payment_methods': payment_methods,
-        'error': error,
-        'title': _('Checkout'),
-    })
+    }
+    
+    # Add Stripe configuration if Stripe module is available
+    stripe_module = payment_modules.get('stripe_payment')
+    if stripe_module and stripe_module.is_installed and stripe_module.is_enabled:
+        try:
+            stripe_public_key = stripe_module.get_stripe_public_key()
+            context['stripe_public_key'] = stripe_public_key
+        except Exception as e:
+            print(f"Error getting Stripe public key: {e}")
+            context['stripe_public_key'] = 'pk_test_your_test_key_here'
+    
+    return render(request, 'shop/checkout.html', context)
+
+def place_order(request):
+    """Simple order placement with modular payment processing."""
+    if request.method == 'POST':
+        # Get cart items
+        cart_items = get_cart_items(request)
+        if not cart_items:
+            messages.error(request, 'Your cart is empty.')
+            return redirect('cart_view')
+        
+        # Calculate total
+        total = sum(item['subtotal'] for item in cart_items)
+        
+        # Get customer information
+        customer_name = request.POST.get('customer_name')
+        customer_email = request.POST.get('customer_email')
+        
+        if not customer_name or not customer_email:
+            messages.error(request, 'Please provide your name and email address.')
+            return redirect('checkout_view')
+        
+        # Get selected payment method
+        payment_method_code = request.POST.get('payment_method')
+        if not payment_method_code:
+            messages.error(request, 'Please select a payment method.')
+            return redirect('checkout_view')
+        
+        # Get payment module
+        payment_modules = module_manager.get_payment_modules()
+        payment_module = payment_modules.get(payment_method_code)
+        
+        if not payment_module:
+            messages.error(request, 'Selected payment method is not available.')
+            return redirect('checkout_view')
+        
+        # Prepare payment data with customer information
+        payment_data = {
+            'customer_name': customer_name,
+            'customer_email': customer_email,
+            'amount': total,
+            'currency': 'pln'
+        }
+        
+        # Validate payment data
+        if payment_module.get_payment_form():
+            form = payment_module.get_payment_form()(request.POST)
+            if not form.is_valid():
+                messages.error(request, 'Please correct the payment information.')
+                return redirect('checkout_view')
+            payment_data.update(form.cleaned_data)
+        
+        # Validate payment data with module
+        validation_errors = payment_module.validate_payment_data(payment_data)
+        if validation_errors:
+            for error in validation_errors:
+                messages.error(request, error)
+            return redirect('checkout_view')
+        
+        # Process payment
+        payment_result = payment_module.process_payment(request, payment_data)
+        
+        if not payment_result.get('success'):
+            messages.error(request, payment_result.get('message', 'Payment processing failed.'))
+            return redirect('checkout_view')
+        
+        # Create order with customer information
+        order = Order.objects.create(
+            user=request.user if request.user.is_authenticated else None,
+            shipping_address=None,  # No address for now
+            billing_address=None,   # No address for now
+            status='pending',
+            payment_method_name=payment_method_code,
+            payment_transaction_id=payment_result.get('transaction_id'),
+            payment_status=payment_result.get('status', 'pending'),
+            total_amount=total,
+            customer_name=customer_name,
+            customer_email=customer_email,
+        )
+        
+        # Create order items
+        for item in cart_items:
+            OrderItem.objects.create(
+                order=order,
+                product=item['product'],
+                quantity=item['quantity'],
+                price=item['price']
+            )
+        
+        # Clear cart
+        clear_cart(request)
+        
+        # Show success message
+        messages.success(request, payment_result.get('message', 'Order placed successfully!'))
+        
+        # Redirect to success page
+        return redirect('order_success', order_id=order.id)
+    
+    return redirect('checkout_view')
+
+def order_success(request, order_id=None):
+    """Order success page view."""
+    # Handle Stripe redirect with payment intent
+    payment_intent = request.GET.get('payment_intent')
+    redirect_status = request.GET.get('redirect_status')
+    
+    if payment_intent and redirect_status == 'succeeded':
+        # This is a Stripe success redirect
+        try:
+            # Try to find order by payment intent ID
+            order = Order.objects.filter(payment_transaction_id=payment_intent).first()
+            if order:
+                context = {
+                    'order': order,
+                    'order_items': order.orderitem_set.all(),
+                    'payment_intent': payment_intent,
+                    'payment_status': 'succeeded'
+                }
+            else:
+                context = {
+                    'order': None,
+                    'order_items': [],
+                    'payment_intent': payment_intent,
+                    'payment_status': 'succeeded',
+                    'message': 'Payment completed successfully!'
+                }
+            # Clear cart after successful Stripe payment
+            clear_cart(request)
+        except Exception as e:
+            context = {
+                'order': None,
+                'order_items': [],
+                'payment_intent': payment_intent,
+                'payment_status': 'succeeded',
+                'message': 'Payment completed successfully!'
+            }
+            clear_cart(request)
+    else:
+        # Handle regular order success with order_id
+        if not order_id:
+            messages.error(request, 'Order not found.')
+            return redirect('home')
+        
+        try:
+            order = Order.objects.get(id=order_id)
+            context = {
+                'order': order,
+                'order_items': order.orderitem_set.all(),
+            }
+            # Clear cart after successful order
+            clear_cart(request)
+        except Order.DoesNotExist:
+            messages.error(request, 'Order not found.')
+            return redirect('home')
+    
+    return render(request, 'shop/order_success.html', context)
 
 @require_POST
 @csrf_exempt
@@ -281,3 +467,42 @@ def update_cart_ajax(request):
         return JsonResponse({'success': False, 'error': 'Invalid data'}, status=400)
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+def generate_breadcrumbs(request, current_page=None, category=None, product=None):
+    """Generate breadcrumb data for catalog pages."""
+    breadcrumbs = [
+        {
+            'title': 'Misamisa',
+            'url': reverse('home')
+        }
+    ]
+    
+    if category:
+        breadcrumbs.append({
+            'title': _('Shop'),
+            'url': reverse('shop:public_product_list')
+        })
+        breadcrumbs.append({
+            'title': category.name,
+            'url': reverse('category_or_product', kwargs={'slug': category.slug})
+        })
+    elif product and product.category:
+        breadcrumbs.append({
+            'title': _('Shop'),
+            'url': reverse('shop:public_product_list')
+        })
+        breadcrumbs.append({
+            'title': product.category.name,
+            'url': reverse('category_or_product', kwargs={'slug': product.category.slug})
+        })
+        breadcrumbs.append({
+            'title': product.name,
+            'url': reverse('category_or_product', kwargs={'slug': product.slug})
+        })
+    else:
+        breadcrumbs.append({
+            'title': _('Shop'),
+            'url': reverse('shop:public_product_list')
+        })
+    
+    return breadcrumbs

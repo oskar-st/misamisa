@@ -1,0 +1,11 @@
+Collecting stripe
+  Using cached stripe-12.2.0-py2.py3-none-any.whl.metadata (2.9 kB)
+Requirement already satisfied: typing_extensions>=4.5.0 in ./venv/lib/python3.12/site-packages (from stripe) (4.14.0)
+Requirement already satisfied: requests>=2.20 in ./venv/lib/python3.12/site-packages (from stripe) (2.32.4)
+Requirement already satisfied: charset_normalizer<4,>=2 in ./venv/lib/python3.12/site-packages (from requests>=2.20->stripe) (3.4.2)
+Requirement already satisfied: idna<4,>=2.5 in ./venv/lib/python3.12/site-packages (from requests>=2.20->stripe) (3.10)
+Requirement already satisfied: urllib3<3,>=1.21.1 in ./venv/lib/python3.12/site-packages (from requests>=2.20->stripe) (2.5.0)
+Requirement already satisfied: certifi>=2017.4.17 in ./venv/lib/python3.12/site-packages (from requests>=2.20->stripe) (2025.6.15)
+Using cached stripe-12.2.0-py2.py3-none-any.whl (1.6 MB)
+Installing collected packages: stripe
+Successfully installed stripe-12.2.0
