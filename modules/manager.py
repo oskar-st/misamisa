@@ -152,24 +152,37 @@ class ModuleManager:
         return loaded
     
     def get_module_urls(self) -> List:
-        """Get all module URLs."""
+        """Get all module URLs for active modules."""
         urls = []
-        active_modules = self.get_active_modules()
         
-        for module_name, module in active_modules.items():
+        for module_name, module in self.discovered_modules.items():
             if module.is_enabled:
                 module_urls = module.get_urls()
                 if module_urls:
                     # Add module prefix to each URL pattern
                     for url_pattern in module_urls:
-                        # Use the original route string if available, otherwise fallback to regex
-                        pattern_str = getattr(url_pattern.pattern, '_route', None)
-                        if not pattern_str:
-                            # Fallback: use regex pattern, remove leading ^ if present
-                            pattern_str = url_pattern.pattern.regex.pattern
-                            if pattern_str.startswith('^'):
-                                pattern_str = pattern_str[1:]
+                        # Get the pattern string from the URLPattern object
+                        if hasattr(url_pattern, 'pattern'):
+                            # For Django 4.0+ URLPattern objects
+                            if hasattr(url_pattern.pattern, '_route'):
+                                pattern_str = url_pattern.pattern._route
+                            elif hasattr(url_pattern.pattern, 'regex'):
+                                # Fallback: use regex pattern, remove leading ^ if present
+                                pattern_str = url_pattern.pattern.regex.pattern
+                                if pattern_str.startswith('^'):
+                                    pattern_str = pattern_str[1:]
+                            else:
+                                # Try to get the pattern string directly
+                                pattern_str = str(url_pattern.pattern)
+                        else:
+                            # Fallback for older Django versions
+                            pattern_str = str(url_pattern)
+                        
+                        # Clean up the pattern string
                         pattern_str = pattern_str.lstrip("/")
+                        
+                        # Create new URL pattern with module prefix
+                        from django.urls import path
                         new_pattern = path(f'{module_name}/{pattern_str}', 
                                          url_pattern.callback, 
                                          name=f'{module_name}_{url_pattern.name}')
