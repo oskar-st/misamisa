@@ -248,10 +248,4 @@ pip install libsass
 
 # Build once
 python -m sass static/scss/style.scss:static/css/style.css --style compressed
-
-# Watch for changes
-python -m sass --watch static/scss/style.scss:static/css/style.css --style expanded
-
-# Clean up
-rm -f static/css/style.css static/css/style.css.map
 ``` 

@@ -44,12 +44,7 @@ class StripeModule(PaymentModuleBase):
         """Initialize Stripe with secret key when needed."""
         try:
             import stripe
-            # Try to get configuration from environment variables first
-            stripe_secret_key = os.getenv('STRIPE_SECRET_KEY')
-            if stripe_secret_key:
-                stripe.api_key = stripe_secret_key
-                return stripe
-            # Fallback to saved config file
+            # Try to get configuration from saved file
             config = self._get_config()
             if config and config.get('stripe_secret_key'):
                 stripe.api_key = config['stripe_secret_key']
@@ -76,14 +71,16 @@ class StripeModule(PaymentModuleBase):
     
     def get_stripe_public_key(self):
         """Get Stripe public key from configuration."""
-        # Try environment variables first
-        stripe_public_key = os.getenv('STRIPE_PUBLIC_KEY')
-        if stripe_public_key:
-            return stripe_public_key
-        # Fallback to config file
+        # First try to get from environment variables (highest priority)
+        env_key = os.getenv('STRIPE_PUBLIC_KEY')
+        if env_key:
+            return env_key
+        
+        # Then try to get from saved config file
         config = self._get_config()
         if config and config.get('stripe_public_key'):
             return config['stripe_public_key']
+        
         # Fallback to Django settings
         return getattr(settings, 'STRIPE_PUBLIC_KEY', 'pk_test_your_test_key_here')
     

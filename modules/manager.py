@@ -23,7 +23,7 @@ class ModuleManager:
         """Initialize the module manager."""
         self.modules_path = os.path.join(settings.BASE_DIR, "modules")
         self.discovered_modules: Dict[str, BaseModule] = {}
-        self._uninstalled_modules_file = os.path.join(settings.BASE_DIR, "uninstalled_modules.json")
+        self._uninstalled_modules_file = os.path.join(self.modules_path, "uninstalled_modules.json")
         self.load_all_modules()
     
     def _get_uninstalled_modules(self) -> set:
@@ -174,6 +174,9 @@ class ModuleManager:
                             else:
                                 # Try to get the pattern string directly
                                 pattern_str = str(url_pattern.pattern)
+                        elif hasattr(url_pattern, 'route'):
+                            # For Django 5.x URLPattern objects
+                            pattern_str = url_pattern.route
                         else:
                             # Fallback for older Django versions
                             pattern_str = str(url_pattern)
