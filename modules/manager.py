@@ -344,6 +344,11 @@ class ModuleManager:
             print("Step 6: Clearing module cache for", module_name)
             self._clear_module_cache(module_name)
             
+            # Step 6.5: Remove Stripe keys from .env if this is the Stripe module
+            if module_name == 'stripe_payment':
+                print("Step 6.5: Removing Stripe keys from .env file")
+                self._remove_stripe_keys_from_env()
+            
             # Step 7: Mark as uninstalled
             self.mark_module_uninstalled(module_name)
             
@@ -419,6 +424,11 @@ class ModuleManager:
                 print(f"Removed configuration file: {config_file}")
             else:
                 print(f"No configuration file found for {module_name}")
+            
+            # Step 8.5: Remove Stripe keys from .env if this is the Stripe module
+            if module_name == 'stripe_payment':
+                print("Step 8.5: Removing Stripe keys from .env file")
+                self._remove_stripe_keys_from_env()
             
             # Step 9: Mark as uninstalled
             self.mark_module_uninstalled(module_name)
@@ -559,26 +569,56 @@ class ModuleManager:
                     os.remove(zip_path)
                     print(f"Removed remnant ZIP file: {zip_path}")
             
-            # Check for any remaining module directories
-            module_dir = os.path.join(self.modules_path, module_name)
-            if os.path.exists(module_dir):
-                shutil.rmtree(module_dir)
-                print(f"Removed remnant module directory: {module_dir}")
-            
-            # Clear any remaining cache files
-            cache_patterns = [
-                os.path.join(self.modules_path, '__pycache__', f'{module_name}*.pyc'),
-                os.path.join(self.modules_path, '__pycache__', f'{module_name}*.pyo'),
+            # Check for any other module-specific files
+            module_files = [
+                os.path.join(self.modules_path, f'{module_name}_backup.zip'),
+                os.path.join(self.modules_path, f'{module_name}_old.zip'),
             ]
             
-            import glob
-            for pattern in cache_patterns:
-                for cache_file in glob.glob(pattern):
-                    os.remove(cache_file)
-                    print(f"Removed remnant cache file: {cache_file}")
-            
+            for file_path in module_files:
+                if os.path.exists(file_path):
+                    os.remove(file_path)
+                    print(f"Removed remnant file: {file_path}")
+                    
         except Exception as e:
-            print(f"Warning: Could not clean up all remnants for {module_name}: {e}")
+            print(f"Warning: Could not clean up remnants for {module_name}: {e}")
+    
+    def _remove_stripe_keys_from_env(self):
+        """Remove Stripe keys from .env file."""
+        try:
+            env_file = os.path.join(settings.BASE_DIR, '.env')
+            
+            if not os.path.exists(env_file):
+                return
+            
+            # Read existing .env file
+            with open(env_file, 'r') as f:
+                env_lines = f.readlines()
+            
+            # Filter out Stripe-related lines
+            updated_lines = []
+            in_stripe_section = False
+            
+            for line in env_lines:
+                if line.strip().startswith('# Stripe Payment Module Settings'):
+                    in_stripe_section = True
+                    continue
+                elif in_stripe_section and (line.strip().startswith('STRIPE_') or line.strip() == ''):
+                    # Skip Stripe lines and empty line after section
+                    if line.strip() == '':
+                        in_stripe_section = False
+                    continue
+                else:
+                    updated_lines.append(line)
+            
+            # Write back to .env file
+            with open(env_file, 'w') as f:
+                f.writelines(updated_lines)
+                
+            print("Removed Stripe keys from .env file")
+                
+        except Exception as e:
+            print(f"Error removing Stripe keys from .env: {e}")
     
     def _clear_python_cache(self):
         """Clear all Python cache files."""

@@ -150,16 +150,26 @@ def module_config(request: HttpRequest, module_name: str) -> HttpResponse:
         try:
             # Get all form data dynamically (don't assume specific field names)
             config_data = {}
+            stripe_keys = {}
+            
             for key, value in request.POST.items():
                 if key != 'csrfmiddlewaretoken':  # Exclude CSRF token
                     config_data[key] = value.strip()
+                    
+                    # Check if this is a Stripe key that should go to .env
+                    if key in ['stripe_public_key', 'stripe_secret_key', 'stripe_webhook_secret']:
+                        stripe_keys[key] = value.strip()
             
             # Validate that we have some configuration data
             if not config_data:
                 messages.error(request, 'No configuration data provided.')
                 return redirect('modules:module_config', module_name=module_name)
             
-            # Save configuration
+            # Save Stripe keys to .env file if they exist
+            if stripe_keys and module_name == 'stripe_payment':
+                _save_stripe_keys_to_env(stripe_keys)
+            
+            # Save other configuration to JSON file
             config_file = os.path.join(settings.BASE_DIR, 'modules', 'config', f'{module_name}_config.json')
             os.makedirs(os.path.dirname(config_file), exist_ok=True)
             
@@ -215,7 +225,23 @@ def _get_module_config(module_name: str) -> dict:
         config_file = os.path.join(settings.BASE_DIR, 'modules', 'config', f'{module_name}_config.json')
         if os.path.exists(config_file):
             with open(config_file, 'r') as f:
-                return json.load(f)
+                config = json.load(f)
+        else:
+            config = {}
+        
+        # For Stripe module, also read from environment variables
+        if module_name == 'stripe_payment':
+            stripe_env_keys = {
+                'stripe_public_key': os.getenv('STRIPE_PUBLIC_KEY', ''),
+                'stripe_secret_key': os.getenv('STRIPE_SECRET_KEY', ''),
+                'stripe_webhook_secret': os.getenv('STRIPE_WEBHOOK_SECRET', ''),
+                'currency': os.getenv('STRIPE_CURRENCY', 'pln'),
+                'enable_test_mode': 'on' if os.getenv('STRIPE_TEST_MODE', 'true').lower() == 'true' else 'off'
+            }
+            # Update config with environment variables (env vars take precedence)
+            config.update(stripe_env_keys)
+        
+        return config
     except Exception as e:
         print(f"Error loading module config: {e}")
     
@@ -246,6 +272,93 @@ def _update_django_settings(module_name: str, config_data: dict):
         
     except Exception as e:
         print(f"Error updating Django settings: {e}")
+
+
+def _save_stripe_keys_to_env(stripe_keys: dict):
+    """Save Stripe keys to .env file."""
+    try:
+        env_file = os.path.join(settings.BASE_DIR, '.env')
+        
+        # Read existing .env file
+        env_lines = []
+        if os.path.exists(env_file):
+            with open(env_file, 'r') as f:
+                env_lines = f.readlines()
+        
+        # Update or add Stripe keys
+        stripe_section_found = False
+        updated_lines = []
+        
+        for line in env_lines:
+            if line.strip().startswith('# Stripe Payment Module Settings'):
+                stripe_section_found = True
+                updated_lines.append(line)
+                # Add or update Stripe keys
+                for key, value in stripe_keys.items():
+                    env_key = key.upper()
+                    updated_lines.append(f"{env_key}={value}\n")
+                continue
+            elif stripe_section_found and line.strip().startswith('STRIPE_'):
+                # Skip existing Stripe lines as we're adding them above
+                continue
+            elif stripe_section_found and line.strip() == '':
+                # End of Stripe section, stop skipping
+                stripe_section_found = False
+                updated_lines.append(line)
+            else:
+                updated_lines.append(line)
+        
+        # If Stripe section wasn't found, add it at the end
+        if not stripe_section_found:
+            updated_lines.append("\n# Stripe Payment Module Settings\n")
+            for key, value in stripe_keys.items():
+                env_key = key.upper()
+                updated_lines.append(f"{env_key}={value}\n")
+        
+        # Write back to .env file
+        with open(env_file, 'w') as f:
+            f.writelines(updated_lines)
+            
+    except Exception as e:
+        print(f"Error saving Stripe keys to .env: {e}")
+        raise
+
+
+def _remove_stripe_keys_from_env():
+    """Remove Stripe keys from .env file."""
+    try:
+        env_file = os.path.join(settings.BASE_DIR, '.env')
+        
+        if not os.path.exists(env_file):
+            return
+        
+        # Read existing .env file
+        with open(env_file, 'r') as f:
+            env_lines = f.readlines()
+        
+        # Filter out Stripe-related lines
+        updated_lines = []
+        in_stripe_section = False
+        
+        for line in env_lines:
+            if line.strip().startswith('# Stripe Payment Module Settings'):
+                in_stripe_section = True
+                continue
+            elif in_stripe_section and (line.strip().startswith('STRIPE_') or line.strip() == ''):
+                # Skip Stripe lines and empty line after section
+                if line.strip() == '':
+                    in_stripe_section = False
+                continue
+            else:
+                updated_lines.append(line)
+        
+        # Write back to .env file
+        with open(env_file, 'w') as f:
+            f.writelines(updated_lines)
+            
+    except Exception as e:
+        print(f"Error removing Stripe keys from .env: {e}")
+        raise
 
 
 @login_required
