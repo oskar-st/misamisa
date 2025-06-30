@@ -101,13 +101,23 @@ def product_list_public(request, category_slug=None):
     page_obj = paginator.get_page(page_number)
     
     # Generate breadcrumbs
-    breadcrumbs = generate_breadcrumbs(request, category=category)
-    
+    breadcrumbs = [{'title': 'Misamisa', 'url': reverse('home')}]
+    if category:
+        # Build full parent chain
+        parent_chain = []
+        current = category
+        while current.parent:
+            parent_chain.append(current.parent)
+            current = current.parent
+        for parent in reversed(parent_chain):
+            breadcrumbs.append({'title': parent.name, 'url': reverse('category_or_product', kwargs={'slug': parent.slug})})
+        breadcrumbs.append({'title': category.name, 'url': reverse('category_or_product', kwargs={'slug': category.slug})})
+
     # Set appropriate title
     if category:
         title = category.name
     else:
-        title = _('Shop')
+        title = _('All Products')
     
     context = {
         'categories': categories,
@@ -125,7 +135,17 @@ def product_detail_public(request, slug):
     product = get_object_or_404(Product, slug=slug, is_active=True)
     
     # Generate breadcrumbs
-    breadcrumbs = generate_breadcrumbs(request, product=product)
+    breadcrumbs = [{'title': 'Misamisa', 'url': reverse('home')}]
+    # Add full category parent chain
+    parent_chain = []
+    current = product.category
+    while current.parent:
+        parent_chain.append(current.parent)
+        current = current.parent
+    for parent in reversed(parent_chain):
+        breadcrumbs.append({'title': parent.name, 'url': reverse('category_or_product', kwargs={'slug': parent.slug})})
+    breadcrumbs.append({'title': product.category.name, 'url': reverse('category_or_product', kwargs={'slug': product.category.slug})})
+    breadcrumbs.append({'title': product.name, 'url': product.get_absolute_url()})
     
     # For now, just show product info and a simple add-to-cart form (no JS)
     return render(request, 'shop/public_product_detail.html', {
@@ -467,42 +487,3 @@ def update_cart_ajax(request):
         return JsonResponse({'success': False, 'error': 'Invalid data'}, status=400)
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=500)
-
-def generate_breadcrumbs(request, current_page=None, category=None, product=None):
-    """Generate breadcrumb data for catalog pages."""
-    breadcrumbs = [
-        {
-            'title': 'Misamisa',
-            'url': reverse('home')
-        }
-    ]
-    
-    if category:
-        breadcrumbs.append({
-            'title': _('Shop'),
-            'url': reverse('shop:public_product_list')
-        })
-        breadcrumbs.append({
-            'title': category.name,
-            'url': reverse('category_or_product', kwargs={'slug': category.slug})
-        })
-    elif product and product.category:
-        breadcrumbs.append({
-            'title': _('Shop'),
-            'url': reverse('shop:public_product_list')
-        })
-        breadcrumbs.append({
-            'title': product.category.name,
-            'url': reverse('category_or_product', kwargs={'slug': product.category.slug})
-        })
-        breadcrumbs.append({
-            'title': product.name,
-            'url': reverse('category_or_product', kwargs={'slug': product.slug})
-        })
-    else:
-        breadcrumbs.append({
-            'title': _('Shop'),
-            'url': reverse('shop:public_product_list')
-        })
-    
-    return breadcrumbs

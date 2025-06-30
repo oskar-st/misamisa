@@ -1,0 +1,33 @@
+<nav class="category-menu">
+  <div class="container">
+    <ul class="category-menu-list">
+      {% for category in top_categories %}
+        <li class="category-menu-item{% if category.children.all %} has-dropdown{% endif %}">
+          <a href="{% url 'category_or_product' slug=category.slug %}" class="category-menu-link">{{ category.name }}</a>
+          {% if category.children.all %}
+            <div class="category-dropdown">
+              <ul class="subcategory-list">
+                {% for subcat in category.children.all|dictsort:"name" %}
+                  <li class="subcategory-item{% if subcat.children.all %} has-children{% endif %}">
+                    <a href="{% url 'category_or_product' slug=subcat.slug %}" class="subcategory-link">{{ subcat.name }}</a>
+                    {% if subcat.children.all %}
+                      <div class="subcategory-canvas">
+                        <ul class="third-level-list">
+                          {% for subsubcat in subcat.children.all|dictsort:"name" %}
+                            <li class="third-level-item">
+                              <a href="{% url 'category_or_product' slug=subsubcat.slug %}" class="third-level-link">{{ subsubcat.name }}</a>
+                            </li>
+                          {% endfor %}
+                        </ul>
+                      </div>
+                    {% endif %}
+                  </li>
+                {% endfor %}
+              </ul>
+            </div>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</nav> 

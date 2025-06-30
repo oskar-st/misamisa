@@ -28,8 +28,6 @@
         </a>
       </div>
       <nav class="header-center">
-        <a href="{% url 'shop:public_product_list' %}">{% trans "Shop" %}</a>
-        <a href="#blog">{% trans "Blog" %}</a>
       </nav>
       <div class="header-right">
         <form method="post" action="/i18n/setlang/" style="margin-right: 1rem;">
@@ -82,6 +80,8 @@
       </div>
     </div>
   </header>
+
+  {% include 'components/category_menu.html' %}
 
   <!-- MAIN CONTENT -->
   {% block content %}

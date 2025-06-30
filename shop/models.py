@@ -92,7 +92,7 @@ class Product(models.Model):
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return reverse('shop:product_detail', kwargs={'slug': self.slug})
+        return reverse('category_or_product', kwargs={'slug': self.slug})
 
     @property
     def current_price(self):
