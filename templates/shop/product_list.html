@@ -21,7 +21,7 @@
     </div>
     
     <div id="product-list-container" data-view="{{ request.GET.view|default:'grid' }}">
-        {% include 'shop/pagination_bar.html' %}
+        {% include 'shop/pagination_bar.html' with show_view_toggle=True %}
         <div id="product-list" class="product-list-grid product-grid">
             {% for product in products %}
             <div class="product-card product-row">
@@ -48,7 +48,7 @@
             <div class="no-products">{% trans 'No products found.' %}</div>
             {% endfor %}
         </div>
-        {% include 'shop/pagination_bar.html' %}
+        {% include 'shop/pagination_bar.html' with show_view_toggle=False %}
     </div>
 </div>
 
