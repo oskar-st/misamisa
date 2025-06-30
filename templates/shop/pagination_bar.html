@@ -1,58 +1,60 @@
 <div class="pagination-bar sticky-pagination">
     <div class="pagination-left">
-        {% with page=page_obj.number num_pages=page_obj.paginator.num_pages %}
-            {% if page_obj.has_previous %}
-                {% if category %}
-                    <a href="/{{ category.slug }}/?page={{ page_obj.previous_page_number }}{% if request.GET.view %}&amp;view={{ request.GET.view }}{% endif %}"
-                       class="pagination-link page-arrow" aria-label="Previous page">
+        {% if page_obj.paginator.num_pages > 1 %}
+            {% with page=page_obj.number num_pages=page_obj.paginator.num_pages %}
+                {% if page_obj.has_previous %}
+                    {% if category %}
+                        <a href="/{{ category.slug }}/?page={{ page_obj.previous_page_number }}{% if request.GET.view %}&amp;view={{ request.GET.view }}{% endif %}"
+                           class="pagination-link page-arrow" aria-label="Previous page">
+                    {% else %}
+                        <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.view %}&amp;view={{ request.GET.view }}{% endif %}"
+                           class="pagination-link page-arrow" aria-label="Previous page">
+                    {% endif %}
+                        <span class="arrow-bg">
+                          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M12.354 14.646a.5.5 0 0 1-.708.708l-5-5a.5.5 0 0 1 0-.708l5-5a.5.5 0 0 1 .708.708L7.707 10l4.647 4.646z" fill="currentColor"/>
+                          </svg>
+                        </span>
+                    </a>
                 {% else %}
-                    <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.view %}&amp;view={{ request.GET.view }}{% endif %}"
-                       class="pagination-link page-arrow" aria-label="Previous page">
+                    <span class="pagination-link page-arrow disabled" tabindex="-1" aria-disabled="true">
+                        <span class="arrow-bg">
+                          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M12.354 14.646a.5.5 0 0 1-.708.708l-5-5a.5.5 0 0 1 0-.708l5-5a.5.5 0 0 1 .708.708L7.707 10l4.647 4.646z" fill="currentColor"/>
+                          </svg>
+                        </span>
+                    </span>
                 {% endif %}
-                    <span class="arrow-bg">
-                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                        <path d="M12.354 14.646a.5.5 0 0 1-.708.708l-5-5a.5.5 0 0 1 0-.708l5-5a.5.5 0 0 1 .708.708L7.707 10l4.647 4.646z" fill="currentColor"/>
-                      </svg>
-                    </span>
-                </a>
-            {% else %}
-                <span class="pagination-link page-arrow disabled" tabindex="-1" aria-disabled="true">
-                    <span class="arrow-bg">
-                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                        <path d="M12.354 14.646a.5.5 0 0 1-.708.708l-5-5a.5.5 0 0 1 0-.708l5-5a.5.5 0 0 1 .708.708L7.707 10l4.647 4.646z" fill="currentColor"/>
-                      </svg>
-                    </span>
-                </span>
-            {% endif %}
-            <form class="pagination-jump-form" onsubmit="return false;">
-                <input type="text" inputmode="numeric" pattern="[0-9]*" min="1" max="{{ num_pages }}" value="{{ page }}" class="pagination-jump-input page-num{% if num_pages == 1 %} single{% endif %}" id="pagination-jump-input" autocomplete="off" />
-                <button type="submit" style="display:none"></button>
-                <span class="pagination-total">z {{ num_pages }}</span>
-            </form>
-            {% if page_obj.has_next %}
-                {% if category %}
-                    <a href="/{{ category.slug }}/?page={{ page_obj.next_page_number }}{% if request.GET.view %}&amp;view={{ request.GET.view }}{% endif %}"
-                       class="pagination-link page-arrow" aria-label="Next page">
+                <form class="pagination-jump-form" onsubmit="return false;">
+                    <input type="text" inputmode="numeric" pattern="[0-9]*" min="1" max="{{ num_pages }}" value="{{ page }}" class="pagination-jump-input page-num{% if num_pages == 1 %} single{% endif %}" id="pagination-jump-input" autocomplete="off" />
+                    <button type="submit" style="display:none"></button>
+                    <span class="pagination-total">z {{ num_pages }}</span>
+                </form>
+                {% if page_obj.has_next %}
+                    {% if category %}
+                        <a href="/{{ category.slug }}/?page={{ page_obj.next_page_number }}{% if request.GET.view %}&amp;view={{ request.GET.view }}{% endif %}"
+                           class="pagination-link page-arrow" aria-label="Next page">
+                    {% else %}
+                        <a href="?page={{ page_obj.next_page_number }}{% if request.GET.view %}&amp;view={{ request.GET.view }}{% endif %}"
+                           class="pagination-link page-arrow" aria-label="Next page">
+                    {% endif %}
+                        <span class="arrow-bg">
+                          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style="transform: scaleX(-1);">
+                            <path d="M12.354 14.646a.5.5 0 0 1-.708.708l-5-5a.5.5 0 0 1 0-.708l5-5a.5.5 0 0 1 .708.708L7.707 10l4.647 4.646z" fill="currentColor"/>
+                          </svg>
+                        </span>
+                    </a>
                 {% else %}
-                    <a href="?page={{ page_obj.next_page_number }}{% if request.GET.view %}&amp;view={{ request.GET.view }}{% endif %}"
-                       class="pagination-link page-arrow" aria-label="Next page">
+                    <span class="pagination-link page-arrow disabled" tabindex="-1" aria-disabled="true">
+                        <span class="arrow-bg">
+                          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style="transform: scaleX(-1);">
+                            <path d="M12.354 14.646a.5.5 0 0 1-.708.708l-5-5a.5.5 0 0 1 0-.708l5-5a.5.5 0 0 1 .708.708L7.707 10l4.647 4.646z" fill="currentColor"/>
+                          </svg>
+                        </span>
+                    </span>
                 {% endif %}
-                    <span class="arrow-bg">
-                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style="transform: scaleX(-1);">
-                        <path d="M12.354 14.646a.5.5 0 0 1-.708.708l-5-5a.5.5 0 0 1 0-.708l5-5a.5.5 0 0 1 .708.708L7.707 10l4.647 4.646z" fill="currentColor"/>
-                      </svg>
-                    </span>
-                </a>
-            {% else %}
-                <span class="pagination-link page-arrow disabled" tabindex="-1" aria-disabled="true">
-                    <span class="arrow-bg">
-                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style="transform: scaleX(-1);">
-                        <path d="M12.354 14.646a.5.5 0 0 1-.708.708l-5-5a.5.5 0 0 1 0-.708l5-5a.5.5 0 0 1 .708.708L7.707 10l4.647 4.646z" fill="currentColor"/>
-                      </svg>
-                    </span>
-                </span>
-            {% endif %}
-        {% endwith %}
+            {% endwith %}
+        {% endif %}
     </div>
     <div class="view-toggle">
         <button type="button" class="view-btn active" id="grid-btn" onclick="setView('grid')" aria-label="Grid view">

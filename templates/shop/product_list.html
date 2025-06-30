@@ -21,9 +21,7 @@
     </div>
     
     <div id="product-list-container" data-view="{{ request.GET.view|default:'grid' }}">
-        {% if page_obj.paginator.num_pages > 1 %}
-            {% include 'shop/pagination_bar.html' %}
-        {% endif %}
+        {% include 'shop/pagination_bar.html' %}
         <div id="product-list" class="product-list-grid product-grid">
             {% for product in products %}
             <div class="product-card product-row">
@@ -50,9 +48,7 @@
             <div class="no-products">{% trans 'No products found.' %}</div>
             {% endfor %}
         </div>
-        {% if page_obj.paginator.num_pages > 1 %}
-            {% include 'shop/pagination_bar.html' %}
-        {% endif %}
+        {% include 'shop/pagination_bar.html' %}
     </div>
 </div>
 
