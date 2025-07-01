@@ -1,0 +1,21 @@
+{% extends 'admin/base_site.html' %}
+{% load i18n %}
+
+{% block content %}
+  <h1>{{ title }}</h1>
+  <form method="post">{% csrf_token %}
+    <p>{% trans "You are about to assign a new category to the following products:" %}</p>
+    <ul>
+      {% for product in products %}
+        <li>{{ product }}</li>
+      {% endfor %}
+    </ul>
+    <fieldset>
+      {{ form.as_p }}
+    </fieldset>
+    <input type="hidden" name="action" value="assign_category_bulk">
+    <input type="hidden" name="apply" value="1">
+    <button type="submit" class="default">{% trans "Assign Category" %}</button>
+    <a href="../" class="button cancel-link">{% trans "Cancel" %}</a>
+  </form>
+{% endblock %} 

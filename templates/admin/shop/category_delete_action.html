@@ -1,0 +1,21 @@
+{% extends 'admin/base_site.html' %}
+{% load i18n %}
+
+{% block content %}
+  <h1>{{ title }}</h1>
+  <form method="post">{% csrf_token %}
+    <p>{% trans "You are about to delete the following categories:" %}</p>
+    <ul>
+      {% for category in categories %}
+        <li>{{ category }}</li>
+      {% endfor %}
+    </ul>
+    <fieldset>
+      {{ form.as_p }}
+    </fieldset>
+    <input type="hidden" name="action" value="delete_or_reassign_products">
+    <input type="hidden" name="apply" value="1">
+    <button type="submit" class="default">{% trans "Proceed" %}</button>
+    <a href="../" class="button cancel-link">{% trans "Cancel" %}</a>
+  </form>
+{% endblock %} 

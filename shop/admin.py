@@ -2,35 +2,34 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 from .models import Category, Product, Order, OrderItem, ShippingMethod, PaymentMethod
+from django_mptt_admin.admin import DjangoMpttAdmin
+from django import forms
+from django.contrib import messages
+from django.shortcuts import render, redirect
+from django.urls import path, reverse
+from django.contrib.admin.helpers import ACTION_CHECKBOX_NAME
+from django.http import HttpResponseRedirect
+from django.utils.http import urlencode
 
 @admin.register(Category)
-class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('name', 'parent', 'is_active', 'level', 'created_at')
-    list_filter = ('is_active', 'parent', 'created_at')
-    search_fields = ('name', 'slug')
-    prepopulated_fields = {'slug': ('name',)}
-    ordering = ('name',)
-    
+class CategoryAdmin(DjangoMpttAdmin):
+    list_display = ("name", "parent", "is_active", "created_at")
+    list_display_links = ("name",)
+    search_fields = ("name", "slug")
+    prepopulated_fields = {"slug": ("name",)}
+    readonly_fields = ("created_at", "updated_at")
     fieldsets = (
-        ('Basic Information', {
-            'fields': ('name', 'slug', 'parent', 'is_active')
+        ("Basic Information", {
+            "fields": ("name", "slug", "parent", "is_active")
         }),
-        ('Timestamps', {
-            'fields': ('created_at', 'updated_at'),
-            'classes': ('collapse',)
+        ("Timestamps", {
+            "fields": ("created_at", "updated_at"),
+            "classes": ("collapse",)
         }),
     )
-    
-    readonly_fields = ('created_at', 'updated_at')
-    
-    def level(self, obj):
-        """Display the nesting level with indentation"""
-        return format_html(
-            '<span style="margin-left: {}px;">{}</span>',
-            obj.level * 20,
-            obj.level
-        )
-    level.short_description = _('Level')
+
+class AssignCategoryForm(forms.Form):
+    category = forms.ModelChoiceField(queryset=Category.objects.all(), required=True, label=_('Category'))
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
@@ -62,6 +61,45 @@ class ProductAdmin(admin.ModelAdmin):
     
     readonly_fields = ('created_at', 'updated_at', 'image_preview')
     
+    actions = ["redirect_assign_category"]
+
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path('assign-category/', self.admin_site.admin_view(self.assign_category_view), name='shop_product_assign_category'),
+        ]
+        return custom_urls + urls
+
+    def redirect_assign_category(self, request, queryset):
+        selected = queryset.values_list('pk', flat=True)
+        url = reverse('admin:shop_product_assign_category')
+        params = urlencode({'ids': ','.join(str(pk) for pk in selected)})
+        return HttpResponseRedirect(f'{url}?{params}')
+    redirect_assign_category.short_description = _('Assign category to selected products (custom view)')
+
+    def assign_category_view(self, request):
+        ids = request.GET.get('ids') or request.POST.get('ids')
+        if not ids:
+            self.message_user(request, _('No products selected.'), messages.ERROR)
+            return HttpResponseRedirect(reverse('admin:shop_product_changelist'))
+        id_list = [int(pk) for pk in ids.split(',') if pk.isdigit()]
+        products = Product.objects.filter(pk__in=id_list)
+        if request.method == 'POST':
+            form = AssignCategoryForm(request.POST)
+            if form.is_valid():
+                category = form.cleaned_data['category']
+                updated = products.update(category=category)
+                self.message_user(request, _(f"{updated} products assigned to category '{category}'."), messages.SUCCESS)
+                return HttpResponseRedirect(reverse('admin:shop_product_changelist'))
+        else:
+            form = AssignCategoryForm()
+        return render(request, 'admin/shop/assign_category_action.html', {
+            'products': products,
+            'form': form,
+            'ids': ','.join(str(pk) for pk in id_list),
+            'title': _('Assign Category to Products'),
+        })
+
     def current_price(self, obj):
         """Display the current price with discount indicator"""
         if obj.has_discount:

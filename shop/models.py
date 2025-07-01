@@ -3,11 +3,12 @@ from django.utils.translation import gettext_lazy as _
 from django.utils.text import slugify
 from django.urls import reverse
 from django.conf import settings
+from mptt.models import MPTTModel, TreeForeignKey
 
-class Category(models.Model):
+class Category(MPTTModel):
     name = models.CharField(_('name'), max_length=100)
     slug = models.SlugField(_('slug'), max_length=100, unique=True, blank=True)
-    parent = models.ForeignKey(
+    parent = TreeForeignKey(
         'self',
         on_delete=models.CASCADE,
         null=True,
@@ -22,7 +23,10 @@ class Category(models.Model):
     class Meta:
         verbose_name = _('category')
         verbose_name_plural = _('categories')
-        ordering = ['name']
+        ordering = ['tree_id', 'lft']
+
+    class MPTTMeta:
+        order_insertion_by = ['name']
 
     def __str__(self):
         if self.parent:
@@ -59,7 +63,9 @@ class Product(models.Model):
     slug = models.SlugField(_('slug'), max_length=200, unique=True, blank=True)
     category = models.ForeignKey(
         Category,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
         related_name='products',
         verbose_name=_('category')
     )
