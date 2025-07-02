@@ -55,8 +55,9 @@ def product_list(request):
 def category_detail(request, slug):
     """Display products in a specific category"""
     category = get_object_or_404(Category, slug=slug, is_active=True)
+    descendant_categories = category.get_descendants(include_self=True)
     products = Product.objects.filter(
-        category=category,
+        category__in=descendant_categories,
         is_active=True
     ).select_related('category')
     
@@ -83,7 +84,8 @@ def product_list_public(request, category_slug=None):
     if category_slug:
         try:
             category = Category.objects.get(slug=category_slug, is_active=True)
-            products = products.filter(category=category)
+            descendant_categories = category.get_descendants(include_self=True)
+            products = products.filter(category__in=descendant_categories)
         except Category.DoesNotExist:
             # If category doesn't exist, return 404
             from django.http import Http404
@@ -93,7 +95,8 @@ def product_list_public(request, category_slug=None):
     elif request.GET.get('kategoria'):
         category_slug_param = request.GET.get('kategoria')
         category = get_object_or_404(Category, slug=category_slug_param, is_active=True)
-        products = products.filter(category=category)
+        descendant_categories = category.get_descendants(include_self=True)
+        products = products.filter(category__in=descendant_categories)
     
     paginator = Paginator(products, 12)
     page_number = request.GET.get('page')

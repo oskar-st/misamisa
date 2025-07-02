@@ -6,14 +6,14 @@ help: ## Show this help message
 	@echo 'Targets:'
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "  %-15s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
-install: ## Install Python dependencies for SCSS compilation
-	. venv/bin/activate && pip install libsass
+install: ## Install Node.js dependencies for SCSS compilation
+	npm install
 
 build: ## Build CSS from SCSS (compressed)
-	. venv/bin/activate && python -m sass static/scss/style.scss:static/css/style.css --style compressed
+	npm run build-css
 
 watch: ## Watch SCSS files and compile on changes (compressed)
-	. venv/bin/activate && python -m sass --watch static/scss/style.scss:static/css/style.css --style compressed
+	npx sass --watch static/scss:static/css --style=compressed
 
 dev: ## Watch SCSS files and compile on changes (expanded for debugging)
 	. venv/bin/activate && python -m sass --watch static/scss/style.scss:static/css/style.css --style expanded

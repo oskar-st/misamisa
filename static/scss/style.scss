@@ -1588,8 +1588,7 @@ body {
     appearance: textfield !important;
   }
 
-// Import module management styles
-@import 'modules/module-management'; 
+@use 'modules/module-management' as mm;
 
 /* --- MOVED FROM CSS: BREADCRUMBS & CATEGORY MENU --- */
 

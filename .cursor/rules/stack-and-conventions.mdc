@@ -1,0 +1,22 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+- Python 3.12 virtualenv
+- Django 5.2.2 as backend framework (no Flask, no FastAPI)
+- PostgreSQL as DB via psycopg2-binary
+- Pillow for images
+- django-mptt (+ admin) for nested/tree categories
+- stripe for payment integration (BLIK + Przelewy24 should be available)
+- django-turnstile for forms protection 
+- python-dotenv for .env config/secrets
+- **Custom SCSS/SASS only** for styles (no Tailwind, Bootstrap, or CSS frameworks unless we find a good use case)
+  - All SCSS source files live in `static/scss/`
+  - SCSS is compiled using **Dart Sass** (`npm install sass`) via npm scripts
+  - Compiled CSS output goes to `static/css/`
+  - Reference CSS in templates via `{% static 'css/style.css' %}`
+- JS is vanilla/handwritten unless specified
+- No frontend JS/CSS frameworks unless project requirements change
+- All templates are Django template language (not Jinja2, not React)
+- Follow Django app/project conventions for file paths and structure
