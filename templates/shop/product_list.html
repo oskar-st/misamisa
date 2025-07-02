@@ -8,47 +8,43 @@
         {% include 'components/breadcrumbs.html' %}
     {% endif %}
     
-    <h1 class="shop-title">{{ title }}</h1>
-    <div class="category-filter-form">
-        <label for="category-select">{% trans 'Category' %}:</label>
-        <select name="kategoria" id="category-select" onchange="changeCategory(this.value)">
-            <option value="">{% trans 'All' %}</option>
-            {% for cat in categories %}
-                <option value="{{ cat.slug }}" {% if category and cat == category %}selected{% endif %}>{{ cat.name }}</option>
-            {% endfor %}
-        </select>
-        <input type="hidden" name="view" id="view-mode-input" value="{{ request.GET.view|default:'grid' }}">
-    </div>
-    
-    <div id="product-list-container" data-view="{{ request.GET.view|default:'grid' }}">
-        {% include 'shop/pagination_bar.html' with show_view_toggle=True %}
-        <div id="product-list" class="product-list-grid product-grid">
-            {% for product in products %}
-            <div class="product-card product-row">
-                <a href="{% url 'category_or_product' product.slug %}" class="product-link">
-                    {% if product.image %}
-                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image" />
-                    {% else %}
-                        <div class="no-image">{% trans 'No image' %}</div>
-                    {% endif %}
-                    <span class="product-info">
-                      <h2 class="product-title">{{ product.name }}</h2>
-                      <span class="product-price">
-                        {% if product.discount_price %}
-                            <span class="old-price">{{ product.price }} zł</span>
-                            <span class="discount-price">{{ product.discount_price }} zł</span>
-                        {% else %}
-                            {{ product.price }} zł
-                        {% endif %}
-                      </span>
-                    </span>
-                </a>
+    <div class="shop-layout">
+        <!-- Sidebar -->
+        {% include 'components/sidebar.html' %}
+        
+        <!-- Main Content -->
+        <div class="shop-content">
+            <div id="product-list-container" data-view="{{ request.GET.view|default:'grid' }}">
+                {% include 'shop/pagination_bar.html' with show_view_toggle=True %}
+                <div id="product-list" class="product-list-grid product-grid">
+                    {% for product in products %}
+                    <div class="product-card product-row">
+                        <a href="{% url 'category_or_product' product.slug %}" class="product-link">
+                            {% if product.image %}
+                                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image" />
+                            {% else %}
+                                <div class="no-image">{% trans 'No image' %}</div>
+                            {% endif %}
+                            <span class="product-info">
+                              <h2 class="product-title">{{ product.name }}</h2>
+                              <span class="product-price">
+                                {% if product.discount_price %}
+                                    <span class="old-price">{{ product.price }} zł</span>
+                                    <span class="discount-price">{{ product.discount_price }} zł</span>
+                                {% else %}
+                                    {{ product.price }} zł
+                                {% endif %}
+                              </span>
+                            </span>
+                        </a>
+                    </div>
+                    {% empty %}
+                    <div class="no-products">{% trans 'No products found.' %}</div>
+                    {% endfor %}
+                </div>
+                {% include 'shop/pagination_bar.html' with show_view_toggle=False %}
             </div>
-            {% empty %}
-            <div class="no-products">{% trans 'No products found.' %}</div>
-            {% endfor %}
         </div>
-        {% include 'shop/pagination_bar.html' with show_view_toggle=False %}
     </div>
 </div>
 

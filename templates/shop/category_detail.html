@@ -3,52 +3,54 @@
 
 {% block content %}
 <div class="main-container">
-    <h1>{{ category.name }}</h1>
-    {% if category.description %}
-        <p>{{ category.description }}</p>
-    {% endif %}
-    
-    {% if products %}
-        <div id="product-list-container" data-view="{{ request.GET.view|default:'grid' }}">
-            {% if page_obj.paginator.num_pages > 1 %}
-                {% include 'shop/pagination_bar.html' %}
+    <div class="shop-layout">
+        <!-- Sidebar -->
+        {% include 'components/sidebar.html' %}
+        
+        <!-- Main Content -->
+        <div class="shop-content">
+            <h1>{{ category.name }}</h1>
+            {% if category.description %}
+                <p>{{ category.description }}</p>
             {% endif %}
-            <div id="product-list" class="product-list-grid product-grid">
-                {% for product in products %}
-                <div class="product-card product-row">
-                    <a href="{% url 'category_or_product' product.slug %}" class="product-link">
-                        {% if product.image %}
-                            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image" />
-                        {% else %}
-                            <div class="no-image">{% trans 'No image' %}</div>
-                        {% endif %}
-                        <span class="product-info">
-                          <h2 class="product-title">{{ product.name }}</h2>
-                          <span class="product-price">
-                            {% if product.discount_price %}
-                                <span class="old-price">{{ product.price }} zł</span>
-                                <span class="discount-price">{{ product.discount_price }} zł</span>
-                            {% else %}
-                                {{ product.price }} zł
-                            {% endif %}
-                          </span>
-                        </span>
-                    </a>
+            
+            {% if products %}
+                <div id="product-list-container" data-view="{{ request.GET.view|default:'grid' }}">
+                    <div id="product-list" class="product-list-grid product-grid">
+                        {% for product in products %}
+                        <div class="product-card product-row">
+                            <a href="{% url 'category_or_product' product.slug %}" class="product-link">
+                                {% if product.image %}
+                                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image" />
+                                {% else %}
+                                    <div class="no-image">{% trans 'No image' %}</div>
+                                {% endif %}
+                                <span class="product-info">
+                                  <h2 class="product-title">{{ product.name }}</h2>
+                                  <span class="product-price">
+                                    {% if product.discount_price %}
+                                        <span class="old-price">{{ product.price }} zł</span>
+                                        <span class="discount-price">{{ product.discount_price }} zł</span>
+                                    {% else %}
+                                        {{ product.price }} zł
+                                    {% endif %}
+                                  </span>
+                                </span>
+                            </a>
+                        </div>
+                        {% empty %}
+                        <div class="no-products">{% trans 'No products found in this category.' %}</div>
+                        {% endfor %}
+                    </div>
                 </div>
-                {% empty %}
+            {% else %}
                 <div class="no-products">{% trans 'No products found in this category.' %}</div>
-                {% endfor %}
-            </div>
-            {% if page_obj.paginator.num_pages > 1 %}
-                {% include 'shop/pagination_bar.html' %}
             {% endif %}
+            
+            <div class="category-back-link">
+                <a href="{% url 'shop:public_product_list' %}">&larr; {% trans 'Back to all products' %}</a>
+            </div>
         </div>
-    {% else %}
-        <div class="no-products">{% trans 'No products found in this category.' %}</div>
-    {% endif %}
-    
-    <div class="category-back-link">
-        <a href="{% url 'shop:public_product_list' %}">&larr; {% trans 'Back to all products' %}</a>
     </div>
 </div>
 {% endblock %} 

@@ -1,3 +1,7 @@
+/* --- IMPORTS --- */
+@use 'modules/module-management' as mm;
+@use 'components/sidebar';
+
 /* --- GLOBAL CURSOR RULES --- */
 button, 
 input[type="submit"], 
@@ -105,7 +109,6 @@ body {
   /* --- HEADER --- */
   header {
     background: var(--header-bg);
-    box-shadow: 0 2px 6px var(--header-shadow);
     position: sticky;
     top: 0;
     z-index: 999;
@@ -580,7 +583,7 @@ body {
 
   .main-container {
     max-width: 1200px;
-    margin: 2rem auto;
+    margin: 0.4rem auto;
     padding: 2rem;
     background-color: var(--page-bg);
     border-radius: 8px;
@@ -885,7 +888,7 @@ body {
     background-color: var(--header-bg);
     border-top: 1px solid var(--card-border);
     padding: 1.5rem 0;
-    margin-top: 3rem;
+    margin-top: 0;
     text-align: center;
   }
 
@@ -1588,14 +1591,25 @@ body {
     appearance: textfield !important;
   }
 
-@use 'modules/module-management' as mm;
-
 /* --- MOVED FROM CSS: BREADCRUMBS & CATEGORY MENU --- */
+
+// Shop title styling (standalone above sidebar box)
+.sidebar-title {
+  margin-bottom: 1rem;
+  width: 300px; // Match sidebar width
+}
+
+.shop-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--text-color);
+  text-align: left;
+}
 
 // BREADCRUMBS - x-kom style
 .breadcrumbs {
     background: var(--page-bg);
-    border-bottom: 1px solid var(--card-border);
     padding: 0.75rem 0;
     margin-bottom: 0;
 }
@@ -1679,10 +1693,9 @@ body {
 .category-menu {
   background: var(--header-bg);
   box-shadow: 0 1px 4px var(--header-shadow);
-  border-bottom: 1px solid var(--card-border);
   position: relative;
   z-index: 998;
-  font-size: 1rem;
+  font-size: 0.9rem;
   min-height: 36px;
   max-height: 38px;
   overflow: visible;

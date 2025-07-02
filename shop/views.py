@@ -61,10 +61,16 @@ def category_detail(request, slug):
         is_active=True
     ).select_related('category')
     
+    # Get hierarchical categories for sidebar
+    sidebar_categories = Category.objects.filter(parent=None, is_active=True).prefetch_related(
+        'children__children'  # Prefetch up to 3 levels for performance
+    ).order_by('name')
+    
     context = {
         'category': category,
         'products': products,
-        'title': category.name
+        'title': category.name,
+        'sidebar_categories': sidebar_categories,
     }
     return render(request, 'shop/category_detail.html', context)
 
@@ -122,6 +128,11 @@ def product_list_public(request, category_slug=None):
     else:
         title = _('All Products')
     
+    # Get hierarchical categories for sidebar
+    sidebar_categories = Category.objects.filter(parent=None, is_active=True).prefetch_related(
+        'children__children'  # Prefetch up to 3 levels for performance
+    ).order_by('name')
+    
     context = {
         'categories': categories,
         'category': category,
@@ -129,6 +140,7 @@ def product_list_public(request, category_slug=None):
         'page_obj': page_obj,
         'title': title,
         'breadcrumbs': breadcrumbs,
+        'sidebar_categories': sidebar_categories,
     }
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         return render(request, 'shop/product_list.html', context, content_type='text/html')

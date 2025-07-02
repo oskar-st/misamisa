@@ -1,0 +1,94 @@
+{% load i18n %}
+
+<div class="sidebar-column">
+    <!-- Shop Title Above Sidebar -->
+    <div class="sidebar-title">
+        <h1 class="shop-title">{{ title }}</h1>
+    </div>
+
+    <aside class="shop-sidebar">
+    <!-- Category Navigation -->
+    <div class="sidebar-categories">
+        <h3>{% trans 'Categories' %}</h3>
+        
+        <ul class="category-list">
+            <!-- All Products Link -->
+            <li class="category-item">
+                <a href="{% url 'shop:public_product_list' %}" 
+                   class="category-link {% if not category %}active{% endif %}">
+                    {% trans 'All Products' %}
+                </a>
+            </li>
+            
+            <!-- Root Categories -->
+            {% for root_category in sidebar_categories %}
+                <li class="category-item">
+                    <a href="{% url 'category_or_product' slug=root_category.slug %}" 
+                       class="category-link {% if category and category.pk == root_category.pk %}active{% endif %}">
+                        {{ root_category.name }}
+                    </a>
+                    
+                    <!-- Subcategories -->
+                    {% if root_category.children.all %}
+                        <ul class="subcategory-list">
+                            {% for subcategory in root_category.children.all|dictsort:"name" %}
+                                <li class="category-item">
+                                    <a href="{% url 'category_or_product' slug=subcategory.slug %}" 
+                                       class="category-link {% if category and category.pk == subcategory.pk %}active{% endif %}">
+                                        {{ subcategory.name }}
+                                    </a>
+                                    
+                                    <!-- Third level categories -->
+                                    {% if subcategory.children.all %}
+                                        <ul class="subcategory-list">
+                                            {% for subsubcategory in subcategory.children.all|dictsort:"name" %}
+                                                <li class="category-item">
+                                                    <a href="{% url 'category_or_product' slug=subsubcategory.slug %}" 
+                                                       class="category-link {% if category and category.pk == subsubcategory.pk %}active{% endif %}">
+                                                        {{ subsubcategory.name }}
+                                                    </a>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    
+    <!-- Product Filters - Placeholder for Future Implementation -->
+    <div class="sidebar-filters">
+        <h3>{% trans 'Filters' %}</h3>
+        
+        <!-- Temporary category selector (will be replaced by better filters) -->
+        <div class="category-filter-form">
+            <label for="category-select">{% trans 'Category' %}:</label>
+            <select name="kategoria" id="category-select" onchange="changeCategory(this.value)">
+                <option value="">{% trans 'All' %}</option>
+                {% for cat in categories %}
+                    <option value="{{ cat.slug }}" {% if category and cat == category %}selected{% endif %}>{{ cat.name }}</option>
+                {% endfor %}
+            </select>
+            <input type="hidden" name="view" id="view-mode-input" value="{{ request.GET.view|default:'grid' }}">
+        </div>
+        
+        <!-- 
+        Future filter sections will go here, such as:
+        - Price range slider
+        - Brand checkboxes
+        - Product attributes (size, color, etc.)
+        - In stock / availability
+        - Rating filter
+        - Sort options
+        -->
+        
+        <div class="filters-placeholder">
+            {% trans 'Additional product filters will be added here in future updates' %}
+        </div>
+    </div>
+    </aside>
+</div> 

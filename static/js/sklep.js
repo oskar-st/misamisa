@@ -1,8 +1,37 @@
 function setView(view) {
     const params = new URLSearchParams(window.location.search);
     params.set('view', view);
-    // Reload the page with the new view parameter, preserving other params
-    window.location.search = params.toString();
+    
+    // Use AJAX to load the new view without page reload
+    const url = window.location.pathname + '?' + params.toString();
+    
+    fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+        .then(response => response.text())
+        .then(html => {
+            // Extract the #product-list-container from the response
+            const temp = document.createElement('div');
+            temp.innerHTML = html;
+            const newContainer = temp.querySelector('#product-list-container');
+            if (newContainer) {
+                document.getElementById('product-list-container').replaceWith(newContainer);
+                applyViewFromContainer();
+                setupAjaxPagination(); // Re-attach pagination listeners
+                setupPaginationJump(); // Re-attach jump input listener
+                
+                // Update the URL without reloading the page
+                window.history.pushState({}, '', url);
+                
+                // Smooth scroll to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                window.location = url; // fallback to page reload
+            }
+        })
+        .catch(error => {
+            console.error('Error loading view:', error);
+            // Fallback to page reload on error
+            window.location.search = params.toString();
+        });
 }
 
 function applyViewFromContainer() {
