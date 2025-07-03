@@ -1,0 +1,20 @@
+{% load i18n %}
+
+<div class="main-container">
+    <div class="auth-container">
+        <div class="auth-card success-card">
+            <h2>{% trans "Registration Successful!" %}</h2>
+            
+            <div class="success-message">
+                <p>{% trans "Thank you for creating an account!" %}</p>
+                <p>{% trans "We've sent a verification email to" %} <strong>{{ email }}</strong></p>
+                <p>{% trans "Please check your inbox and click the verification link to complete your registration." %}</p>
+            </div>
+            
+            <div class="auth-links">
+                <a href="{% url 'login' %}" class="cta-btn btn-primary shop-link">{% trans "Go to Login" %}</a>
+                <a href="{% url 'home' %}" class="cta-btn btn-secondary shop-link">{% trans "Back to Home" %}</a>
+            </div>
+        </div>
+    </div>
+</div> 

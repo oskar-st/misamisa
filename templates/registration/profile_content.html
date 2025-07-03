@@ -1,0 +1,36 @@
+{% load i18n %}
+
+<div class="main-container">
+    <div class="profile-container">
+        <div class="profile-card">
+            <h2>{% trans "My Profile" %}</h2>
+            
+            <div class="profile-info">
+                <div class="info-group">
+                    <label>{% trans "Email" %}:</label>
+                    <span>{{ user.email }}</span>
+                </div>
+                
+                <div class="info-group">
+                    <label>{% trans "Name" %}:</label>
+                    <span>{{ user.first_name }} {{ user.last_name }}</span>
+                </div>
+                
+                <div class="info-group">
+                    <label>{% trans "Member since" %}:</label>
+                    <span>{{ user.date_joined|date:"F j, Y" }}</span>
+                </div>
+                
+                <div class="info-group">
+                    <label>{% trans "Email verified" %}:</label>
+                    <span>{% if user.email_verified %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}</span>
+                </div>
+            </div>
+            
+            <div class="profile-actions">
+                <a href="{% url 'cart_view' %}" class="cta-btn shop-link">{% trans "View Cart" %}</a>
+                <a href="{% url 'logout' %}" class="cta-btn btn-secondary shop-link">{% trans "Logout" %}</a>
+            </div>
+        </div>
+    </div>
+</div> 

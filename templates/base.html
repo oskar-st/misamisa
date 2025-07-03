@@ -2,10 +2,11 @@
 {% load i18n %}
 {% get_current_language as LANGUAGE_CODE %}
 <!DOCTYPE html>
-<html lang="pl" data-theme="light">
+<html lang="{{ LANGUAGE_CODE }}" data-theme="light">
 <head>
   <meta charset="UTF-8">
-  <title>Misamisa</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Misamisa{% endblock %}</title>
   <!-- Favicon -->
   <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
   <link rel="shortcut icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
@@ -15,15 +16,26 @@
   <link rel="stylesheet" href="{% static 'css/style.css' %}">
   <script src="{% static 'js/main.js' %}" defer></script>
   <script src="{% static 'js/sklep.js' %}" defer></script>
-  <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,600,700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  
+  <!-- htmx for smooth navigation -->
+  <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+  {% block extra_head %}{% endblock %}
 </head>
 <body style="font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;">
+
+  <!-- Loading indicator -->
+  <div id="loading-indicator" class="htmx-indicator">
+    <div class="loading-spinner">Loading...</div>
+  </div>
 
   <!-- HEADER -->
   <header class="site-header">
     <div class="header-inner container">
       <div class="header-left">
-        <a href="{% url 'home' %}" class="logo-link">
+        <a href="{% url 'home' %}" class="logo-link shop-link">
           <img src="{% static 'logo.png' %}" alt="Misamisa logo" class="logo">
         </a>
       </div>
@@ -54,15 +66,15 @@
           </div>
           <div class="user-menu-dropdown">
             {% if user.is_authenticated %}
-              <a href="{% url 'profile' %}" class="dropdown-item dropdown-btn-primary">{% trans 'My account' %}</a>
-              <a href="{% url 'logout' %}" class="dropdown-item dropdown-btn-secondary">{% trans 'Logout' %}</a>
+              <a href="{% url 'profile' %}" class="dropdown-item dropdown-btn-primary shop-link">{% trans 'My account' %}</a>
+              <a href="{% url 'logout' %}" class="dropdown-item dropdown-btn-secondary shop-link">{% trans 'Logout' %}</a>
             {% else %}
-              <a href="{% url 'login' %}" class="dropdown-item dropdown-btn-primary">{% trans 'Login' %}</a>
-              <a href="{% url 'register' %}" class="dropdown-item dropdown-btn-secondary">{% trans 'Sign up' %}</a>
+              <a href="{% url 'login' %}" class="dropdown-item dropdown-btn-primary shop-link">{% trans 'Login' %}</a>
+              <a href="{% url 'register' %}" class="dropdown-item dropdown-btn-secondary shop-link">{% trans 'Sign up' %}</a>
             {% endif %}
           </div>
         </div>
-        <a href="{% url 'cart_view' %}" class="cart-link">
+        <a href="{% url 'cart_view' %}" class="cart-link shop-link">
           <div class="cart-icon-wrapper">
             <svg class="cart-icon" viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="9" cy="21" r="1"/>
@@ -83,24 +95,187 @@
 
   {% include 'components/category_menu.html' %}
 
-  <!-- MAIN CONTENT -->
-  {% block content %}
-  <!-- Optional homepage default content -->
-  <section class="hero">
-    <div class="hero-inner container">
-      <h1>{% trans "Welcome to" %} <span class="highlight">Misamisa</span> 🍪</h1>
-      <p>{% trans "Your favorite cookies — fresh, sweet, and handmade from the best ingredients!" %}</p>
-      <a href="#" class="cta-btn">{% trans "See our offer" %}</a>
-    </div>
-  </section>
-  {% endblock %}
+  <!-- MAIN CONTENT TARGET -->
+  <div id="main-content" 
+       hx-history="false"
+       hx-indicator="#loading-indicator">
+    {% block content %}
+    <!-- Optional homepage default content -->
+    <section class="hero">
+      <div class="hero-inner container">
+        <h1>{% trans "Welcome to" %} <span class="highlight">Misamisa</span> 🍪</h1>
+        <p>{% trans "Your favorite cookies — fresh, sweet, and handmade from the best ingredients!" %}</p>
+        <a href="{% url 'shop:public_product_list' %}" class="cta-btn shop-link">{% trans "See our offer" %}</a>
+      </div>
+    </section>
+    {% endblock %}
+  </div>
 
   <!-- FOOTER -->
   <footer>
     <div class="container">
-      <p>&copy; 2025 misamisa.pl</p>
+      <div class="footer-content">
+        <div class="footer-links">
+          <a href="{% url 'about' %}" class="footer-link shop-link">{% trans "About" %}</a>
+          <a href="{% url 'contact' %}" class="footer-link shop-link">{% trans "Contact" %}</a>
+          <a href="{% url 'terms' %}" class="footer-link shop-link">{% trans "Terms" %}</a>
+          <a href="{% url 'privacy' %}" class="footer-link shop-link">{% trans "Privacy" %}</a>
+        </div>
+        <p>&copy; 2025 misamisa.pl</p>
+      </div>
     </div>
   </footer>
 
+
+  <script src="{% static 'js/sklep.js' %}"></script>
+  
+  <!-- HTMX Configuration for smooth navigation -->
+  <script>
+    // Enhanced htmx initialization with debugging
+    function setupHtmxNavigation() {
+        // Add htmx to category navigation links
+        const categoryLinks = document.querySelectorAll('.category-link:not([hx-get])');
+        console.log('Found category links:', categoryLinks.length);
+        
+        categoryLinks.forEach((link, index) => {
+            link.setAttribute('hx-get', link.href);
+            link.setAttribute('hx-target', '#main-content');
+            link.setAttribute('hx-push-url', 'true');
+            link.setAttribute('hx-swap', 'innerHTML');
+            link.setAttribute('hx-indicator', '#loading-indicator');
+            console.log(`Added htmx to category link ${index + 1}:`, link.href);
+        });
+        
+        // Add htmx to product links (for smooth product browsing)
+        const productLinks = document.querySelectorAll('.product-link:not([hx-get])');
+        console.log('Found product links:', productLinks.length);
+        
+        productLinks.forEach((link, index) => {
+            link.setAttribute('hx-get', link.href);
+            link.setAttribute('hx-target', '#main-content');
+            link.setAttribute('hx-push-url', 'true');
+            link.setAttribute('hx-swap', 'innerHTML');
+            link.setAttribute('hx-indicator', '#loading-indicator');
+            console.log(`Added htmx to product link ${index + 1}:`, link.href);
+        });
+        
+        // Add htmx to pagination links
+        const paginationLinks = document.querySelectorAll('.pagination a:not([hx-get])');
+        console.log('Found pagination links:', paginationLinks.length);
+        
+        paginationLinks.forEach((link, index) => {
+            link.setAttribute('hx-get', link.href);
+            link.setAttribute('hx-target', '#main-content');
+            link.setAttribute('hx-push-url', 'true');
+            link.setAttribute('hx-swap', 'innerHTML');
+            link.setAttribute('hx-indicator', '#loading-indicator');
+            console.log(`Added htmx to pagination link ${index + 1}:`, link.href);
+        });
+        
+        // Add htmx to general shop navigation links (cart, login, etc.)
+        const shopLinks = document.querySelectorAll('.shop-link:not([hx-get])');
+        console.log('Found shop links:', shopLinks.length);
+        
+        shopLinks.forEach((link, index) => {
+            link.setAttribute('hx-get', link.href);
+            link.setAttribute('hx-target', '#main-content');
+            link.setAttribute('hx-push-url', 'true');
+            link.setAttribute('hx-swap', 'innerHTML');
+            link.setAttribute('hx-indicator', '#loading-indicator');
+            console.log(`Added htmx to shop link ${index + 1}:`, link.href);
+        });
+        
+        // Add htmx to breadcrumb links
+        const breadcrumbLinks = document.querySelectorAll('.breadcrumb a:not([hx-get])');
+        console.log('Found breadcrumb links:', breadcrumbLinks.length);
+        
+        breadcrumbLinks.forEach((link, index) => {
+            link.setAttribute('hx-get', link.href);
+            link.setAttribute('hx-target', '#main-content');
+            link.setAttribute('hx-push-url', 'true');
+            link.setAttribute('hx-swap', 'innerHTML');
+            link.setAttribute('hx-indicator', '#loading-indicator');
+            console.log(`Added htmx to breadcrumb link ${index + 1}:`, link.href);
+        });
+        
+        // Process htmx attributes
+        htmx.process(document.body);
+        console.log('HTMX processed all new attributes');
+    }
+
+    // Initialize when DOM is ready  
+    document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(() => {
+            setupHtmxNavigation();
+            console.log('HTMX navigation initialized after timeout');
+        }, 100);
+        
+        // Handle user menu dropdown visibility
+        const userMenuTrigger = document.querySelector('.user-menu-trigger');
+        const userMenuDropdown = document.querySelector('.user-menu-dropdown');
+        
+        if (userMenuTrigger && userMenuDropdown) {
+            userMenuTrigger.addEventListener('click', function() {
+                setTimeout(() => {
+                    setupHtmxNavigation();
+                    console.log('HTMX reinitialized after user menu opened');
+                }, 50);
+            });
+        }
+    });
+
+    // Smooth transitions with theme preservation
+    document.addEventListener('htmx:beforeSwap', function(e) {
+        const mainContent = document.getElementById('main-content');
+        mainContent.classList.add('htmx-swapping');
+        mainContent.style.opacity = '0.7';
+    });
+    
+    document.addEventListener('htmx:afterSwap', function(e) {
+        const mainContent = document.getElementById('main-content');
+        mainContent.style.opacity = '1';
+        
+        // Remove swapping class after transition
+        setTimeout(() => {
+            mainContent.classList.remove('htmx-swapping');
+        }, 200);
+        
+        console.log('HTMX swap completed, reinitializing...');
+        
+        // Reinitialize htmx for new content
+        setTimeout(() => {
+            setupHtmxNavigation();
+            
+            // Reinitialize shop functionality  
+            if (typeof initializeShopFunctionality === 'function') {
+                initializeShopFunctionality();
+                console.log('Shop functionality reinitialized');
+            }
+            
+            console.log('Content swapped, all functionality reinitialized');
+        }, 50);
+    });
+    
+    // Enhanced error handling
+    document.addEventListener('htmx:responseError', function(e) {
+        console.warn('HTMX failed, using normal navigation');
+        if (e.detail.elt && e.detail.elt.href) {
+            window.location.href = e.detail.elt.href;
+        }
+    });
+
+    // Handle htmx request errors
+    document.addEventListener('htmx:sendError', function(e) {
+        console.warn('HTMX send error, using normal navigation');
+        if (e.detail.elt && e.detail.elt.href) {
+            window.location.href = e.detail.elt.href;
+        }
+    });
+
+    // Debug htmx requests
+    document.addEventListener('htmx:configRequest', function(e) {
+        console.log('HTMX request config:', e.detail);
+    });
+  </script>
 </body>
 </html>

@@ -1,0 +1,24 @@
+{% load i18n %}
+
+<div class="main-container">
+    <div class="contact-container">
+        <h1>{% trans "Contact Us" %}</h1>
+        
+        <div class="contact-content">
+            <p>{% trans "We'd love to hear from you! Get in touch with us:" %}</p>
+            
+            <div class="contact-info">
+                <h3>{% trans "Email" %}</h3>
+                <p><a href="mailto:hi@misamisa.pl">hi@misamisa.pl</a></p>
+                
+                <h3>{% trans "Address" %}</h3>
+                <p>Misamisa Cookie Shop<br>
+                Poland</p>
+            </div>
+            
+            <div class="back-link">
+                <a href="{% url 'home' %}" class="shop-link">&larr; {% trans "Back to Home" %}</a>
+            </div>
+        </div>
+    </div>
+</div> 

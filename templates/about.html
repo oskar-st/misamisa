@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+<div class="main-container">
+    <div class="about-container">
+        <h1>{% trans "About Misamisa" %}</h1>
+        
+        <div class="about-content">
+            <p>{% trans "Welcome to Misamisa - your favorite cookie shop!" %}</p>
+            
+            <h3>{% trans "Our Story" %}</h3>
+            <p>{% trans "We're passionate about creating the most delicious, fresh cookies using only the finest ingredients. Every cookie is made with love and care." %}</p>
+            
+            <h3>{% trans "Our Mission" %}</h3>
+            <p>{% trans "To bring joy and sweetness to your day with our handcrafted cookies that are made fresh daily." %}</p>
+            
+            <h3>{% trans "Quality Promise" %}</h3>
+            <p>{% trans "We use only premium ingredients and traditional baking methods to ensure every cookie meets our high standards." %}</p>
+            
+            <div class="back-link">
+                <a href="{% url 'home' %}" class="shop-link">&larr; {% trans "Back to Home" %}</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

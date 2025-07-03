@@ -1,7 +1,7 @@
 {% load i18n %}
 
 {% if breadcrumbs %}
-<nav class="breadcrumbs" aria-label="{% trans 'Breadcrumb navigation' %}">
+<nav class="breadcrumbs breadcrumb" aria-label="{% trans 'Breadcrumb navigation' %}">
     <ol class="breadcrumb-list">
         {% for breadcrumb in breadcrumbs %}
             {% if forloop.last %}
@@ -10,7 +10,7 @@
                 </li>
             {% else %}
                 <li class="breadcrumb-item">
-                    <a href="{{ breadcrumb.url }}" class="breadcrumb-link">{{ breadcrumb.title }}</a>
+                    <a href="{{ breadcrumb.url }}" class="breadcrumb-link shop-link">{{ breadcrumb.title }}</a>
                     <span class="breadcrumb-separator">/</span>
                 </li>
             {% endif %}

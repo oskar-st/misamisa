@@ -13,7 +13,13 @@ from home.models import News
 
 def homepage(request):
     news_items = News.objects.all()
-    return render(request, "home.html", {"news_items": news_items})
+    context = {"news_items": news_items}
+    
+    # For htmx requests, return just the main content
+    if request.headers.get('HX-Request'):
+        return render(request, 'home_content.html', context)
+    
+    return render(request, "home.html", context)
 
 def register_view(request):
     if request.method == 'POST':
@@ -47,23 +53,28 @@ def register_view(request):
                 )
                 print("Email sent successfully!")
                 
-                return render(request, 'registration/registration_success.html', {
-                    'email': user.email
-                })
+                context = {'email': user.email}
+                if request.headers.get('HX-Request'):
+                    return render(request, 'registration/registration_success_content.html', context)
+                return render(request, 'registration/registration_success.html', context)
                 
             except Exception as e:
                 print(f"Email sending failed: {str(e)}")
                 # If email fails, still create user but show error
                 messages.error(request, _('Account created but verification email could not be sent. Please contact support.'))
-                return render(request, 'registration/registration_success.html', {
-                    'email': user.email
-                })
+                context = {'email': user.email}
+                if request.headers.get('HX-Request'):
+                    return render(request, 'registration/registration_success_content.html', context)
+                return render(request, 'registration/registration_success.html', context)
         else:
             messages.error(request, _('Please correct the errors below.'))
     else:
         form = CustomUserCreationForm()
     
-    return render(request, 'registration/register.html', {'form': form})
+    context = {'form': form}
+    if request.headers.get('HX-Request'):
+        return render(request, 'registration/register_content.html', context)
+    return render(request, 'registration/register.html', context)
 
 def verify_email(request, token):
     """Verify user email with token"""
@@ -98,7 +109,10 @@ def login_view(request):
     else:
         form = CustomAuthenticationForm()
     
-    return render(request, 'registration/login.html', {'form': form})
+    context = {'form': form}
+    if request.headers.get('HX-Request'):
+        return render(request, 'registration/login_content.html', context)
+    return render(request, 'registration/login.html', context)
 
 @login_required
 def logout_view(request):
@@ -108,7 +122,10 @@ def logout_view(request):
 
 @login_required
 def profile_view(request):
-    return render(request, 'registration/profile.html')
+    context = {}
+    if request.headers.get('HX-Request'):
+        return render(request, 'registration/profile_content.html', context)
+    return render(request, 'registration/profile.html', context)
 
 def resend_verification_email(request):
     from django.contrib.auth import get_user_model
@@ -140,3 +157,31 @@ def resend_verification_email(request):
             messages.error(request, _('No user found with that email address.'))
             return render(request, 'registration/resend_verification.html', {'email': email})
     return render(request, 'registration/resend_verification.html')
+
+def contact_view(request):
+    """Contact page view"""
+    context = {'title': _('Contact Us')}
+    if request.headers.get('HX-Request'):
+        return render(request, 'contact_content.html', context)
+    return render(request, 'contact.html', context)
+
+def about_view(request):
+    """About page view"""
+    context = {'title': _('About Us')}
+    if request.headers.get('HX-Request'):
+        return render(request, 'about_content.html', context)
+    return render(request, 'about.html', context)
+
+def terms_view(request):
+    """Terms of Service page view"""
+    context = {'title': _('Terms of Service')}
+    if request.headers.get('HX-Request'):
+        return render(request, 'terms_content.html', context)
+    return render(request, 'terms.html', context)
+
+def privacy_view(request):
+    """Privacy Policy page view"""
+    context = {'title': _('Privacy Policy')}
+    if request.headers.get('HX-Request'):
+        return render(request, 'privacy_content.html', context)
+    return render(request, 'privacy.html', context)

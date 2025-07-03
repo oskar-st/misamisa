@@ -5,10 +5,10 @@
                 {% if page_obj.has_previous %}
                     {% if category %}
                         <a href="/{{ category.slug }}/?page={{ page_obj.previous_page_number }}{% if request.GET.view %}&amp;view={{ request.GET.view }}{% endif %}"
-                           class="pagination-link page-arrow" aria-label="Previous page">
+                           class="pagination-link page-arrow pagination" aria-label="Previous page">
                     {% else %}
                         <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.view %}&amp;view={{ request.GET.view }}{% endif %}"
-                           class="pagination-link page-arrow" aria-label="Previous page">
+                           class="pagination-link page-arrow pagination" aria-label="Previous page">
                     {% endif %}
                         <span class="arrow-bg">
                           <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -33,10 +33,10 @@
                 {% if page_obj.has_next %}
                     {% if category %}
                         <a href="/{{ category.slug }}/?page={{ page_obj.next_page_number }}{% if request.GET.view %}&amp;view={{ request.GET.view }}{% endif %}"
-                           class="pagination-link page-arrow" aria-label="Next page">
+                           class="pagination-link page-arrow pagination" aria-label="Next page">
                     {% else %}
                         <a href="?page={{ page_obj.next_page_number }}{% if request.GET.view %}&amp;view={{ request.GET.view }}{% endif %}"
-                           class="pagination-link page-arrow" aria-label="Next page">
+                           class="pagination-link page-arrow pagination" aria-label="Next page">
                     {% endif %}
                         <span class="arrow-bg">
                           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style="transform: scaleX(-1);">

@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'accounts',  # New accounts app for custom user
     'shop',  # New shop app for e-commerce
     'modules',  # Module management system
+    'mptt',  # Django MPTT for tree structures
     'django_mptt_admin',
     # 'turnstile',
  #  'tailwind',

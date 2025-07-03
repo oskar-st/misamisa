@@ -2,82 +2,66 @@ function setView(view) {
     const params = new URLSearchParams(window.location.search);
     params.set('view', view);
     
-    // Use AJAX to load the new view without page reload
+    // Use htmx to load the new view
     const url = window.location.pathname + '?' + params.toString();
     
-    fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-        .then(response => response.text())
-        .then(html => {
-            // Extract the #product-list-container from the response
-            const temp = document.createElement('div');
-            temp.innerHTML = html;
-            const newContainer = temp.querySelector('#product-list-container');
-            if (newContainer) {
-                document.getElementById('product-list-container').replaceWith(newContainer);
-                applyViewFromContainer();
-                setupAjaxPagination(); // Re-attach pagination listeners
-                setupPaginationJump(); // Re-attach jump input listener
-                
-                // Update the URL without reloading the page
-                window.history.pushState({}, '', url);
-                
-                // Smooth scroll to top
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            } else {
-                window.location = url; // fallback to page reload
-            }
-        })
-        .catch(error => {
-            console.error('Error loading view:', error);
-            // Fallback to page reload on error
-            window.location.search = params.toString();
-        });
+    console.log('Switching to view:', view);
+    
+    // Use htmx to fetch and replace content
+    htmx.ajax('GET', url, {
+        target: '#main-content',
+        swap: 'innerHTML',
+        headers: { 'HX-Request': 'true' }
+    }).then(() => {
+        // Update URL without page reload
+        history.pushState({}, '', url);
+        console.log('View switched successfully to:', view);
+    }).catch(error => {
+        console.error('Error loading view:', error);
+        // Fallback to page reload
+        window.location.search = params.toString();
+    });
 }
 
 function applyViewFromContainer() {
   const container = document.getElementById('product-list-container');
-  if (!container) return;
+  if (!container) {
+    console.log('No product-list-container found');
+    return;
+  }
+  
   const view = container.getAttribute('data-view') || 'grid';
   const list = document.getElementById('product-list');
   const gridBtn = document.getElementById('grid-btn');
   const listBtn = document.getElementById('list-btn');
+  
+  console.log('Applying view:', view);
+  console.log('Elements found:', { list: !!list, gridBtn: !!gridBtn, listBtn: !!listBtn });
+  
+  if (!list || !gridBtn || !listBtn) {
+    console.log('Missing elements for view toggle');
+    return;
+  }
+  
   if (view === 'list') {
     list.classList.remove('product-grid');
     list.classList.add('product-list');
     listBtn.classList.add('active');
     gridBtn.classList.remove('active');
+    console.log('Applied list view');
   } else {
     list.classList.remove('product-list');
     list.classList.add('product-grid');
     gridBtn.classList.add('active');
     listBtn.classList.remove('active');
+    console.log('Applied grid view');
   }
 }
 
-// AJAX pagination
+// htmx pagination (handled automatically by hx-boost)
 function setupAjaxPagination() {
-  document.querySelectorAll('.pagination-link').forEach(link => {
-    link.addEventListener('click', function(e) {
-      e.preventDefault();
-      fetch(link.href, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-        .then(response => response.text())
-        .then(html => {
-          // Extract the #product-list-container from the response
-          const temp = document.createElement('div');
-          temp.innerHTML = html;
-          const newContainer = temp.querySelector('#product-list-container');
-          if (newContainer) {
-            document.getElementById('product-list-container').replaceWith(newContainer);
-            applyViewFromContainer();
-            setupAjaxPagination(); // Re-attach listeners
-            setupPaginationJump(); // Re-attach jump input listener
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          } else {
-            window.location = link.href; // fallback
-          }
-        });
-    });
-  });
+  // htmx handles this automatically with hx-boost
+  // Just add htmx attributes to pagination links in template
 }
 
 function setupPaginationJump() {
@@ -116,11 +100,24 @@ function setupPaginationJump() {
   });
 }
 
-// On page load, set the view based on the query parameter (for initial render only)
-window.addEventListener('DOMContentLoaded', function() {
+// Initialize view functionality
+function initializeProductView() {
   applyViewFromContainer();
   setupAjaxPagination();
   setupPaginationJump();
+}
+
+// Export for use in base template
+window.initializeShopFunctionality = initializeProductView;
+
+// On page load, set the view based on the query parameter (for initial render only)
+window.addEventListener('DOMContentLoaded', initializeProductView);
+
+// Reinitialize after htmx content swaps
+document.body.addEventListener('htmx:afterSwap', function(evt) {
+    if (evt.detail.target.id === 'main-content') {
+        initializeProductView();
+    }
 });
 
 function scrollToTop() {

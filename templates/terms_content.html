@@ -1,0 +1,30 @@
+{% load i18n %}
+
+<div class="main-container">
+    <div class="legal-container">
+        <h1>{% trans "Terms of Service" %}</h1>
+        
+        <div class="legal-content">
+            <p><strong>{% trans "Last updated:" %}</strong> {% now "F j, Y" %}</p>
+            
+            <h3>{% trans "1. Acceptance of Terms" %}</h3>
+            <p>{% trans "By accessing and using Misamisa, you accept and agree to be bound by these Terms of Service." %}</p>
+            
+            <h3>{% trans "2. Products and Services" %}</h3>
+            <p>{% trans "We offer handcrafted cookies and related products. All product descriptions and prices are subject to change without notice." %}</p>
+            
+            <h3>{% trans "3. Orders and Payment" %}</h3>
+            <p>{% trans "All orders are subject to acceptance and availability. Payment is required at the time of order." %}</p>
+            
+            <h3>{% trans "4. Shipping and Delivery" %}</h3>
+            <p>{% trans "We strive to deliver your orders promptly. Delivery times may vary depending on location and availability." %}</p>
+            
+            <h3>{% trans "5. Returns and Refunds" %}</h3>
+            <p>{% trans "Due to the perishable nature of our products, returns are limited. Please contact us for any quality issues." %}</p>
+            
+            <div class="back-link">
+                <a href="{% url 'home' %}" class="shop-link">&larr; {% trans "Back to Home" %}</a>
+            </div>
+        </div>
+    </div>
+</div> 

@@ -1,0 +1,74 @@
+{% load i18n %}
+
+<div class="main-container">
+    <div class="auth-container">
+        <div class="auth-card">
+            <h2>{% trans "Create Account" %}</h2>
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+            
+            <form method="post" class="auth-form">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+                    {{ form.email }}
+                    {% if form.email.errors %}
+                        <div class="form-errors">{{ form.email.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.first_name.id_for_label }}">{{ form.first_name.label }}</label>
+                    {{ form.first_name }}
+                    {% if form.first_name.errors %}
+                        <div class="form-errors">{{ form.first_name.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.last_name.id_for_label }}">{{ form.last_name.label }}</label>
+                    {{ form.last_name }}
+                    {% if form.last_name.errors %}
+                        <div class="form-errors">{{ form.last_name.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.password1.id_for_label }}">{{ form.password1.label }}</label>
+                    {{ form.password1 }}
+                    {% if form.password1.errors %}
+                        <div class="form-errors">{{ form.password1.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.password2.id_for_label }}">{{ form.password2.label }}</label>
+                    {{ form.password2 }}
+                    {% if form.password2.errors %}
+                        <div class="form-errors">{{ form.password2.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label>
+                        {{ form.newsletter_opt_in }}
+                        {{ form.newsletter_opt_in.label }}
+                    </label>
+                    {% if form.newsletter_opt_in.errors %}
+                        <div class="form-errors">{{ form.newsletter_opt_in.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <button type="submit" class="cta-btn btn-primary">{% trans "Create Account" %}</button>
+            </form>
+            
+            <div class="auth-links">
+                <p><a href="{% url 'login' %}" class="shop-link">{% trans "Already have an account? Login" %}</a></p>
+            </div>
+        </div>
+    </div>
+</div> 

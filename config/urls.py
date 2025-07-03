@@ -3,7 +3,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.shortcuts import render
-from home.views import homepage, register_view, login_view, logout_view, profile_view, verify_email, resend_verification_email
+from home.views import homepage, register_view, login_view, logout_view, profile_view, verify_email, resend_verification_email, contact_view, about_view, terms_view, privacy_view
 from .admin import admin_site
 from shop.views import product_list_public, product_detail_public, cart_view, checkout, place_order, order_success
 
@@ -50,6 +50,10 @@ urlpatterns = [
     path('profile/', profile_view, name='profile'),
     path('verify-email/<uuid:token>/', verify_email, name='verify_email'),
     path('resend-verification/', resend_verification_email, name='resend_verification'),
+    path('contact/', contact_view, name='contact'),
+    path('about/', about_view, name='about'),
+    path('terms/', terms_view, name='terms'),
+    path('privacy/', privacy_view, name='privacy'),
     path('downloads/', downloads_view, name='downloads'),
     # Combined category and product URLs - single pattern that handles both
     path('<slug:slug>/', category_or_product_view, name='category_or_product'),

@@ -1,6 +1,8 @@
 /* --- IMPORTS --- */
 @use 'modules/module-management' as mm;
 @use 'components/sidebar';
+@use 'components/loading';
+@use 'base/footer';
 
 /* --- GLOBAL CURSOR RULES --- */
 button, 
@@ -1198,6 +1200,9 @@ body {
     color: var(--accent-color);
   }
   .product-link:focus {
+    outline: none;
+  }
+  .product-link:focus-visible {
     outline: 2px solid var(--accent-color);
     outline-offset: 2px;
   }
@@ -1834,4 +1839,53 @@ body {
     font-size: 0.95rem;
     padding: 0.2rem 0.4rem;
   }
+}
+
+/* --- HTMX LOADING AND TRANSITIONS --- */
+.htmx-indicator {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  padding: 1rem 2rem;
+  box-shadow: 0 4px 12px var(--shadow-md);
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.htmx-indicator.htmx-request {
+  opacity: 1;
+}
+
+.loading-spinner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-color);
+  font-weight: 500;
+}
+
+.loading-spinner::before {
+  content: '';
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--card-border);
+  border-top: 2px solid var(--accent-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Smooth content transitions */
+#main-content {
+  transition: opacity 0.2s ease;
 } 

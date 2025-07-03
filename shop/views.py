@@ -72,6 +72,11 @@ def category_detail(request, slug):
         'title': category.name,
         'sidebar_categories': sidebar_categories,
     }
+    
+    # For htmx requests, return just the main content
+    if request.headers.get('HX-Request'):
+        return render(request, 'shop/product_list_content.html', context)
+    
     return render(request, 'shop/category_detail.html', context)
 
 def product_detail(request, slug):
@@ -81,53 +86,40 @@ def product_detail(request, slug):
 
 # --- PUBLIC VIEWS ---
 def product_list_public(request, category_slug=None):
-    """Display products with support for flat category URLs."""
+    """Display all products, with optional category filtering"""
+    categories = Category.objects.filter(is_active=True).order_by('name')
     category = None
-    categories = Category.objects.filter(is_active=True)
-    products = Product.objects.filter(is_active=True)
+    products = Product.objects.filter(is_active=True).select_related('category')
     
-    # Handle category from URL path (flat category URLs)
+    # Handle category filtering - first check parameter, then GET request
+    if not category_slug:
+        category_slug = request.GET.get('category')
+    
     if category_slug:
         try:
             category = Category.objects.get(slug=category_slug, is_active=True)
             descendant_categories = category.get_descendants(include_self=True)
             products = products.filter(category__in=descendant_categories)
         except Category.DoesNotExist:
-            # If category doesn't exist, return 404
-            from django.http import Http404
-            raise Http404("Category not found")
-    
-    # Handle category from query parameter (backward compatibility)
-    elif request.GET.get('kategoria'):
-        category_slug_param = request.GET.get('kategoria')
-        category = get_object_or_404(Category, slug=category_slug_param, is_active=True)
-        descendant_categories = category.get_descendants(include_self=True)
-        products = products.filter(category__in=descendant_categories)
-    
-    paginator = Paginator(products, 12)
+            pass
+
+    # Pagination
+    paginator = Paginator(products, 12)  # 12 products per page
     page_number = request.GET.get('page')
-    # Use get_page to always return a valid page (never raises EmptyPage)
     page_obj = paginator.get_page(page_number)
     
     # Generate breadcrumbs
     breadcrumbs = [{'title': 'Misamisa', 'url': reverse('home')}]
-    if category:
-        # Build full parent chain
-        parent_chain = []
-        current = category
-        while current.parent:
-            parent_chain.append(current.parent)
-            current = current.parent
-        for parent in reversed(parent_chain):
-            breadcrumbs.append({'title': parent.name, 'url': reverse('category_or_product', kwargs={'slug': parent.slug})})
-        breadcrumbs.append({'title': category.name, 'url': reverse('category_or_product', kwargs={'slug': category.slug})})
-
-    # Set appropriate title
+    
+    # Determine title
     if category:
         title = category.name
+        breadcrumbs.append({'title': 'Shop', 'url': reverse('shop:public_product_list')})
+        breadcrumbs.append({'title': category.name, 'url': reverse('category_or_product', kwargs={'slug': category.slug})})
     else:
         title = _('All Products')
-    
+        breadcrumbs.append({'title': 'Shop', 'url': reverse('shop:public_product_list')})
+
     # Get hierarchical categories for sidebar
     sidebar_categories = Category.objects.filter(parent=None, is_active=True).prefetch_related(
         'children__children'  # Prefetch up to 3 levels for performance
@@ -142,8 +134,11 @@ def product_list_public(request, category_slug=None):
         'breadcrumbs': breadcrumbs,
         'sidebar_categories': sidebar_categories,
     }
-    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        return render(request, 'shop/product_list.html', context, content_type='text/html')
+    
+    # For htmx requests, return just the main content
+    if request.headers.get('HX-Request'):
+        return render(request, 'shop/product_list_content.html', context)
+    
     return render(request, 'shop/product_list.html', context)
 
 def product_detail_public(request, slug):
@@ -162,12 +157,17 @@ def product_detail_public(request, slug):
     breadcrumbs.append({'title': product.category.name, 'url': reverse('category_or_product', kwargs={'slug': product.category.slug})})
     breadcrumbs.append({'title': product.name, 'url': product.get_absolute_url()})
     
-    # For now, just show product info and a simple add-to-cart form (no JS)
-    return render(request, 'shop/public_product_detail.html', {
+    context = {
         'product': product,
         'title': product.name,
         'breadcrumbs': breadcrumbs,
-    })
+    }
+    
+    # For htmx requests, create a minimal content template
+    if request.headers.get('HX-Request'):
+        return render(request, 'shop/product_detail_content.html', context)
+    
+    return render(request, 'shop/public_product_detail.html', context)
 
 def cart_view(request):
     # Cart is stored in session as {product_id: quantity}
@@ -220,12 +220,19 @@ def cart_view(request):
             'price': price,
             'subtotal': subtotal,
         })
-    return render(request, 'shop/cart.html', {
+    
+    context = {
         'cart_items': cart_items,
         'total': total,
         'message': message,
         'title': _('Cart'),
-    })
+    }
+    
+    # For htmx requests, return just the main content
+    if request.headers.get('HX-Request'):
+        return render(request, 'shop/cart_content.html', context)
+    
+    return render(request, 'shop/cart.html', context)
 
 def checkout(request):
     """Checkout view with modular payment methods."""

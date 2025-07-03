@@ -1,10 +1,8 @@
-{% extends 'base.html' %}
 {% load i18n static %}
 
 <!-- Add CSRF token for AJAX requests -->
 {% csrf_token %}
 
-{% block content %}
 <div class="main-container">
     <h1>{% trans 'Your Cart' %}</h1>
     {% if message %}
@@ -227,5 +225,4 @@ function removeFromCart(productId) {
         alert('Error removing item. Please try again.');
     });
 }
-</script>
-{% endblock %} 
+</script> 
