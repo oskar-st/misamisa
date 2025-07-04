@@ -6,7 +6,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from datetime import timedelta
 from django.urls import path
-from shop.models import Order, OrderItem, Category, Product, ShippingMethod, PaymentMethod
+from shop.models import Order, OrderItem, Category, Product, ShippingMethod, PaymentMethod, UserCart
 from accounts.models import CustomUser, Address
 from accounts.admin import UserAdmin, AddressAdmin
 from shop.admin import CategoryAdmin, ProductAdmin, OrderAdmin, OrderItemAdmin, ShippingMethodAdmin, PaymentMethodAdmin
@@ -100,6 +100,26 @@ class CustomAdminSite(admin.AdminSite):
         """Redirect to module management interface"""
         return redirect('modules:module_list')
 
+class OrderItemAdmin(admin.ModelAdmin):
+    list_display = ['order', 'product', 'quantity', 'price']
+    list_filter = ['order__status']
+    search_fields = ['product__name', 'order__customer_email']
+    readonly_fields = ['total_price']
+    
+    def total_price(self, obj):
+        return obj.total_price
+    total_price.short_description = _('Total Price')
+
+class UserCartAdmin(admin.ModelAdmin):
+    list_display = ['user', 'product', 'quantity', 'total_price', 'created_at', 'updated_at']
+    list_filter = ['created_at', 'updated_at']
+    search_fields = ['user__email', 'product__name']
+    readonly_fields = ['total_price', 'created_at', 'updated_at']
+    
+    def total_price(self, obj):
+        return obj.total_price
+    total_price.short_description = _('Total Price')
+
 # Create custom admin site instance
 admin_site = CustomAdminSite(name='custom_admin')
 
@@ -110,5 +130,6 @@ admin_site.register(Category, CategoryAdmin)
 admin_site.register(Product, ProductAdmin)
 admin_site.register(Order, OrderAdmin)
 admin_site.register(OrderItem, OrderItemAdmin)
+admin_site.register(UserCart, UserCartAdmin)
 admin_site.register(ShippingMethod, ShippingMethodAdmin)
 admin_site.register(PaymentMethod, PaymentMethodAdmin) 

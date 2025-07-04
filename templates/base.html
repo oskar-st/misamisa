@@ -14,6 +14,40 @@
   <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon.ico' %}">
   <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon.ico' %}">
   <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <style>
+    /* Prevent flash of double content */
+    body.checking-content {
+      visibility: hidden;
+    }
+    
+    body.content-verified {
+      visibility: visible;
+    }
+    
+    /* Loading indicator styles */
+    #loading-indicator {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 9999;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 1rem 2rem;
+      border-radius: 4px;
+      font-weight: 500;
+    }
+    
+    .htmx-request #loading-indicator {
+      display: block;
+    }
+    
+    /* Smooth transition for content swaps */
+    .htmx-swapping {
+      transition: opacity 0.2s ease;
+    }
+  </style>
   <script src="{% static 'js/main.js' %}" defer></script>
   <script src="{% static 'js/sklep.js' %}" defer></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,7 +58,7 @@
   <script src="https://unpkg.com/htmx.org@1.9.10"></script>
   {% block extra_head %}{% endblock %}
 </head>
-<body style="font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;">
+<body style="font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;"{% if request.session.show_login_success %} data-show-login="true"{% endif %}>
 
   <!-- Loading indicator -->
   <div id="loading-indicator" class="htmx-indicator">
@@ -64,14 +98,8 @@
               <circle cx="12" cy="7" r="4"/>
             </svg>
           </div>
-          <div class="user-menu-dropdown">
-            {% if user.is_authenticated %}
-              <a href="{% url 'profile' %}" class="dropdown-item dropdown-btn-primary shop-link">{% trans 'My account' %}</a>
-              <a href="{% url 'logout' %}" class="dropdown-item dropdown-btn-secondary shop-link">{% trans 'Logout' %}</a>
-            {% else %}
-              <a href="{% url 'login' %}" class="dropdown-item dropdown-btn-primary shop-link">{% trans 'Login' %}</a>
-              <a href="{% url 'register' %}" class="dropdown-item dropdown-btn-secondary shop-link">{% trans 'Sign up' %}</a>
-            {% endif %}
+          <div class="user-menu-dropdown" id="user-menu-dropdown">
+            {% include 'components/user_menu_dropdown.html' %}
           </div>
         </div>
         <a href="{% url 'cart_view' %}" class="cart-link shop-link">
@@ -210,6 +238,12 @@
             console.log('HTMX navigation initialized after timeout');
         }, 100);
         
+        // Check for login success notification
+        const showLoginSuccess = document.body.getAttribute('data-show-login');
+        if (showLoginSuccess === 'true') {
+            showLoginMessage();
+        }
+        
         // Handle user menu dropdown visibility
         const userMenuTrigger = document.querySelector('.user-menu-trigger');
         const userMenuDropdown = document.querySelector('.user-menu-dropdown');
@@ -232,13 +266,22 @@
     });
     
     document.addEventListener('htmx:afterSwap', function(e) {
-        const mainContent = document.getElementById('main-content');
-        mainContent.style.opacity = '1';
+        // Handle logout success
+        if (e.target.id === 'user-menu-dropdown') {
+            console.log('User menu updated after logout');
+            showLogoutMessage();
+            return;
+        }
         
-        // Remove swapping class after transition
-        setTimeout(() => {
-            mainContent.classList.remove('htmx-swapping');
-        }, 200);
+        const mainContent = document.getElementById('main-content');
+        if (mainContent) {
+            mainContent.style.opacity = '1';
+            
+            // Remove swapping class after transition
+            setTimeout(() => {
+                mainContent.classList.remove('htmx-swapping');
+            }, 200);
+        }
         
         console.log('HTMX swap completed, reinitializing...');
         
@@ -256,6 +299,126 @@
         }, 50);
     });
     
+    function showLoginMessage() {
+        // Create a temporary notification for login success
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #28a745;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1000;
+            font-weight: 500;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            max-width: 400px;
+            text-align: center;
+        `;
+        notification.textContent = 'Logged in successfully!';
+        
+        // Append to main content container instead of body
+        const mainContent = document.getElementById('main-content');
+        if (mainContent) {
+            // Make main-content relative if not already
+            if (getComputedStyle(mainContent).position === 'static') {
+                mainContent.style.position = 'relative';
+            }
+            mainContent.appendChild(notification);
+        } else {
+            document.body.appendChild(notification);
+        }
+        
+        // Show notification
+        setTimeout(() => notification.style.opacity = '1', 100);
+        
+        // Remove notification after 3 seconds
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 300);
+        }, 3000);
+    }
+
+    function showLogoutMessage() {
+        // Clear cart display from header
+        const cartBadge = document.querySelector('.cart-badge');
+        if (cartBadge) {
+            cartBadge.textContent = '0';
+            cartBadge.style.display = 'none';
+        }
+        
+        const cartTotal = document.querySelector('.cart-total');
+        if (cartTotal) {
+            cartTotal.textContent = '0.00 zł';
+        }
+        
+        // If user is on cart page, refresh it to show empty cart
+        if (window.location.pathname === '/cart/' || window.location.pathname.includes('/cart/')) {
+            // Use HTMX to refresh the cart page content
+            const mainContent = document.getElementById('main-content');
+            if (mainContent) {
+                htmx.ajax('GET', '/cart/', {
+                    target: '#main-content',
+                    swap: 'innerHTML'
+                });
+            }
+        }
+        
+        // Create a temporary notification
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #dc3545;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1000;
+            font-weight: 500;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            max-width: 400px;
+            text-align: center;
+        `;
+        notification.textContent = 'Logged out successfully!';
+        
+        // Append to main content container instead of body
+        const mainContent = document.getElementById('main-content');
+        if (mainContent) {
+            // Make main-content relative if not already
+            if (getComputedStyle(mainContent).position === 'static') {
+                mainContent.style.position = 'relative';
+            }
+            mainContent.appendChild(notification);
+        } else {
+            document.body.appendChild(notification);
+        }
+        
+        // Show notification
+        setTimeout(() => notification.style.opacity = '1', 100);
+        
+        // Remove notification after 3 seconds
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 300);
+        }, 3000);
+    }
+    
     // Enhanced error handling
     document.addEventListener('htmx:responseError', function(e) {
         console.warn('HTMX failed, using normal navigation');
@@ -272,9 +435,118 @@
         }
     });
 
-    // Debug htmx requests
+    // Configure HTMX requests and debug
     document.addEventListener('htmx:configRequest', function(e) {
         console.log('HTMX request config:', e.detail);
+        
+        // Add cache control headers to prevent browser caching of partial responses
+        e.detail.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate';
+        e.detail.headers['Pragma'] = 'no-cache';
+        e.detail.headers['Expires'] = '0';
+    });
+
+    // Prevent HTMX from restoring partial content from history
+    document.addEventListener('htmx:beforeHistoryRestore', function(e) {
+        console.log('Preventing HTMX history restore, using full page reload instead');
+        e.preventDefault();
+        
+        // Immediately hide content to prevent flash
+        document.body.classList.add('checking-content');
+        document.body.classList.remove('content-verified');
+        window.location.reload();
+    });
+
+    // Handle browser back/forward button properly
+    let isNavigating = false;
+    window.addEventListener('popstate', function(e) {
+        console.log('Browser back/forward detected');
+        
+        if (isNavigating) return;
+        isNavigating = true;
+        
+        // Immediately hide content to prevent flash
+        document.body.classList.add('checking-content');
+        document.body.classList.remove('content-verified');
+        
+        // Always do a full page reload for back/forward navigation
+        window.location.reload();
+    });
+
+    // Immediate detection and prevention of double content
+    (function() {
+        // Start with hidden content to prevent flash
+        document.body.classList.add('checking-content');
+        
+        function verifyContent() {
+            const headers = document.querySelectorAll('header');
+            const footers = document.querySelectorAll('footer');
+            
+            if (headers.length > 1 || footers.length > 1) {
+                console.warn('Double content detected, reloading immediately');
+                window.location.reload();
+                return false;
+            }
+            
+            // Content is verified as correct, show it
+            document.body.classList.remove('checking-content');
+            document.body.classList.add('content-verified');
+            return true;
+        }
+        
+        // Check immediately when script executes
+        if (!verifyContent()) {
+            return;
+        }
+        
+        // Also check when DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!verifyContent()) {
+                return;
+            }
+        });
+        
+        // Check after any potential DOM changes
+        if (window.MutationObserver) {
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                        // Check for double content after DOM changes
+                        setTimeout(verifyContent, 10);
+                    }
+                });
+            });
+            
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true
+            });
+        }
+    })();
+
+    // Intercept HTMX history saves to prevent storing partial content
+    document.addEventListener('htmx:pushedIntoHistory', function(e) {
+        console.log('HTMX pushed to history:', e.detail.path);
+        
+        // Replace the HTMX history entry with a marker that will trigger full reload
+        const currentState = history.state || {};
+        const newState = {
+            ...currentState,
+            htmxFullReload: true,
+            path: e.detail.path
+        };
+        
+        history.replaceState(newState, '', e.detail.path);
+    });
+
+    // Disable HTMX history for specific problematic pages
+    document.addEventListener('htmx:beforeRequest', function(e) {
+        const targetPath = e.detail.pathInfo.requestPath;
+        
+        // For cart and profile pages, disable history to prevent caching issues
+        if (targetPath.includes('/cart/') || targetPath.includes('/profile/')) {
+            console.log('Disabling HTMX history for:', targetPath);
+            e.detail.xhr.setRequestHeader('HX-History', 'false');
+        }
     });
   </script>
 </body>

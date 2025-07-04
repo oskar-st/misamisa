@@ -12,7 +12,11 @@
         </div>
         
         <div class="profile-actions">
-            <a href="{% url 'logout' %}" class="cta-btn">{% trans "Logout" %}</a>
+            <a href="{% url 'logout' %}" 
+               class="cta-btn"
+               hx-get="{% url 'logout' %}"
+               hx-target="#user-menu-dropdown"
+               hx-swap="innerHTML">{% trans "Logout" %}</a>
         </div>
     </div>
 </div>

@@ -1,0 +1,126 @@
+{% load static %}
+{% load i18n %}
+
+<div class="main-container">
+    <h1>{% trans 'Checkout' %}</h1>
+    
+    {% if cart_items %}
+        <div class="checkout-content">
+            <!-- Order Summary -->
+            <div class="order-summary">
+                <h3>{% trans 'Order Summary' %}</h3>
+                
+                <div class="order-items">
+                    {% for item in cart_items %}
+                    <div class="order-item">
+                        <div class="item-details">
+                            <h4>{{ item.product.name }}</h4>
+                            <div class="item-info">
+                                <span class="quantity">{% trans 'Quantity' %}: {{ item.quantity }}</span>
+                                <span class="price">{% trans 'Price' %}: ${{ item.price }}</span>
+                                <span class="subtotal">{% trans 'Subtotal' %}: ${{ item.subtotal }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="order-total">
+                    <h4>{% trans 'Total' %}: ${{ total }}</h4>
+                </div>
+            </div>
+            
+            <!-- Customer Information -->
+            <div class="customer-info-section">
+                <h3>{% trans 'Customer Information' %}</h3>
+                
+                <form method="post" action="{% url 'place_order' %}" id="checkout-form">
+                    {% csrf_token %}
+                    
+                    <div class="customer-form">
+                        <div class="form-group">
+                            <label for="customer_name">{% trans 'Full Name' %} *</label>
+                            <input type="text" id="customer_name" name="customer_name" required 
+                                   placeholder="{% trans 'Enter your full name' %}" class="form-control">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="customer_email">{% trans 'Email Address' %} *</label>
+                            <input type="email" id="customer_email" name="customer_email" required 
+                                   placeholder="{% trans 'Enter your email address' %}" class="form-control">
+                            <small class="form-text">{% trans 'We\'ll send your order confirmation to this email' %}</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Payment Methods -->
+                    <div class="payment-section">
+                        <h3>{% trans 'Payment Method' %}</h3>
+                        
+                        {% if payment_methods %}
+                            <div class="payment-methods">
+                                {% for payment_method in payment_methods %}
+                                <div class="payment-method-option">
+                                    <input type="radio" 
+                                           name="payment_method" 
+                                           id="payment_{{ payment_method.info.code }}" 
+                                           value="{{ payment_method.info.code }}"
+                                           {% if forloop.first %}checked{% endif %}
+                                           required>
+                                    <label for="payment_{{ payment_method.info.code }}" class="payment-method-label">
+                                        <div class="payment-method-info">
+                                            <div class="payment-icon" style="color: {{ payment_method.info.color }}">
+                                                <i class="{{ payment_method.info.icon }}"></i>
+                                            </div>
+                                            <div class="payment-details">
+                                                <h4>{{ payment_method.info.name }}</h4>
+                                                <p>{{ payment_method.info.description }}</p>
+                                            </div>
+                                        </div>
+                                    </label>
+                                    
+                                    <!-- Payment form for this method -->
+                                    <div class="payment-form-container" 
+                                         data-payment-method="{{ payment_method.info.code }}"
+                                         {% if not forloop.first %}style="display: none;"{% endif %}>
+                                        {% if payment_method.form %}
+                                            {% include payment_method.template_path %}
+                                        {% else %}
+                                            <div class="payment-no-form">
+                                                <p>{% trans 'No additional information required for this payment method.' %}</p>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            
+                            <div class="checkout-actions">
+                                <a href="{% url 'cart_view' %}" class="cta-btn btn-secondary shop-link">
+                                    <i class="fas fa-arrow-left"></i> {% trans 'Back to Cart' %}
+                                </a>
+                                <button type="submit" class="cta-btn btn-primary checkout-btn">
+                                    <i class="fas fa-credit-card"></i> {% trans 'Place Order' %}
+                                </button>
+                            </div>
+                        {% else %}
+                            <div class="no-payment-methods">
+                                <div class="alert alert-warning">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <strong>{% trans 'No Payment Methods Available' %}</strong>
+                                    <p>{% trans 'There are currently no payment methods available. Please contact the administrator.' %}</p>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    {% else %}
+        <div class="empty-cart">
+            <p>{% trans 'Your cart is empty.' %}</p>
+            <a href="{% url 'shop:public_product_list' %}" class="cta-btn btn-primary shop-link">
+                {% trans 'Continue Shopping' %}
+            </a>
+        </div>
+    {% endif %}
+</div> 

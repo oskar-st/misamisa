@@ -16,6 +16,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from modules.manager import module_manager
 from django.conf import settings
+from .cart_utils import save_cart_to_database, validate_and_clean_cart, get_cart_change_messages
 
 def get_cart_items(request):
     """Get cart items from session."""
@@ -173,6 +174,10 @@ def cart_view(request):
     # Cart is stored in session as {product_id: quantity}
     cart = request.session.get('cart', {})
     message = None
+    
+    # Validate cart and get any change messages
+    cart_change_messages = get_cart_change_messages(request)
+    
     # Handle add, update, remove
     if request.method == 'POST':
         product_id = request.POST.get('product_id')
@@ -186,24 +191,61 @@ def cart_view(request):
             product_id_str = str(product_id)
             if action == 'add':
                 qty = int(request.POST.get('quantity', 1))
+                # Validate quantity against stock
+                if qty > product.stock:
+                    qty = product.stock
+                    message = _('Quantity adjusted to available stock.')
+                
                 if product_id_str in cart:
-                    cart[product_id_str] += qty
+                    new_qty = cart[product_id_str] + qty
+                    if new_qty > product.stock:
+                        cart[product_id_str] = product.stock
+                        message = _('Maximum stock reached.')
+                    else:
+                        cart[product_id_str] = new_qty
+                        message = _('Added to cart.')
                 else:
                     cart[product_id_str] = qty
-                message = _('Added to cart.')
+                    message = _('Added to cart.')
             elif action == 'update':
                 qty = int(request.POST.get('quantity', 1))
                 if qty > 0:
+                    # Validate quantity against stock
+                    if qty > product.stock:
+                        qty = product.stock
+                        message = _('Quantity adjusted to available stock.')
                     cart[product_id_str] = qty
-                    message = _('Cart updated.')
+                    message = message or _('Cart updated.')
                 else:
                     cart.pop(product_id_str, None)
                     message = _('Item removed.')
             elif action == 'remove':
                 cart.pop(product_id_str, None)
                 message = _('Item removed.')
+        
+        # Validate entire cart after changes
+        if request.user.is_authenticated:
+            cart, changes_made, change_messages = validate_and_clean_cart(request.user, cart)
+            if change_messages:
+                cart_change_messages.extend(change_messages)
+        
         request.session['cart'] = cart
+        
+        # Sync cart to database for authenticated users
+        if request.user.is_authenticated:
+            save_cart_to_database(request.user, cart)
+        
         return HttpResponseRedirect(reverse('cart_view'))
+    
+    # Validate cart on load for authenticated users
+    if request.user.is_authenticated and cart:
+        cart, changes_made, change_messages = validate_and_clean_cart(request.user, cart)
+        if changes_made:
+            request.session['cart'] = cart
+            save_cart_to_database(request.user, cart)
+            if change_messages:
+                cart_change_messages.extend(change_messages)
+    
     # Prepare cart items for display
     product_ids = list(cart.keys())
     products = Product.objects.filter(id__in=product_ids, is_active=True)
@@ -225,6 +267,7 @@ def cart_view(request):
         'cart_items': cart_items,
         'total': total,
         'message': message,
+        'cart_change_messages': cart_change_messages,
         'title': _('Cart'),
     }
     
@@ -292,6 +335,10 @@ def checkout(request):
         except Exception as e:
             print(f"Error getting Stripe public key: {e}")
             context['stripe_public_key'] = 'pk_test_your_test_key_here'
+    
+    # For htmx requests, return just the main content
+    if request.headers.get('HX-Request'):
+        return render(request, 'shop/checkout_content.html', context)
     
     return render(request, 'shop/checkout.html', context)
 
@@ -472,13 +519,24 @@ def update_cart_ajax(request):
         
         if action == 'update':
             if quantity > 0:
+                # Validate quantity against stock
+                if quantity > product.stock:
+                    quantity = product.stock
                 cart[product_id_str] = quantity
             else:
                 cart.pop(product_id_str, None)
         elif action == 'remove':
             cart.pop(product_id_str, None)
         
+        # Validate entire cart after changes
+        if request.user.is_authenticated:
+            cart, changes_made, change_messages = validate_and_clean_cart(request.user, cart)
+        
         request.session['cart'] = cart
+        
+        # Sync cart to database for authenticated users
+        if request.user.is_authenticated:
+            save_cart_to_database(request.user, cart)
         
         # Recalculate cart totals
         product_ids = list(cart.keys())

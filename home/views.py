@@ -6,14 +6,20 @@ from django.utils.translation import gettext_lazy as _
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+from django.http import HttpResponse
 from django.conf import settings
 from .forms import CustomUserCreationForm, CustomAuthenticationForm
 from accounts.models import CustomUser
 from home.models import News
+from shop.cart_utils import sync_cart_on_logout, sync_cart_on_login
 
 def homepage(request):
     news_items = News.objects.all()
     context = {"news_items": news_items}
+    
+    # Clear login success flag after it's been shown
+    if 'show_login_success' in request.session:
+        del request.session['show_login_success']
     
     # For htmx requests, return just the main content
     if request.headers.get('HX-Request'):
@@ -98,7 +104,12 @@ def login_view(request):
             if user is not None:
                 if user.email_verified:
                     login(request, user)
-                    messages.success(request, _('Logged in successfully!'))
+                    
+                    # Sync cart after login
+                    sync_cart_on_login(request, user)
+                    
+                    # Add login success flag to session for JavaScript notification
+                    request.session['show_login_success'] = True
                     return redirect('home')
                 else:
                     messages.error(request, _('Please verify your email address before logging in. Check your inbox for the verification email.'))
@@ -116,8 +127,33 @@ def login_view(request):
 
 @login_required
 def logout_view(request):
+    user = request.user
+    
+    # Sync cart before logout
+    sync_cart_on_logout(request, user)
+    
     logout(request)
-    messages.success(request, _('Logged out successfully!'))
+    # Don't add persistent messages for logout, use JavaScript notification instead
+    
+    # For htmx requests, check if user is on a login-required page
+    if request.headers.get('HX-Request'):
+        # Check the referer or current path to see if user is on a login-required page
+        referer = request.META.get('HTTP_REFERER', '')
+        current_path = request.path
+        
+        # Pages that require login and should redirect after logout
+        login_required_paths = ['/profile/', '/checkout/', '/orders/']
+        
+        # If user is on a login-required page, redirect to login
+        if any(path in referer for path in login_required_paths):
+            # Use HTMX redirect instead of returning content
+            response = HttpResponse()
+            response['HX-Redirect'] = '/login/'
+            return response
+        else:
+            # Just return the user menu dropdown for other pages
+            return render(request, 'components/user_menu_dropdown.html')
+    
     return redirect('home')
 
 @login_required

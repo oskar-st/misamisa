@@ -280,3 +280,34 @@ class OrderItem(models.Model):
         if not self.price:
             self.price = self.product.current_price
         super().save(*args, **kwargs)
+
+class UserCart(models.Model):
+    """Model to store cart data for authenticated users."""
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='cart_items',
+        verbose_name=_('user')
+    )
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        verbose_name=_('product')
+    )
+    quantity = models.PositiveIntegerField(_('quantity'), default=1)
+    created_at = models.DateTimeField(_('created at'), auto_now_add=True)
+    updated_at = models.DateTimeField(_('updated at'), auto_now=True)
+
+    class Meta:
+        verbose_name = _('user cart item')
+        verbose_name_plural = _('user cart items')
+        unique_together = ['user', 'product']
+
+    def __str__(self):
+        return f"{self.quantity}x {self.product.name} for {self.user.email}"
+
+    @property
+    def total_price(self):
+        """Calculate the total price for this cart item"""
+        price = self.product.discount_price or self.product.price
+        return self.quantity * price

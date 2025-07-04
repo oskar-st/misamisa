@@ -7,6 +7,15 @@
 {% block content %}
 <div class="main-container">
     <h1>{% trans 'Your Cart' %}</h1>
+    
+    {% if cart_change_messages %}
+        {% for change_message in cart_change_messages %}
+            <div class="alert alert-warning">
+                <strong>{% trans 'Cart Updated:' %}</strong> {{ change_message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+    
     {% if message %}
         <div class="alert alert-success">{{ message }}</div>
     {% endif %}
