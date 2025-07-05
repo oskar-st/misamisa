@@ -155,8 +155,9 @@ def sync_cart_on_logout(request, user):
         session_cart = request.session.get('cart', {})
         save_cart_to_database(user, session_cart)
     
-    # Clear session cart
-    request.session['cart'] = {}
+    # Keep session cart for anonymous browsing
+    # Don't clear the session cart so user can continue shopping
+    pass
 
 
 def get_cart_change_messages(request):

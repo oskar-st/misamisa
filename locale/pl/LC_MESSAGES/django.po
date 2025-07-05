@@ -111,3 +111,76 @@ msgid "Add to cart"
 msgstr "Dodaj do koszyka"
 msgid "Stock"
 msgstr "Stan magazynowy"
+
+# Registration and authentication
+msgid "Registration Successful!"
+msgstr "Rejestracja zakończona pomyślnie!"
+
+msgid "Thank you for signing up with Misamisa! We've sent a verification email to:"
+msgstr "Dziękujemy za rejestrację w Misamisa! Wysłaliśmy e-mail weryfikacyjny na adres:"
+
+msgid "Next Steps:"
+msgstr "Następne kroki:"
+
+msgid "Check your email inbox (and spam folder)"
+msgstr "Sprawdź swoją skrzynkę e-mail (i folder spam)"
+
+msgid "Click the verification link in the email"
+msgstr "Kliknij link weryfikacyjny w e-mailu"
+
+msgid "Once verified, you can log in to your account"
+msgstr "Po weryfikacji możesz zalogować się na swoje konto"
+
+msgid "Didn't receive the email?"
+msgstr "Nie otrzymałeś e-maila?"
+
+msgid "Please check your spam folder. If you still don't see it, contact us at hi@misamisa.pl"
+msgstr "Sprawdź folder spam. Jeśli nadal go nie widzisz, skontaktuj się z nami pod adresem hi@misamisa.pl"
+
+msgid "Go to Login"
+msgstr "Przejdź do logowania"
+
+msgid "Email"
+msgstr "E-mail"
+
+msgid "Password"
+msgstr "Hasło"
+
+msgid "Confirm Password"
+msgstr "Potwierdź hasło"
+
+msgid "Register"
+msgstr "Zarejestruj się"
+
+msgid "Profile"
+msgstr "Profil"
+
+msgid "Date Joined"
+msgstr "Data dołączenia"
+
+msgid "About"
+msgstr "O nas"
+
+msgid "Contact"
+msgstr "Kontakt"
+
+msgid "Terms"
+msgstr "Regulamin"
+
+msgid "Privacy"
+msgstr "Prywatność"
+
+msgid "About Us"
+msgstr "O nas"
+
+msgid "Contact Us"
+msgstr "Skontaktuj się z nami"
+
+msgid "Terms of Service"
+msgstr "Regulamin serwisu"
+
+msgid "Privacy Policy"
+msgstr "Polityka prywatności"
+
+msgid "Cart"
+msgstr "Koszyk"

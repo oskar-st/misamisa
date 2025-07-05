@@ -1010,7 +1010,7 @@ header {
 .user-menu-dropdown {
   display: none;
   position: absolute;
-  top: calc(100% + 5px);
+  top: calc(100% + 2px);
   right: 0;
   background: var(--card-bg);
   border: 1px solid var(--card-border);
@@ -1021,7 +1021,7 @@ header {
   z-index: 1000;
 }
 
-.user-menu:hover .user-menu-dropdown {
+.user-menu.dropdown-show .user-menu-dropdown {
   display: block;
 }
 
@@ -2688,14 +2688,14 @@ input[type=number]:focus,
   left: 0;
   min-width: 180px;
   background: var(--header-bg);
-  box-shadow: 0 4px 16px var(--shadow-md);
+  box-shadow: 0 2px 8px var(--shadow-sm);
   border: 1px solid var(--card-border);
   border-radius: 0 0 8px 8px;
   z-index: 1000;
   padding: 0.5rem 0;
 }
 
-.category-menu-item.has-dropdown:hover > .category-dropdown {
+.category-menu-item.dropdown-show > .category-dropdown {
   display: block;
 }
 
@@ -2738,14 +2738,14 @@ input[type=number]:focus,
   left: 100%;
   min-width: 160px;
   background: var(--header-bg);
-  box-shadow: 0 4px 16px var(--shadow-md);
+  box-shadow: 0 2px 8px var(--shadow-sm);
   border: 1px solid var(--card-border);
   border-radius: 0 8px 8px 8px;
   z-index: 1001;
   padding: 0.5rem 0;
 }
 
-.subcategory-item.has-children:hover > .subcategory-canvas {
+.subcategory-item.dropdown-show > .subcategory-canvas {
   display: block;
 }
 

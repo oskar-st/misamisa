@@ -237,14 +237,22 @@ def cart_view(request):
         
         return HttpResponseRedirect(reverse('cart_view'))
     
-    # Validate cart on load for authenticated users
-    if request.user.is_authenticated and cart:
-        cart, changes_made, change_messages = validate_and_clean_cart(request.user, cart)
-        if changes_made:
-            request.session['cart'] = cart
-            save_cart_to_database(request.user, cart)
-            if change_messages:
-                cart_change_messages.extend(change_messages)
+    # Validate cart on load for all users (but safely)
+    if cart:
+        try:
+            cart, changes_made, change_messages = validate_and_clean_cart(request.user, cart)
+            if changes_made:
+                request.session['cart'] = cart
+                # Save to database only for authenticated users
+                if request.user.is_authenticated:
+                    save_cart_to_database(request.user, cart)
+                if change_messages:
+                    cart_change_messages.extend(change_messages)
+        except Exception as e:
+            # If validation fails, log the error but don't crash
+            print(f"Cart validation error: {e}")
+            # Keep the original cart if validation fails
+            pass
     
     # Prepare cart items for display
     product_ids = list(cart.keys())
