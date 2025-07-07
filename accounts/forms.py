@@ -78,44 +78,41 @@ class CustomUserCreationForm(UserCreationForm):
 class ShippingAddressForm(forms.ModelForm):
     class Meta:
         model = ShippingAddress
-        fields = ['full_name', 'street', 'postal_code', 'city', 'phone', 'email', 'is_default']
+        fields = ['full_name', 'street', 'postal_code', 'city', 'phone', 'email']
         widgets = {
             'full_name': forms.TextInput(attrs={
                 'class': 'form-control',
-                'placeholder': _('Full name')
+                'placeholder': _('Enter full name')
             }),
             'street': forms.TextInput(attrs={
                 'class': 'form-control',
-                'placeholder': _('Street and number')
+                'placeholder': _('Enter street address')
             }),
             'postal_code': forms.TextInput(attrs={
                 'class': 'form-control',
-                'placeholder': '00-000'
+                'placeholder': _('XX-XXX'),
+                'maxlength': 6
             }),
             'city': forms.TextInput(attrs={
                 'class': 'form-control',
-                'placeholder': _('City')
+                'placeholder': _('Enter city')
             }),
             'phone': forms.TextInput(attrs={
                 'class': 'form-control',
-                'placeholder': '+48 123 456 789'
+                'placeholder': _('Enter phone number')
             }),
             'email': forms.EmailInput(attrs={
                 'class': 'form-control',
-                'placeholder': _('Email address')
+                'placeholder': _('Enter email address')
             }),
-            'is_default': forms.CheckboxInput(attrs={
-                'class': 'form-check-input'
-            })
         }
         labels = {
-            'full_name': _('Full name'),
-            'street': _('Street and number'),
-            'postal_code': _('Postal code'),
+            'full_name': _('Full Name'),
+            'street': _('Street and Number'),
+            'postal_code': _('Postal Code'),
             'city': _('City'),
-            'phone': _('Phone number'),
-            'email': _('Email address'),
-            'is_default': _('Set as default')
+            'phone': _('Phone Number'),
+            'email': _('Email Address'),
         }
 
     def __init__(self, *args, **kwargs):
@@ -144,39 +141,37 @@ class ShippingAddressForm(forms.ModelForm):
 class InvoiceDetailsForm(forms.ModelForm):
     class Meta:
         model = InvoiceDetails
-        fields = ['vat_id', 'full_name_or_company', 'street', 'postal_code', 'city', 'is_default']
+        fields = ['vat_id', 'full_name_or_company', 'street', 'postal_code', 'city']
         widgets = {
             'vat_id': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'XXXXXXXXXX'
+                'class': 'form-control vat-input',
+                'placeholder': _('Enter VAT ID (optional)'),
+                'maxlength': 15
             }),
             'full_name_or_company': forms.TextInput(attrs={
                 'class': 'form-control',
-                'placeholder': _('Full name or company name')
+                'placeholder': _('Enter full name or company name')
             }),
             'street': forms.TextInput(attrs={
                 'class': 'form-control',
-                'placeholder': _('Street and number')
+                'placeholder': _('Enter street address')
             }),
             'postal_code': forms.TextInput(attrs={
                 'class': 'form-control',
-                'placeholder': '00-000'
+                'placeholder': _('XX-XXX'),
+                'maxlength': 6
             }),
             'city': forms.TextInput(attrs={
                 'class': 'form-control',
-                'placeholder': _('City')
+                'placeholder': _('Enter city')
             }),
-            'is_default': forms.CheckboxInput(attrs={
-                'class': 'form-check-input'
-            })
         }
         labels = {
             'vat_id': _('VAT ID (NIP)'),
-            'full_name_or_company': _('Full name or company name'),
-            'street': _('Street and number'),
-            'postal_code': _('Postal code'),
+            'full_name_or_company': _('Full Name or Company Name'),
+            'street': _('Street and Number'),
+            'postal_code': _('Postal Code'),
             'city': _('City'),
-            'is_default': _('Set as default')
         }
 
     def __init__(self, *args, **kwargs):

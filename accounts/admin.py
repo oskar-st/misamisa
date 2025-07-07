@@ -114,8 +114,8 @@ class CustomUserAdmin(admin.ModelAdmin):
 
 @admin.register(ShippingAddress)
 class ShippingAddressAdmin(admin.ModelAdmin):
-    list_display = ('full_name', 'user', 'city', 'postal_code', 'phone', 'is_default', 'created_at')
-    list_filter = ('is_default', 'city', 'created_at')
+    list_display = ('full_name', 'user', 'city', 'postal_code', 'phone', 'created_at')
+    list_filter = ('city', 'created_at')
     search_fields = ('full_name', 'user__email', 'street', 'city', 'phone', 'email')
     ordering = ('-created_at',)
     readonly_fields = ('created_at', 'updated_at')
@@ -129,9 +129,6 @@ class ShippingAddressAdmin(admin.ModelAdmin):
         }),
         (_('Contact'), {
             'fields': ('phone',)
-        }),
-        (_('Settings'), {
-            'fields': ('is_default',)
         }),
         (_('Timestamps'), {
             'fields': ('created_at', 'updated_at'),
@@ -149,8 +146,8 @@ class ShippingAddressAdmin(admin.ModelAdmin):
 
 @admin.register(InvoiceDetails)
 class InvoiceDetailsAdmin(admin.ModelAdmin):
-    list_display = ('full_name_or_company', 'user', 'vat_id', 'city', 'postal_code', 'is_default', 'created_at')
-    list_filter = ('is_default', 'city', 'created_at')
+    list_display = ('full_name_or_company', 'user', 'vat_id', 'city', 'postal_code', 'created_at')
+    list_filter = ('city', 'created_at')
     search_fields = ('full_name_or_company', 'user__email', 'vat_id', 'street', 'city')
     ordering = ('-created_at',)
     readonly_fields = ('created_at', 'updated_at')
@@ -165,9 +162,6 @@ class InvoiceDetailsAdmin(admin.ModelAdmin):
         }),
         (_('Address'), {
             'fields': ('street', 'postal_code', 'city')
-        }),
-        (_('Settings'), {
-            'fields': ('is_default',)
         }),
         (_('Timestamps'), {
             'fields': ('created_at', 'updated_at'),
@@ -186,8 +180,8 @@ class InvoiceDetailsAdmin(admin.ModelAdmin):
 # Keep the old Address admin for backward compatibility
 @admin.register(Address)
 class AddressAdmin(admin.ModelAdmin):
-    list_display = ('name', 'user', 'address_type', 'city', 'country', 'is_default', 'created_at')
-    list_filter = ('address_type', 'is_default', 'country', 'created_at')
+    list_display = ('name', 'user', 'address_type', 'city', 'country', 'created_at')
+    list_filter = ('address_type', 'country', 'created_at')
     search_fields = ('name', 'user__email', 'company_name', 'street', 'city', 'country')
     ordering = ('-created_at',)
     readonly_fields = ('created_at',)
@@ -204,9 +198,6 @@ class AddressAdmin(admin.ModelAdmin):
         }),
         (_('Contact'), {
             'fields': ('phone',)
-        }),
-        (_('Settings'), {
-            'fields': ('is_default',)
         }),
         (_('Timestamps'), {
             'fields': ('created_at',),

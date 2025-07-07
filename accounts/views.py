@@ -89,8 +89,20 @@ def delete_shipping_address(request, address_id):
     address = get_object_or_404(ShippingAddress, id=address_id, user=request.user)
     address_name = address.full_name
     address.delete()
-    messages.success(request, _('Shipping address for "{}" deleted successfully').format(address_name))
-    return redirect('accounts:addresses')
+    
+    # For HTMX requests, use immediate display rather than session-stored messages
+    if request.headers.get('HX-Request'):
+        # Add message but ensure it's consumed immediately by redirecting to addresses page
+        messages.success(request, _('Shipping address for "{}" deleted successfully').format(address_name))
+        # Force redirect to clear message context
+        from django.http import HttpResponse
+        response = HttpResponse()
+        response['HX-Redirect'] = '/addresses/'
+        return response
+    else:
+        # Regular request - use standard message handling
+        messages.success(request, _('Shipping address for "{}" deleted successfully').format(address_name))
+        return redirect('accounts:addresses')
 
 @login_required
 def add_invoice_details(request):
@@ -153,8 +165,20 @@ def delete_invoice_details(request, details_id):
     details = get_object_or_404(InvoiceDetails, id=details_id, user=request.user)
     details_name = details.full_name_or_company
     details.delete()
-    messages.success(request, _('Invoice details for "{}" deleted successfully').format(details_name))
-    return redirect('accounts:addresses')
+    
+    # For HTMX requests, use immediate display rather than session-stored messages
+    if request.headers.get('HX-Request'):
+        # Add message but ensure it's consumed immediately by redirecting to addresses page
+        messages.success(request, _('Invoice details for "{}" deleted successfully').format(details_name))
+        # Force redirect to clear message context
+        from django.http import HttpResponse
+        response = HttpResponse()
+        response['HX-Redirect'] = '/addresses/'
+        return response
+    else:
+        # Regular request - use standard message handling
+        messages.success(request, _('Invoice details for "{}" deleted successfully').format(details_name))
+        return redirect('accounts:addresses')
 
 @require_GET
 @csrf_exempt

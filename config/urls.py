@@ -3,6 +3,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.shortcuts import render
+from django.views.generic import RedirectView
 from home.views import homepage, register_view, login_view, logout_view, profile_view, verify_email, resend_verification_email, contact_view, about_view, terms_view, privacy_view
 from .admin import admin_site
 from shop.views import product_list_public, product_detail_public, cart_view, checkout, place_order, order_success
@@ -36,7 +37,10 @@ urlpatterns = [
     path('i18n/', include('django.conf.urls.i18n')),
     path('', homepage, name='home'),
     path('admin/', admin_site.urls),
-    path('shop/', include('shop.urls', namespace='shop')),
+    path('sklep/', include('shop.urls', namespace='shop')),
+    # Redirect old /shop/ URLs to /sklep/ for backward compatibility
+    path('shop/<path:remaining>', RedirectView.as_view(url='/sklep/%(remaining)s', permanent=True)),
+    path('shop/', RedirectView.as_view(url='/sklep/', permanent=True)),
     path('modules/', include('modules.urls', namespace='modules')),
     path('', include('accounts.urls', namespace='accounts')),  # Include accounts URLs
     path('cart/', cart_view, name='cart_view'),

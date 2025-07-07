@@ -10,5 +10,4 @@ urlpatterns = [
     path('api/update-cart/', views.update_cart_ajax, name='update_cart_ajax'),
     # Optionally, admin-only product list:
     path('admin/', views.product_list, name='admin_product_list'),
-    path('shop/', views.product_list_public, name='public_product_list_alt'),
 ] 

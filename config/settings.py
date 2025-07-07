@@ -63,6 +63,7 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'config.middleware.ClearMessagesMiddleware',  # Custom middleware to prevent message contamination
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
@@ -198,3 +199,9 @@ MODULE_SETTINGS = {
     'ENABLE_DASHBOARD': True,
     'ENABLE_API': True,
 }
+
+# Message Framework Configuration - Force immediate consumption
+MESSAGE_STORAGE = 'django.contrib.messages.storage.fallback.FallbackStorage'
+
+# Ensure messages are cleared after first display to prevent cross-page contamination
+MESSAGE_LEVEL = 10  # DEBUG level and above

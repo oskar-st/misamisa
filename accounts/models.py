@@ -130,14 +130,13 @@ class ShippingAddress(models.Model):
         help_text=_('Polish phone number')
     )
     email = models.EmailField(_('email address'))
-    is_default = models.BooleanField(_('is default'), default=False)
     created_at = models.DateTimeField(_('created at'), auto_now_add=True)
     updated_at = models.DateTimeField(_('updated at'), auto_now=True)
 
     class Meta:
         verbose_name = _('shipping address')
         verbose_name_plural = _('shipping addresses')
-        ordering = ['-is_default', '-created_at']
+        ordering = ['-created_at']
 
     def __str__(self):
         return f"{self.full_name} - {self.city}"
@@ -148,13 +147,6 @@ class ShippingAddress(models.Model):
             count = ShippingAddress.objects.filter(user=self.user).count()
             if count >= 6:
                 raise ValidationError(_('Maximum 6 shipping addresses allowed per user'))
-        
-        # If this address is set as default, unset other default addresses for this user
-        if self.is_default:
-            ShippingAddress.objects.filter(
-                user=self.user,
-                is_default=True
-            ).exclude(pk=self.pk).update(is_default=False)
         
         super().save(*args, **kwargs)
 
@@ -181,14 +173,13 @@ class InvoiceDetails(models.Model):
         help_text=_('Format: XX-XXX')
     )
     city = models.CharField(_('city'), max_length=100)
-    is_default = models.BooleanField(_('is default'), default=False)
     created_at = models.DateTimeField(_('created at'), auto_now_add=True)
     updated_at = models.DateTimeField(_('updated at'), auto_now=True)
 
     class Meta:
         verbose_name = _('invoice details')
         verbose_name_plural = _('invoice details')
-        ordering = ['-is_default', '-created_at']
+        ordering = ['-created_at']
 
     def __str__(self):
         return f"{self.full_name_or_company} - {self.city}"
@@ -199,13 +190,6 @@ class InvoiceDetails(models.Model):
             count = InvoiceDetails.objects.filter(user=self.user).count()
             if count >= 6:
                 raise ValidationError(_('Maximum 6 invoice details allowed per user'))
-        
-        # If this entry is set as default, unset other default entries for this user
-        if self.is_default:
-            InvoiceDetails.objects.filter(
-                user=self.user,
-                is_default=True
-            ).exclude(pk=self.pk).update(is_default=False)
         
         super().save(*args, **kwargs)
 
@@ -228,7 +212,6 @@ class Address(models.Model):
         choices=ADDRESS_TYPE_CHOICES,
         default='shipping'
     )
-    is_default = models.BooleanField(_('is default'), default=False)
     name = models.CharField(_('name'), max_length=100)
     company_name = models.CharField(_('company name'), max_length=100, blank=True)
     tax_id = models.CharField(_('tax ID'), max_length=50, blank=True)
@@ -246,13 +229,3 @@ class Address(models.Model):
 
     def __str__(self):
         return f"{self.name} - {self.address_type} ({self.city}, {self.country})"
-
-    def save(self, *args, **kwargs):
-        # If this address is set as default, unset other default addresses of the same type for this user
-        if self.is_default:
-            Address.objects.filter(
-                user=self.user,
-                address_type=self.address_type,
-                is_default=True
-            ).exclude(pk=self.pk).update(is_default=False)
-        super().save(*args, **kwargs)

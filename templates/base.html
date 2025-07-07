@@ -434,6 +434,27 @@
             window.location.href = e.detail.elt.href;
         }
     });
+    
+    // Clear any unrelated messages during HTMX navigation
+    document.addEventListener('htmx:beforeSwap', function(e) {
+        // If navigating to login/auth pages, clear any non-auth related messages
+        const newContent = e.detail.serverResponse;
+        const currentPath = window.location.pathname;
+        
+        if (currentPath.includes('login') || currentPath.includes('register')) {
+            // Remove any existing message displays that don't belong on auth pages
+            const existingMessages = document.querySelectorAll('.messages .alert');
+            existingMessages.forEach(msg => {
+                const msgText = msg.textContent.toLowerCase();
+                // If message contains non-auth terms, remove it
+                if (msgText.includes('invoice') || msgText.includes('address') || 
+                    msgText.includes('deleted') || msgText.includes('shipping') ||
+                    msgText.includes('details for')) {
+                    msg.style.display = 'none';
+                }
+            });
+        }
+    });
 
     // Configure HTMX requests and debug
     document.addEventListener('htmx:configRequest', function(e) {

@@ -115,11 +115,11 @@ def product_list_public(request, category_slug=None):
     # Determine title
     if category:
         title = category.name
-        breadcrumbs.append({'title': 'Shop', 'url': reverse('shop:public_product_list')})
+        breadcrumbs.append({'title': _('Shop'), 'url': reverse('shop:public_product_list')})
         breadcrumbs.append({'title': category.name, 'url': reverse('category_or_product', kwargs={'slug': category.slug})})
     else:
         title = _('All Products')
-        breadcrumbs.append({'title': 'Shop', 'url': reverse('shop:public_product_list')})
+        breadcrumbs.append({'title': _('Shop'), 'url': reverse('shop:public_product_list')})
 
     # Get hierarchical categories for sidebar
     sidebar_categories = Category.objects.filter(parent=None, is_active=True).prefetch_related(
