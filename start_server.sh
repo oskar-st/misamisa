@@ -6,8 +6,12 @@ pkill -f "manage.py runserver" || true
 # Change to project directory
 cd /var/www/misamisa.pl
 
-# Activate virtual environment and start server
+# Activate virtual environment and install dependencies
 source venv/bin/activate
+
+# Install required dependencies
+echo "Installing dependencies..."
+pip install -r requirements.txt
 
 # Check if database is accessible
 echo "Checking database connection..."

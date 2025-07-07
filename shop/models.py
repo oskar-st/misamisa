@@ -3,12 +3,21 @@ from django.utils.translation import gettext_lazy as _
 from django.utils.text import slugify
 from django.urls import reverse
 from django.conf import settings
-from mptt.models import MPTTModel, TreeForeignKey
 
-class Category(MPTTModel):
+# Conditional import for MPTT (temporarily disabled)
+try:
+    from mptt.models import MPTTModel, TreeForeignKey
+    MPTT_AVAILABLE = True
+except ImportError:
+    MPTT_AVAILABLE = False
+    # Fallback to regular Django models
+    MPTTModel = models.Model
+    TreeForeignKey = models.ForeignKey
+
+class Category(MPTTModel if MPTT_AVAILABLE else models.Model):
     name = models.CharField(_('name'), max_length=100)
     slug = models.SlugField(_('slug'), max_length=100, unique=True, blank=True)
-    parent = TreeForeignKey(
+    parent = (TreeForeignKey if MPTT_AVAILABLE else models.ForeignKey)(
         'self',
         on_delete=models.CASCADE,
         null=True,
@@ -23,10 +32,11 @@ class Category(MPTTModel):
     class Meta:
         verbose_name = _('category')
         verbose_name_plural = _('categories')
-        ordering = ['tree_id', 'lft']
+        ordering = ['tree_id', 'lft'] if MPTT_AVAILABLE else ['name']
 
-    class MPTTMeta:
-        order_insertion_by = ['name']
+    if MPTT_AVAILABLE:
+        class MPTTMeta:
+            order_insertion_by = ['name']
 
     def __str__(self):
         if self.parent:

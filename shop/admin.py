@@ -2,8 +2,16 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 from .models import Category, Product, Order, OrderItem, ShippingMethod, PaymentMethod
-from django_mptt_admin.admin import DjangoMpttAdmin
 from django import forms
+
+# Conditional import for MPTT admin with drag & drop
+try:
+    from django_mptt_admin.admin import DjangoMpttAdmin
+    MPTT_ADMIN_AVAILABLE = True
+except ImportError:
+    MPTT_ADMIN_AVAILABLE = False
+    # Fallback to regular Django admin
+    DjangoMpttAdmin = admin.ModelAdmin
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.urls import path, reverse

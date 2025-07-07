@@ -78,8 +78,11 @@ def validate_polish_nip(value):
     if not value:
         return  # NIP is optional
     
-    # Remove spaces and dashes
+    # Remove spaces, dashes, and other non-digit characters
     cleaned = re.sub(r'[^\d]', '', value)
+    
+    if len(cleaned) == 0:
+        return  # Empty after cleaning is OK (optional field)
     
     if len(cleaned) != 10:
         raise ValidationError(
@@ -87,13 +90,20 @@ def validate_polish_nip(value):
             code='invalid_nip'
         )
     
-    # NIP checksum validation
+    # NIP checksum validation using the official algorithm
     weights = [6, 5, 7, 2, 3, 4, 5, 6, 7]
     checksum = sum(int(digit) * weight for digit, weight in zip(cleaned[:9], weights)) % 11
     
-    if checksum != int(cleaned[9]):
+    # Handle special case where checksum is 10
+    if checksum == 10:
         raise ValidationError(
             _('Invalid NIP checksum'),
+            code='invalid_nip'
+        )
+    
+    if checksum != int(cleaned[9]):
+        raise ValidationError(
+            _('Invalid NIP checksum - please verify the number'),
             code='invalid_nip'
         )
 

@@ -16,4 +16,7 @@ urlpatterns = [
     path('addresses/invoice/add/', views.add_invoice_details, name='add_invoice_details'),
     path('addresses/invoice/<int:details_id>/edit/', views.edit_invoice_details, name='edit_invoice_details'),
     path('addresses/invoice/<int:details_id>/delete/', views.delete_invoice_details, name='delete_invoice_details'),
+    
+    # NIP validation API
+    path('validate-nip/', views.validate_nip_api, name='validate_nip_api'),
 ] 

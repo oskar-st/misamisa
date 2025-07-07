@@ -1,0 +1,8 @@
+Django==5.2.2
+psycopg2-binary
+Pillow
+django-mptt
+django-mptt-admin
+django-turnstile
+stripe>=5.0.0
+python-dotenv 

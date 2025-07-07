@@ -329,5 +329,313 @@
         width: 100%;
     }
 }
+
+/* NIP validation styles moved to SCSS */
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // NIP field formatting and validation
+    const nipField = document.querySelector('.nip-field');
+    if (nipField) {
+        let nipValidationMessage = nipField.parentNode.querySelector('.nip-validation-message');
+        if (!nipValidationMessage) {
+            nipValidationMessage = document.createElement('div');
+            nipValidationMessage.className = 'nip-validation-message';
+            nipField.parentNode.appendChild(nipValidationMessage);
+        }
+
+        // Format input in real-time
+        nipField.addEventListener('input', function(e) {
+            let value = e.target.value;
+            // Remove all non-digit characters
+            let cleanValue = value.replace(/[^\d]/g, '');
+            
+            // Limit to 10 digits
+            if (cleanValue.length > 10) {
+                cleanValue = cleanValue.substring(0, 10);
+            }
+            
+            // Update field value
+            e.target.value = cleanValue;
+            
+            // Validate NIP if 10 digits entered
+            if (cleanValue.length === 10) {
+                validateNIP(cleanValue, nipField, nipValidationMessage);
+            } else if (cleanValue.length === 0) {
+                // Clear validation for empty field (optional field)
+                clearNIPValidation(nipField, nipValidationMessage);
+            } else {
+                // Show invalid for incomplete NIP
+                showNIPValidation(nipField, nipValidationMessage, 'invalid', 'NIP musi mieć dokładnie 10 cyfr', false, null);
+            }
+        });
+
+        // Validate on blur
+        nipField.addEventListener('blur', function(e) {
+            const cleanValue = e.target.value.replace(/[^\d]/g, '');
+            if (cleanValue.length > 0 && cleanValue.length !== 10) {
+                showNIPValidation(nipField, nipValidationMessage, 'invalid', 'NIP musi mieć dokładnie 10 cyfr', false, null);
+            }
+        });
+    }
+
+    function validateNIP(nip, field, messageElement) {
+        // First validate checksum locally
+        if (!isValidNIPChecksum(nip)) {
+            showNIPValidation(field, messageElement, 'invalid', 'Nieprawidłowa suma kontrolna NIP', false, null);
+            return;
+        }
+
+        // Show that we're checking with GUS
+        showNIPValidation(field, messageElement, 'checking', 'Sprawdzanie w bazie GUS...', false, null);
+        
+        checkNIPInGUS(nip).then(result => {
+            console.log('Full NIP validation result:', result);
+            if (result.valid) {
+                // Check if it's GUS verified or just checksum
+                const isGusVerified = result.gus_verified === true;
+                const companyData = result.company_data || null;
+                console.log('GUS verified:', isGusVerified, 'Company data:', companyData);
+                showNIPValidation(field, messageElement, 'valid', result.message, isGusVerified, companyData);
+            } else {
+                // Invalid NIP (not found in GUS or failed checksum)
+                showNIPValidation(field, messageElement, 'invalid', result.error || 'NIP nie został znaleziony', false, null);
+            }
+        }).catch(error => {
+            console.error('Error checking NIP:', error);
+            // Network/API error - show generic error
+            showNIPValidation(field, messageElement, 'valid', 'Suma kontrolna prawidłowa (błąd połączenia)', false, null);
+        });
+    }
+
+    function isValidNIPChecksum(nip) {
+        if (nip.length !== 10) return false;
+        
+        const weights = [6, 5, 7, 2, 3, 4, 5, 6, 7];
+        let sum = 0;
+        
+        for (let i = 0; i < 9; i++) {
+            sum += parseInt(nip[i]) * weights[i];
+        }
+        
+        const checksum = sum % 11;
+        console.log('NIP:', nip, 'Sum:', sum, 'Checksum:', checksum, 'Last digit:', parseInt(nip[9]));
+        
+        // Handle special case where checksum is 10
+        if (checksum === 10) return false;
+        
+        return checksum === parseInt(nip[9]);
+    }
+
+    async function checkNIPInGUS(nip) {
+        try {
+            console.log('Checking NIP:', nip);
+            // Use our server-side API for NIP validation
+            const response = await fetch(`/validate-nip/?nip=${encodeURIComponent(nip)}`);
+            console.log('Response status:', response.status);
+            
+            // Check if response is ok (status 200-299)
+            if (response.ok) {
+                try {
+                    const data = await response.json();
+                    console.log('Response data:', data);
+                    
+                    // Return the server's response (which includes our improved messaging)
+                    return {
+                        valid: data.valid || false,
+                        message: data.message || '',
+                        error: data.error || '',
+                        gus_verified: data.gus_verified || false,
+                        company_data: data.company_data || null
+                    };
+                    
+                } catch (jsonError) {
+                    console.error('Failed to parse JSON response:', jsonError);
+                    // Return checksum valid message if we can't parse response
+                    return { 
+                        valid: true, 
+                        error: 'Suma kontrolna prawidłowa (błąd parsowania odpowiedzi)',
+                        gus_verified: false
+                    };
+                }
+            } else {
+                // Non-ok status, try to get error message from JSON
+                try {
+                    const errorData = await response.json();
+                    console.log('Error response data:', errorData);
+                    return {
+                        valid: false,
+                        error: errorData.error || `Błąd HTTP: ${response.status}`
+                    };
+                } catch (jsonError) {
+                    console.error('Failed to parse error JSON response:', jsonError);
+                    return { 
+                        valid: true, 
+                        error: `Suma kontrolna prawidłowa (błąd serwera: ${response.status})`,
+                        gus_verified: false
+                    };
+                }
+            }
+            
+        } catch (error) {
+            console.error('NIP validation API error:', error);
+            return { 
+                valid: true, 
+                error: 'Suma kontrolna prawidłowa (błąd połączenia z serwerem)',
+                gus_verified: false
+            };
+        }
+    }
+
+    function showNIPValidation(field, messageElement, type, message, gusVerified = false, companyData = null) {
+        // Clear previous classes and attributes
+        field.classList.remove('valid', 'invalid', 'checking');
+        messageElement.classList.remove('valid', 'invalid', 'checking');
+        field.removeAttribute('data-gus-verified');
+        messageElement.removeAttribute('data-gus-verified');
+        
+        // Remove any existing autofill button
+        const existingButton = messageElement.parentNode.querySelector('.gus-autofill-btn');
+        if (existingButton) {
+            existingButton.remove();
+        }
+        
+        // Add new classes
+        field.classList.add(type);
+        messageElement.classList.add(type);
+        messageElement.textContent = message;
+        
+        // Set GUS verification attributes if valid
+        if (type === 'valid' && gusVerified) {
+            field.setAttribute('data-gus-verified', 'true');
+            messageElement.setAttribute('data-gus-verified', 'true');
+            
+            console.log('GUS verified field, checking for company data...', companyData);
+            // Add autofill button if company data is available
+            if (companyData) {
+                console.log('Creating autofill button with company data:', companyData);
+                const autofillBtn = document.createElement('button');
+                autofillBtn.type = 'button';
+                autofillBtn.className = 'gus-autofill-btn';
+                autofillBtn.textContent = 'Uzupełnij poniższe dane z GUS';
+                autofillBtn.style.cssText = `
+                    margin-top: 8px;
+                    padding: 6px 12px;
+                    background: #007bff;
+                    color: white;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    font-size: 12px;
+                    display: block;
+                `;
+                
+                autofillBtn.addEventListener('click', function() {
+                    fillCompanyData(companyData);
+                });
+                
+                // Add hover effect
+                autofillBtn.addEventListener('mouseenter', function() {
+                    this.style.background = '#0056b3';
+                });
+                autofillBtn.addEventListener('mouseleave', function() {
+                    this.style.background = '#007bff';
+                });
+                
+                messageElement.parentNode.appendChild(autofillBtn);
+            }
+        }
+    }
+
+    function clearNIPValidation(field, messageElement) {
+        field.classList.remove('valid', 'invalid', 'checking');
+        messageElement.classList.remove('valid', 'invalid', 'checking');
+        messageElement.textContent = '';
+        
+        // Remove any existing autofill button
+        const existingButton = messageElement.parentNode.querySelector('.gus-autofill-btn');
+        if (existingButton) {
+            existingButton.remove();
+        }
+    }
+    
+    function fillCompanyData(companyData) {
+        console.log('Filling company data:', companyData);
+        
+        // Map of GUS data to form field IDs
+        const fieldMappings = {
+            'full_name_or_company': companyData.name,
+            'street': companyData.street,
+            'postal_code': companyData.postal_code,
+            'city': companyData.city
+        };
+        
+        // Count how many fields we actually filled
+        let filledFields = 0;
+        
+        // Fill each field if data is available
+        Object.entries(fieldMappings).forEach(([fieldId, value]) => {
+            if (value) {
+                const field = document.getElementById(`id_${fieldId}`);
+                if (field) {
+                    // Add a subtle animation to show the field is being filled
+                    field.style.transition = 'background-color 0.3s';
+                    field.style.backgroundColor = '#e7f3ff';
+                    
+                    field.value = value;
+                    filledFields++;
+                    
+                    // Remove the highlight after a moment
+                    setTimeout(() => {
+                        field.style.backgroundColor = '';
+                        setTimeout(() => {
+                            field.style.transition = '';
+                        }, 300);
+                    }, 600);
+                    
+                    console.log(`Filled ${fieldId} with: ${value}`);
+                } else {
+                    console.warn(`Field not found: id_${fieldId}`);
+                }
+            }
+        });
+        
+        // Show appropriate success/info message
+        const messageDiv = document.createElement('div');
+        messageDiv.style.cssText = `
+            font-size: 12px;
+            margin-top: 4px;
+            font-weight: 500;
+        `;
+        
+        if (companyData.address_note === 'no_address_available') {
+            messageDiv.textContent = '✅ Nazwa uzupełniona z GUS. ⚠️ Dane adresowe niedostępne w bazie';
+            messageDiv.style.color = '#ffc107'; // Warning color
+        } else if (filledFields === 1) {
+            messageDiv.textContent = '✅ Nazwa uzupełniona z GUS. ⚠️ Dane adresowe niedostępne';
+            messageDiv.style.color = '#ffc107'; // Warning color
+        } else if (filledFields > 1) {
+            messageDiv.textContent = `✅ ${filledFields} pola uzupełnione z bazy GUS`;
+            messageDiv.style.color = '#28a745'; // Success color
+        } else {
+            messageDiv.textContent = '⚠️ Tylko podstawowe dane dostępne w GUS';
+            messageDiv.style.color = '#ffc107'; // Warning color
+        }
+        
+        // Find the autofill button and replace it with message temporarily
+        const autofillBtn = document.querySelector('.gus-autofill-btn');
+        if (autofillBtn) {
+            autofillBtn.style.display = 'none';
+            autofillBtn.parentNode.appendChild(messageDiv);
+            
+            // Remove message and restore button after 4 seconds
+            setTimeout(() => {
+                messageDiv.remove();
+                autofillBtn.style.display = 'block';
+            }, 4000);
+        }
+    }
+});
+</script>
 {% endblock %} 

@@ -3,8 +3,16 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
-from turnstile.fields import TurnstileField
 from .models import ShippingAddress, InvoiceDetails
+
+# Import Turnstile field
+# Conditional import for Turnstile
+try:
+    from turnstile.fields import TurnstileField
+    TURNSTILE_AVAILABLE = True
+except ImportError:
+    TURNSTILE_AVAILABLE = False
+    TurnstileField = None
 
 User = get_user_model()
 
@@ -19,14 +27,17 @@ class CustomUserCreationForm(UserCreationForm):
         initial=True,
         widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
     )
-    turnstile = TurnstileField()
-
+    
     class Meta:
         model = User
         fields = ('email', 'newsletter_opt_in', 'password1', 'password2')
         
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        
+        # Add Turnstile field only if available
+        if TURNSTILE_AVAILABLE:
+            self.fields['turnstile'] = TurnstileField()
         
         # Remove username field if it exists
         if 'username' in self.fields:
@@ -174,6 +185,24 @@ class InvoiceDetailsForm(forms.ModelForm):
         
         # Add help text for VAT ID
         self.fields['vat_id'].help_text = _('Enter VAT ID if you are buying as a company.')
+        
+        # Add CSS classes and data attributes for real-time validation
+        self.fields['vat_id'].widget.attrs.update({
+            'class': 'form-control nip-field',
+            'data-validate-nip': 'true',
+            'maxlength': '10',
+            'inputmode': 'numeric'
+        })
+
+    def clean_vat_id(self):
+        """Clean VAT ID by removing spaces, hyphens, and other non-digit characters"""
+        vat_id = self.cleaned_data.get('vat_id', '')
+        if vat_id:
+            # Remove all non-digit characters
+            import re
+            cleaned_vat_id = re.sub(r'[^\d]', '', vat_id)
+            return cleaned_vat_id
+        return vat_id
 
     def clean(self):
         cleaned_data = super().clean()

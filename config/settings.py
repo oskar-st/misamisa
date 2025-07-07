@@ -47,8 +47,8 @@ INSTALLED_APPS = [
     'shop',  # New shop app for e-commerce
     'modules',  # Module management system
     'mptt',  # Django MPTT for tree structures
-    'django_mptt_admin',
-    # 'turnstile',
+    'django_mptt_admin',  # MPTT admin interface with drag & drop
+    'turnstile',  # Cloudflare Turnstile
  #  'tailwind',
  #  'theme',       # You will create this app below
  #  'django_browser_reload',  # For auto-refresh
@@ -187,8 +187,8 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
 
 # Cloudflare Turnstile Configuration
-# TURNSTILE_SITE_KEY = os.getenv('TURNSTILE_SITE_KEY')
-# TURNSTILE_SECRET_KEY = os.getenv('TURNSTILE_SECRET_KEY')
+TURNSTILE_SITE_KEY = os.getenv('TURNSTILE_SITE_KEY')
+TURNSTILE_SECRET_KEY = os.getenv('TURNSTILE_SECRET_KEY')
 
 # Module system configuration
 MODULE_SETTINGS = {
