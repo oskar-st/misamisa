@@ -142,7 +142,7 @@ def logout_view(request):
         current_path = request.path
         
         # Pages that require login and should redirect after logout
-        login_required_paths = ['/profile/', '/checkout/', '/orders/']
+        login_required_paths = ['/profile/', '/checkout/', '/orders/', '/addresses/']
         
         # If user is on a login-required page, redirect to login
         if any(path in referer for path in login_required_paths):

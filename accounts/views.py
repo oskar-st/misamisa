@@ -32,7 +32,7 @@ def add_shipping_address(request):
     # Check if user already has 6 addresses
     if ShippingAddress.objects.filter(user=request.user).count() >= 6:
         messages.error(request, _('Maximum 6 shipping addresses allowed per user'))
-        return redirect('addresses')
+        return redirect('accounts:addresses')
     
     if request.method == 'POST':
         form = ShippingAddressForm(request.POST, user=request.user)
@@ -40,7 +40,7 @@ def add_shipping_address(request):
             try:
                 form.save()
                 messages.success(request, _('Shipping address added successfully'))
-                return redirect('addresses')
+                return redirect('accounts:addresses')
             except ValidationError as e:
                 messages.error(request, str(e))
     else:
@@ -65,7 +65,7 @@ def edit_shipping_address(request, address_id):
             try:
                 form.save()
                 messages.success(request, _('Shipping address updated successfully'))
-                return redirect('addresses')
+                return redirect('accounts:addresses')
             except ValidationError as e:
                 messages.error(request, str(e))
     else:
@@ -88,7 +88,7 @@ def delete_shipping_address(request, address_id):
     address_name = address.full_name
     address.delete()
     messages.success(request, _('Shipping address for "{}" deleted successfully').format(address_name))
-    return redirect('addresses')
+    return redirect('accounts:addresses')
 
 @login_required
 def add_invoice_details(request):
@@ -96,7 +96,7 @@ def add_invoice_details(request):
     # Check if user already has 6 invoice details
     if InvoiceDetails.objects.filter(user=request.user).count() >= 6:
         messages.error(request, _('Maximum 6 invoice details allowed per user'))
-        return redirect('addresses')
+        return redirect('accounts:addresses')
     
     if request.method == 'POST':
         form = InvoiceDetailsForm(request.POST, user=request.user)
@@ -104,7 +104,7 @@ def add_invoice_details(request):
             try:
                 form.save()
                 messages.success(request, _('Invoice details added successfully'))
-                return redirect('addresses')
+                return redirect('accounts:addresses')
             except ValidationError as e:
                 messages.error(request, str(e))
     else:
@@ -129,7 +129,7 @@ def edit_invoice_details(request, details_id):
             try:
                 form.save()
                 messages.success(request, _('Invoice details updated successfully'))
-                return redirect('addresses')
+                return redirect('accounts:addresses')
             except ValidationError as e:
                 messages.error(request, str(e))
     else:
@@ -152,6 +152,6 @@ def delete_invoice_details(request, details_id):
     details_name = details.full_name_or_company
     details.delete()
     messages.success(request, _('Invoice details for "{}" deleted successfully').format(details_name))
-    return redirect('addresses')
+    return redirect('accounts:addresses')
 
 
