@@ -154,34 +154,4 @@ def delete_invoice_details(request, details_id):
     messages.success(request, _('Invoice details for "{}" deleted successfully').format(details_name))
     return redirect('addresses')
 
-@login_required
-@require_POST
-def set_default_shipping_address(request, address_id):
-    """Set shipping address as default"""
-    address = get_object_or_404(ShippingAddress, id=address_id, user=request.user)
-    
-    # Unset all other default addresses for this user
-    ShippingAddress.objects.filter(user=request.user, is_default=True).update(is_default=False)
-    
-    # Set this address as default
-    address.is_default = True
-    address.save()
-    
-    messages.success(request, _('Default shipping address updated'))
-    return redirect('addresses')
 
-@login_required
-@require_POST
-def set_default_invoice_details(request, details_id):
-    """Set invoice details as default"""
-    details = get_object_or_404(InvoiceDetails, id=details_id, user=request.user)
-    
-    # Unset all other default details for this user
-    InvoiceDetails.objects.filter(user=request.user, is_default=True).update(is_default=False)
-    
-    # Set this details as default
-    details.is_default = True
-    details.save()
-    
-    messages.success(request, _('Default invoice details updated'))
-    return redirect('addresses')

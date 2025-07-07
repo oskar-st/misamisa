@@ -15,104 +15,151 @@ msgstr ""
 
 msgid "Shop"
 msgstr "Sklep"
+
 msgid "About us"
 msgstr "O nas"
+
 msgid "Blog"
 msgstr "Blog"
+
 msgid "My account"
 msgstr "Moje konto"
+
 msgid "Logout"
 msgstr "Wyloguj się"
+
 msgid "Login"
 msgstr "Zaloguj się"
+
 msgid "Sign up"
 msgstr "Zarejestruj się"
+
 msgid "Welcome to"
 msgstr "Witamy w"
+
 msgid "Your favorite cookies — fresh, sweet, and handmade from the best ingredients!"
 msgstr "Twoje ulubione ciasteczka — świeże, słodkie i ręcznie robione z najlepszych składników!"
+
 msgid "See our offer"
 msgstr "Zobacz ofertę"
+
 msgid "Your Cart"
 msgstr "Twój koszyk"
+
 msgid "Product"
 msgstr "Produkt"
+
 msgid "Price"
 msgstr "Cena"
+
 msgid "Quantity"
 msgstr "Ilość"
+
 msgid "Subtotal"
 msgstr "Suma częściowa"
+
 msgid "Update"
 msgstr "Aktualizuj"
+
 msgid "Remove"
 msgstr "Usuń"
+
 msgid "Total"
 msgstr "Razem"
+
 msgid "Proceed to checkout"
 msgstr "Przejdź do zamówienia"
+
 msgid "Your cart is empty."
 msgstr "Twój koszyk jest pusty."
+
 msgid "Back to shop"
 msgstr "Powrót do sklepu"
+
 msgid "Checkout"
 msgstr "Zamówienie"
+
 msgid "Shipping & Billing Address"
 msgstr "Adres dostawy i rozliczeniowy"
+
 msgid "Full name"
 msgstr "Imię i nazwisko"
+
 msgid "Street"
 msgstr "Ulica"
+
 msgid "City"
 msgstr "Miasto"
+
 msgid "Postcode"
 msgstr "Kod pocztowy"
+
 msgid "Country"
 msgstr "Kraj"
+
 msgid "Phone"
 msgstr "Telefon"
+
 msgid "Shipping Method"
 msgstr "Metoda dostawy"
+
 msgid "No shipping methods available."
 msgstr "Brak dostępnych metod dostawy."
+
 msgid "Payment Method"
 msgstr "Metoda płatności"
+
 msgid "No payment methods available."
 msgstr "Brak dostępnych metod płatności."
+
 msgid "Order Summary"
 msgstr "Podsumowanie zamówienia"
+
 msgid "Qty"
 msgstr "Szt."
+
 msgid "Place Order"
 msgstr "Złóż zamówienie"
+
 msgid "Thank you for your order!"
 msgstr "Dziękujemy za zamówienie!"
+
 msgid "Your order has been placed successfully. We will contact you soon."
 msgstr "Twoje zamówienie zostało złożone pomyślnie. Skontaktujemy się z Tobą wkrótce."
+
 msgid "Category"
 msgstr "Kategoria"
+
 msgid "All"
 msgstr "Wszystkie"
+
 msgid "Filter"
 msgstr "Filtruj"
+
 msgid "No products found."
 msgstr "Nie znaleziono produktów."
+
 msgid "Previous"
 msgstr "Poprzednia"
+
 msgid "Page"
 msgstr "Strona"
+
 msgid "Next"
 msgstr "Następna"
+
 msgid "No image"
 msgstr "Brak zdjęcia"
+
 msgid "Out of stock"
 msgstr "Brak w magazynie"
+
 msgid "Add to cart"
 msgstr "Dodaj do koszyka"
+
 msgid "Stock"
 msgstr "Stan magazynowy"
 
-# Registration and authentication
 msgid "Registration Successful!"
 msgstr "Rejestracja zakończona pomyślnie!"
 
@@ -185,7 +232,6 @@ msgstr "Polityka prywatności"
 msgid "Cart"
 msgstr "Koszyk"
 
-# Addresses page
 msgid "My Addresses"
 msgstr "Moje adresy"
 
@@ -201,14 +247,11 @@ msgstr "Dodaj nowy adres dostawy"
 msgid "Maximum limit reached (6/6)"
 msgstr "Osiągnięto maksymalny limit (6/6)"
 
-msgid "Default"
-msgstr "Domyślny"
-
 msgid "Edit"
 msgstr "Edytuj"
 
-msgid "Set as default"
-msgstr "Ustaw jako domyślny"
+msgid "Cancel"
+msgstr "Anuluj"
 
 msgid "Delete"
 msgstr "Usuń"
@@ -223,19 +266,68 @@ msgid "Add your first shipping address using the button above"
 msgstr "Dodaj swój pierwszy adres dostawy używając przycisku powyżej"
 
 msgid "Invoice Details"
-msgstr "Dane do faktur"
+msgstr "Dane do faktury"
 
 msgid "Add new invoice details"
-msgstr "Dodaj nowe dane do faktur"
+msgstr "Dodaj nowe dane do faktury"
 
 msgid "VAT ID"
 msgstr "NIP"
 
 msgid "Are you sure you want to delete these invoice details?"
-msgstr "Czy na pewno chcesz usunąć te dane do faktur?"
+msgstr "Czy na pewno chcesz usunąć te dane do faktury?"
 
 msgid "No invoice details yet"
-msgstr "Brak danych do faktur"
+msgstr "Brak danych do faktury"
 
 msgid "Add your first invoice details using the button above"
-msgstr "Dodaj swoje pierwsze dane do faktur używając przycisku powyżej"
+msgstr "Dodaj swoje pierwsze dane do faktury używając przycisku powyżej"
+
+msgid "Back to addresses"
+msgstr "Powrót do adresów"
+
+msgid "Add Shipping Address"
+msgstr "Dodaj adres dostawy"
+
+msgid "Edit Shipping Address"
+msgstr "Edytuj adres dostawy"
+
+msgid "Add Invoice Details"
+msgstr "Dodaj dane do faktury"
+
+msgid "Edit Invoice Details"
+msgstr "Edytuj dane do faktury"
+
+msgid "Save"
+msgstr "Zapisz"
+
+msgid "optional"
+msgstr "opcjonalne"
+
+msgid "Full name or company name"
+msgstr "Imię i nazwisko lub nazwa firmy"
+
+msgid "Street and number"
+msgstr "Ulica i numer"
+
+msgid "Postal code"
+msgstr "Kod pocztowy"
+
+msgid "Phone number"
+msgstr "Numer telefonu"
+
+msgid "Email address"
+msgstr "Adres e-mail"
+
+msgid "VAT ID (NIP)"
+msgstr "NIP"
+
+msgid "Enter VAT ID if you are buying as a company."
+msgstr "Wprowadź NIP, jeśli kupujesz jako firma."
+
+msgid "Maximum 6 shipping addresses allowed per user"
+msgstr "Maksymalnie 6 adresów dostawy na użytkownika"
+
+msgid "Maximum 6 invoice details allowed per user"
+msgstr "Maksymalnie 6 danych do faktury na użytkownika"
+# End of file

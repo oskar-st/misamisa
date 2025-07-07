@@ -25,39 +25,29 @@
             </div>
             
             <div class="address-grid">
-                {% for address in shipping_addresses %}
-                    <div class="address-card{% if address.is_default %} default{% endif %}">
-                        {% if address.is_default %}
-                            <div class="default-badge">{% trans 'Default' %}</div>
-                        {% endif %}
-                        
-                        <div class="address-content">
-                            <h3>{{ address.full_name }}</h3>
-                            <p class="address-text">
-                                {{ address.street }}<br>
-                                {{ address.postal_code }} {{ address.city }}<br>
-                                {% trans 'Phone' %}: {{ address.phone }}<br>
-                                {% trans 'Email' %}: {{ address.email }}
-                            </p>
-                        </div>
-                        
-                        <div class="address-actions">
-                            <a href="{% url 'accounts:edit_shipping_address' address.id %}" class="btn btn-secondary btn-sm">
-                                {% trans 'Edit' %}
-                            </a>
-                            {% if not address.is_default %}
-                                <form method="post" action="{% url 'accounts:set_default_shipping_address' address.id %}" class="inline-form">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn btn-outline btn-sm">{% trans 'Set as default' %}</button>
-                                </form>
-                            {% endif %}
-                            <form method="post" action="{% url 'accounts:delete_shipping_address' address.id %}" class="inline-form" 
-                                  onsubmit="return confirm('{% trans 'Are you sure you want to delete this shipping address?' %}')">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-danger btn-sm">{% trans 'Delete' %}</button>
-                            </form>
-                        </div>
-                    </div>
+                                 {% for address in shipping_addresses %}
+                     <div class="address-card">
+                         <div class="address-content">
+                             <h3>{{ address.full_name }}</h3>
+                             <p class="address-text">
+                                 {{ address.street }}<br>
+                                 {{ address.postal_code }} {{ address.city }}<br>
+                                 {% trans 'Phone' %}: {{ address.phone }}<br>
+                                 {% trans 'Email' %}: {{ address.email }}
+                             </p>
+                         </div>
+                         
+                         <div class="address-actions">
+                             <a href="{% url 'accounts:edit_shipping_address' address.id %}" class="btn btn-secondary btn-sm">
+                                 {% trans 'Edit' %}
+                             </a>
+                             <form method="post" action="{% url 'accounts:delete_shipping_address' address.id %}" class="inline-form" 
+                                   onsubmit="return confirm('{% trans 'Are you sure you want to delete this shipping address?' %}')">
+                                 {% csrf_token %}
+                                 <button type="submit" class="btn btn-danger btn-sm">{% trans 'Delete' %}</button>
+                             </form>
+                         </div>
+                     </div>
                 {% empty %}
                     <div class="empty-state">
                         <svg class="empty-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -89,40 +79,30 @@
             </div>
             
             <div class="address-grid">
-                {% for details in invoice_details %}
-                    <div class="address-card{% if details.is_default %} default{% endif %}">
-                        {% if details.is_default %}
-                            <div class="default-badge">{% trans 'Default' %}</div>
-                        {% endif %}
-                        
-                        <div class="address-content">
-                            <h3>{{ details.full_name_or_company }}</h3>
-                            {% if details.vat_id %}
-                                <p class="vat-id">{% trans 'VAT ID' %}: {{ details.vat_id }}</p>
-                            {% endif %}
-                            <p class="address-text">
-                                {{ details.street }}<br>
-                                {{ details.postal_code }} {{ details.city }}
-                            </p>
-                        </div>
-                        
-                        <div class="address-actions">
-                            <a href="{% url 'accounts:edit_invoice_details' details.id %}" class="btn btn-secondary btn-sm">
-                                {% trans 'Edit' %}
-                            </a>
-                            {% if not details.is_default %}
-                                <form method="post" action="{% url 'accounts:set_default_invoice_details' details.id %}" class="inline-form">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn btn-outline btn-sm">{% trans 'Set as default' %}</button>
-                                </form>
-                            {% endif %}
-                            <form method="post" action="{% url 'accounts:delete_invoice_details' details.id %}" class="inline-form"
-                                  onsubmit="return confirm('{% trans 'Are you sure you want to delete these invoice details?' %}')">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-danger btn-sm">{% trans 'Delete' %}</button>
-                            </form>
-                        </div>
-                    </div>
+                                 {% for details in invoice_details %}
+                     <div class="address-card">
+                         <div class="address-content">
+                             <h3>{{ details.full_name_or_company }}</h3>
+                             {% if details.vat_id %}
+                                 <p class="vat-id">{% trans 'VAT ID' %}: {{ details.vat_id }}</p>
+                             {% endif %}
+                             <p class="address-text">
+                                 {{ details.street }}<br>
+                                 {{ details.postal_code }} {{ details.city }}
+                             </p>
+                         </div>
+                         
+                         <div class="address-actions">
+                             <a href="{% url 'accounts:edit_invoice_details' details.id %}" class="btn btn-secondary btn-sm">
+                                 {% trans 'Edit' %}
+                             </a>
+                             <form method="post" action="{% url 'accounts:delete_invoice_details' details.id %}" class="inline-form"
+                                   onsubmit="return confirm('{% trans 'Are you sure you want to delete these invoice details?' %}')">
+                                 {% csrf_token %}
+                                 <button type="submit" class="btn btn-danger btn-sm">{% trans 'Delete' %}</button>
+                             </form>
+                         </div>
+                     </div>
                 {% empty %}
                     <div class="empty-state">
                         <svg class="empty-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -206,22 +186,7 @@
     transform: translateY(-2px);
 }
 
-.address-card.default {
-    border-color: var(--accent-color);
-    box-shadow: 0 0 0 1px var(--accent-color);
-}
 
-.default-badge {
-    position: absolute;
-    top: -1px;
-    right: -1px;
-    background: var(--accent-color);
-    color: white;
-    padding: 0.25rem 0.75rem;
-    font-size: 0.75rem;
-    font-weight: 600;
-    border-radius: 0 8px 0 8px;
-}
 
 .address-content h3 {
     color: var(--text-color);

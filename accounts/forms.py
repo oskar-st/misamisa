@@ -173,7 +173,7 @@ class InvoiceDetailsForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         
         # Add help text for VAT ID
-        self.fields['vat_id'].help_text = _('Enter VAT ID if you\'re buying as a company.')
+        self.fields['vat_id'].help_text = _('Enter VAT ID if you are buying as a company.')
 
     def clean(self):
         cleaned_data = super().clean()

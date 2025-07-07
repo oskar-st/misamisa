@@ -5,13 +5,7 @@
 
 {% block content %}
 <div class="main-container">
-    <div class="shop-layout">
-        <!-- Sidebar -->
-        {% include 'components/sidebar.html' %}
-        
-        <!-- Main Content -->
-        <div class="shop-content">
-            <div class="address-form-page">
+    <div class="address-form-page">
                 <div class="form-header">
                     <a href="{% url 'accounts:addresses' %}" class="back-link">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -135,17 +129,6 @@
                                     {% endif %}
                                 </div>
                             {% endif %}
-
-                            <!-- Set as default -->
-                            <div class="field-group checkbox-group">
-                                <label class="checkbox-label">
-                                    {{ form.is_default }}
-                                    <span class="checkbox-text">{{ form.is_default.label }}</span>
-                                </label>
-                                {% if form.is_default.errors %}
-                                    <div class="field-error">{{ form.is_default.errors }}</div>
-                                {% endif %}
-                            </div>
                         </div>
 
                         <div class="form-actions">
@@ -159,8 +142,6 @@
                     </form>
                 </div>
             </div>
-        </div>
-    </div>
 </div>
 
 <style>
@@ -277,27 +258,7 @@
     margin-top: 0.25rem;
 }
 
-.checkbox-group {
-    display: flex;
-    align-items: center;
-}
 
-.checkbox-label {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-weight: 500;
-    cursor: pointer;
-}
-
-.form-check-input {
-    width: auto;
-    margin: 0;
-}
-
-.checkbox-text {
-    color: var(--text-color);
-}
 
 .form-actions {
     display: flex;
