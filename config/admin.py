@@ -8,7 +8,7 @@ from datetime import timedelta
 from django.urls import path
 from shop.models import Order, OrderItem, Category, Product, ShippingMethod, PaymentMethod, UserCart
 from accounts.models import CustomUser, Address
-from accounts.admin import UserAdmin, AddressAdmin
+from accounts.admin import CustomUserAdmin, AddressAdmin
 from shop.admin import CategoryAdmin, ProductAdmin, OrderAdmin, OrderItemAdmin, ShippingMethodAdmin, PaymentMethodAdmin
 
 class CustomAdminSite(admin.AdminSite):
@@ -124,7 +124,7 @@ class UserCartAdmin(admin.ModelAdmin):
 admin_site = CustomAdminSite(name='custom_admin')
 
 # Register all models with the custom admin site
-admin_site.register(CustomUser, UserAdmin)
+admin_site.register(CustomUser, CustomUserAdmin)
 admin_site.register(Address, AddressAdmin)
 admin_site.register(Category, CategoryAdmin)
 admin_site.register(Product, ProductAdmin)

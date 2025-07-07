@@ -38,6 +38,7 @@ urlpatterns = [
     path('admin/', admin_site.urls),
     path('shop/', include('shop.urls', namespace='shop')),
     path('modules/', include('modules.urls', namespace='modules')),
+    path('', include('accounts.urls', namespace='accounts')),  # Include accounts URLs
     path('cart/', cart_view, name='cart_view'),
     path('checkout/', checkout, name='checkout_view'),
     path('checkout/success/', order_success, name='checkout_success'),

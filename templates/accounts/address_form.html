@@ -1,0 +1,372 @@
+{% extends 'base.html' %}
+{% load i18n static %}
+
+{% block title %}{{ title }} - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="main-container">
+    <div class="shop-layout">
+        <!-- Sidebar -->
+        {% include 'components/sidebar.html' %}
+        
+        <!-- Main Content -->
+        <div class="shop-content">
+            <div class="address-form-page">
+                <div class="form-header">
+                    <a href="{% url 'accounts:addresses' %}" class="back-link">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="15,18 9,12 15,6"></polyline>
+                        </svg>
+                        {% trans 'Back to addresses' %}
+                    </a>
+                    <h1>{{ title }}</h1>
+                </div>
+
+                <div class="form-container">
+                    <form method="post" class="address-form">
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {{ form.non_field_errors }}
+                            </div>
+                        {% endif %}
+                        
+                        <div class="form-fields">
+                            {% if type == 'invoice' %}
+                                <!-- VAT ID field for invoice details -->
+                                <div class="field-group">
+                                    <label for="{{ form.vat_id.id_for_label }}" class="field-label">
+                                        {{ form.vat_id.label }}
+                                        <span class="optional-text">({% trans 'optional' %})</span>
+                                        <span class="info-icon" title="{{ form.vat_id.help_text }}">ℹ</span>
+                                    </label>
+                                    {{ form.vat_id }}
+                                    {% if form.vat_id.help_text %}
+                                        <div class="field-help">{{ form.vat_id.help_text }}</div>
+                                    {% endif %}
+                                    {% if form.vat_id.errors %}
+                                        <div class="field-error">{{ form.vat_id.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Full name or company name for invoice -->
+                                <div class="field-group">
+                                    <label for="{{ form.full_name_or_company.id_for_label }}" class="field-label">
+                                        {{ form.full_name_or_company.label }}
+                                    </label>
+                                    {{ form.full_name_or_company }}
+                                    {% if form.full_name_or_company.errors %}
+                                        <div class="field-error">{{ form.full_name_or_company.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            {% else %}
+                                <!-- Full name for shipping -->
+                                <div class="field-group">
+                                    <label for="{{ form.full_name.id_for_label }}" class="field-label">
+                                        {{ form.full_name.label }}
+                                    </label>
+                                    {{ form.full_name }}
+                                    {% if form.full_name.errors %}
+                                        <div class="field-error">{{ form.full_name.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+
+                            <!-- Street and number -->
+                            <div class="field-group">
+                                <label for="{{ form.street.id_for_label }}" class="field-label">
+                                    {{ form.street.label }}
+                                </label>
+                                {{ form.street }}
+                                {% if form.street.errors %}
+                                    <div class="field-error">{{ form.street.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Postal code and city in a row -->
+                            <div class="field-row">
+                                <div class="field-group">
+                                    <label for="{{ form.postal_code.id_for_label }}" class="field-label">
+                                        {{ form.postal_code.label }}
+                                    </label>
+                                    {{ form.postal_code }}
+                                    {% if form.postal_code.help_text %}
+                                        <div class="field-help">{{ form.postal_code.help_text }}</div>
+                                    {% endif %}
+                                    {% if form.postal_code.errors %}
+                                        <div class="field-error">{{ form.postal_code.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="field-group">
+                                    <label for="{{ form.city.id_for_label }}" class="field-label">
+                                        {{ form.city.label }}
+                                    </label>
+                                    {{ form.city }}
+                                    {% if form.city.errors %}
+                                        <div class="field-error">{{ form.city.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            {% if type == 'shipping' %}
+                                <!-- Phone and email for shipping addresses -->
+                                <div class="field-group">
+                                    <label for="{{ form.phone.id_for_label }}" class="field-label">
+                                        {{ form.phone.label }}
+                                    </label>
+                                    {{ form.phone }}
+                                    {% if form.phone.help_text %}
+                                        <div class="field-help">{{ form.phone.help_text }}</div>
+                                    {% endif %}
+                                    {% if form.phone.errors %}
+                                        <div class="field-error">{{ form.phone.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="field-group">
+                                    <label for="{{ form.email.id_for_label }}" class="field-label">
+                                        {{ form.email.label }}
+                                    </label>
+                                    {{ form.email }}
+                                    {% if form.email.errors %}
+                                        <div class="field-error">{{ form.email.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+
+                            <!-- Set as default -->
+                            <div class="field-group checkbox-group">
+                                <label class="checkbox-label">
+                                    {{ form.is_default }}
+                                    <span class="checkbox-text">{{ form.is_default.label }}</span>
+                                </label>
+                                {% if form.is_default.errors %}
+                                    <div class="field-error">{{ form.is_default.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                {% trans 'Save' %}
+                            </button>
+                            <a href="{% url 'accounts:addresses' %}" class="btn btn-secondary">
+                                {% trans 'Cancel' %}
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.address-form-page {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 2rem 0;
+}
+
+.form-header {
+    margin-bottom: 3rem;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--accent-color);
+    text-decoration: none;
+    margin-bottom: 1rem;
+    font-weight: 500;
+}
+
+.back-link:hover {
+    color: var(--button-hover-bg);
+    text-decoration: none;
+}
+
+.form-header h1 {
+    color: var(--text-color);
+    margin: 0;
+}
+
+.form-container {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    padding: 2rem;
+    box-shadow: 0 2px 8px var(--shadow-sm);
+}
+
+.address-form {
+    width: 100%;
+}
+
+.form-fields {
+    margin-bottom: 2rem;
+}
+
+.field-group {
+    margin-bottom: 1.5rem;
+}
+
+.field-row {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 1rem;
+}
+
+.field-label {
+    display: block;
+    color: var(--text-color);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.optional-text {
+    color: var(--hero-text);
+    font-weight: 400;
+    font-style: italic;
+}
+
+.info-icon {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    background: var(--accent-color);
+    color: white;
+    border-radius: 50%;
+    text-align: center;
+    font-size: 0.7rem;
+    line-height: 16px;
+    margin-left: 0.25rem;
+    cursor: help;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--card-border);
+    border-radius: 4px;
+    background: var(--background-color);
+    color: var(--text-color);
+    font-size: 1rem;
+    transition: border-color 0.2s ease;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 2px rgba(215, 126, 0, 0.1);
+}
+
+.field-help {
+    font-size: 0.8rem;
+    color: var(--hero-text);
+    margin-top: 0.25rem;
+}
+
+.field-error {
+    font-size: 0.8rem;
+    color: #dc3545;
+    margin-top: 0.25rem;
+}
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.form-check-input {
+    width: auto;
+    margin: 0;
+}
+
+.checkbox-text {
+    color: var(--text-color);
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    padding-top: 1rem;
+    border-top: 1px solid var(--card-border);
+}
+
+.btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-primary {
+    background: var(--button-bg);
+    color: var(--button-text);
+}
+
+.btn-primary:hover {
+    background: var(--button-hover-bg);
+    color: var(--button-text);
+    text-decoration: none;
+}
+
+.btn-secondary {
+    background: var(--hero-text);
+    color: var(--background-color);
+}
+
+.btn-secondary:hover {
+    background: var(--text-color);
+    color: var(--background-color);
+    text-decoration: none;
+}
+
+.alert {
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 1.5rem;
+}
+
+.alert-danger {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+@media (max-width: 768px) {
+    .field-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .btn {
+        width: 100%;
+    }
+}
+</style>
+{% endblock %} 

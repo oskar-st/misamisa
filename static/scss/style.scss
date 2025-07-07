@@ -221,6 +221,114 @@ body {
     border-color: var(--select-hover-bg);
     box-shadow: 0 2px 4px var(--shadow-md) !important;
   }
+  
+  // Enhanced user menu dropdown styles
+  .user-menu-dropdown {
+    width: 250px;
+    padding: 0.5rem;
+  }
+  
+  .user-menu-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  
+  .dropdown-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    text-decoration: none;
+    color: var(--text-color);
+    border-radius: 6px;
+    transition: background-color 0.2s, color 0.2s;
+    font-weight: 500;
+    font-size: 0.9rem;
+    border: none;
+    background: none;
+    cursor: pointer;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .dropdown-menu-item:hover {
+    background: var(--select-hover-bg);
+    color: var(--accent-color);
+  }
+  
+  .dropdown-item-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    
+    svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      fill: none;
+    }
+  }
+  
+  .user-menu-divider {
+    height: 1px;
+    background: var(--card-border);
+    margin: 0.5rem 0;
+  }
+  
+  .signup-section {
+    margin-top: 0.5rem;
+    
+    .signup-text {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin: 0 0 0.5rem 0;
+      padding: 0 1rem;
+    }
+  }
+  
+  .theme-toggle-btn {
+    text-align: left;
+    
+    &:hover {
+      background: var(--select-hover-bg);
+      color: var(--accent-color);
+    }
+  }
+  
+  .logout-btn {
+    &:hover {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+    }
+  }
+  
+  // Override for dropdown buttons in new structure
+  .dropdown-btn-primary.dropdown-menu-item {
+    background: var(--accent-color);
+    color: var(--button-text);
+    border: 1px solid var(--accent-color);
+    justify-content: center;
+    
+    &:hover {
+      background: var(--button-hover-bg);
+      border-color: var(--button-hover-bg);
+      color: var(--button-text);
+    }
+  }
+  
+  .dropdown-btn-secondary.dropdown-menu-item {
+    background: transparent;
+    border: 1px solid var(--card-border);
+    justify-content: center;
+    
+    &:hover {
+      background: var(--select-hover-bg);
+      border-color: var(--select-hover-bg);
+    }
+  }
   .cart-link {
     display: flex;
     align-items: center;

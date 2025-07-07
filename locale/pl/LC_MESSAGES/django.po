@@ -184,3 +184,58 @@ msgstr "Polityka prywatności"
 
 msgid "Cart"
 msgstr "Koszyk"
+
+# Addresses page
+msgid "My Addresses"
+msgstr "Moje adresy"
+
+msgid "Manage your shipping addresses and invoice details"
+msgstr "Zarządzaj swoimi adresami dostawy i danymi do faktur"
+
+msgid "Shipping Addresses"
+msgstr "Adresy dostawy"
+
+msgid "Add new shipping address"
+msgstr "Dodaj nowy adres dostawy"
+
+msgid "Maximum limit reached (6/6)"
+msgstr "Osiągnięto maksymalny limit (6/6)"
+
+msgid "Default"
+msgstr "Domyślny"
+
+msgid "Edit"
+msgstr "Edytuj"
+
+msgid "Set as default"
+msgstr "Ustaw jako domyślny"
+
+msgid "Delete"
+msgstr "Usuń"
+
+msgid "Are you sure you want to delete this shipping address?"
+msgstr "Czy na pewno chcesz usunąć ten adres dostawy?"
+
+msgid "No shipping addresses yet"
+msgstr "Brak adresów dostawy"
+
+msgid "Add your first shipping address using the button above"
+msgstr "Dodaj swój pierwszy adres dostawy używając przycisku powyżej"
+
+msgid "Invoice Details"
+msgstr "Dane do faktur"
+
+msgid "Add new invoice details"
+msgstr "Dodaj nowe dane do faktur"
+
+msgid "VAT ID"
+msgstr "NIP"
+
+msgid "Are you sure you want to delete these invoice details?"
+msgstr "Czy na pewno chcesz usunąć te dane do faktur?"
+
+msgid "No invoice details yet"
+msgstr "Brak danych do faktur"
+
+msgid "Add your first invoice details using the button above"
+msgstr "Dodaj swoje pierwsze dane do faktur używając przycisku powyżej"

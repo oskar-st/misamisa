@@ -2,7 +2,10 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
+from django.core.validators import RegexValidator
+from django.core.exceptions import ValidationError
 import uuid
+import re
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -45,6 +48,158 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.email
 
+def validate_polish_postcode(value):
+    """Validate Polish postal code format (XX-XXX)"""
+    if not re.match(r'^\d{2}-\d{3}$', value):
+        raise ValidationError(
+            _('Polish postal code must be in format XX-XXX (e.g., 00-001)'),
+            code='invalid_postcode'
+        )
+
+def validate_polish_phone(value):
+    """Validate Polish phone number"""
+    # Remove spaces and other characters
+    cleaned = re.sub(r'[^\d+]', '', value)
+    
+    # Check if it's a valid Polish phone number
+    if not (
+        re.match(r'^\+48\d{9}$', cleaned) or  # +48XXXXXXXXX
+        re.match(r'^48\d{9}$', cleaned) or   # 48XXXXXXXXX
+        re.match(r'^\d{9}$', cleaned) or     # XXXXXXXXX
+        re.match(r'^\d{3}\d{3}\d{3}$', cleaned)  # XXX XXX XXX
+    ):
+        raise ValidationError(
+            _('Enter a valid Polish phone number'),
+            code='invalid_phone'
+        )
+
+def validate_polish_nip(value):
+    """Validate Polish NIP (Tax ID)"""
+    if not value:
+        return  # NIP is optional
+    
+    # Remove spaces and dashes
+    cleaned = re.sub(r'[^\d]', '', value)
+    
+    if len(cleaned) != 10:
+        raise ValidationError(
+            _('Polish NIP must have exactly 10 digits'),
+            code='invalid_nip'
+        )
+    
+    # NIP checksum validation
+    weights = [6, 5, 7, 2, 3, 4, 5, 6, 7]
+    checksum = sum(int(digit) * weight for digit, weight in zip(cleaned[:9], weights)) % 11
+    
+    if checksum != int(cleaned[9]):
+        raise ValidationError(
+            _('Invalid NIP checksum'),
+            code='invalid_nip'
+        )
+
+class ShippingAddress(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='shipping_addresses',
+        verbose_name=_('user')
+    )
+    full_name = models.CharField(_('full name'), max_length=100)
+    street = models.CharField(_('street and number'), max_length=200)
+    postal_code = models.CharField(
+        _('postal code'), 
+        max_length=6,
+        validators=[validate_polish_postcode],
+        help_text=_('Format: XX-XXX')
+    )
+    city = models.CharField(_('city'), max_length=100)
+    phone = models.CharField(
+        _('phone number'), 
+        max_length=20,
+        validators=[validate_polish_phone],
+        help_text=_('Polish phone number')
+    )
+    email = models.EmailField(_('email address'))
+    is_default = models.BooleanField(_('is default'), default=False)
+    created_at = models.DateTimeField(_('created at'), auto_now_add=True)
+    updated_at = models.DateTimeField(_('updated at'), auto_now=True)
+
+    class Meta:
+        verbose_name = _('shipping address')
+        verbose_name_plural = _('shipping addresses')
+        ordering = ['-is_default', '-created_at']
+
+    def __str__(self):
+        return f"{self.full_name} - {self.city}"
+
+    def save(self, *args, **kwargs):
+        # Check maximum limit (6 addresses per user)
+        if not self.pk:  # Only check for new addresses
+            count = ShippingAddress.objects.filter(user=self.user).count()
+            if count >= 6:
+                raise ValidationError(_('Maximum 6 shipping addresses allowed per user'))
+        
+        # If this address is set as default, unset other default addresses for this user
+        if self.is_default:
+            ShippingAddress.objects.filter(
+                user=self.user,
+                is_default=True
+            ).exclude(pk=self.pk).update(is_default=False)
+        
+        super().save(*args, **kwargs)
+
+class InvoiceDetails(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='invoice_details',
+        verbose_name=_('user')
+    )
+    vat_id = models.CharField(
+        _('VAT ID (NIP)'), 
+        max_length=15, 
+        blank=True,
+        validators=[validate_polish_nip],
+        help_text=_('Enter VAT ID if you\'re buying as a company.')
+    )
+    full_name_or_company = models.CharField(_('full name or company name'), max_length=200)
+    street = models.CharField(_('street and number'), max_length=200)
+    postal_code = models.CharField(
+        _('postal code'), 
+        max_length=6,
+        validators=[validate_polish_postcode],
+        help_text=_('Format: XX-XXX')
+    )
+    city = models.CharField(_('city'), max_length=100)
+    is_default = models.BooleanField(_('is default'), default=False)
+    created_at = models.DateTimeField(_('created at'), auto_now_add=True)
+    updated_at = models.DateTimeField(_('updated at'), auto_now=True)
+
+    class Meta:
+        verbose_name = _('invoice details')
+        verbose_name_plural = _('invoice details')
+        ordering = ['-is_default', '-created_at']
+
+    def __str__(self):
+        return f"{self.full_name_or_company} - {self.city}"
+
+    def save(self, *args, **kwargs):
+        # Check maximum limit (6 invoice details per user)
+        if not self.pk:  # Only check for new entries
+            count = InvoiceDetails.objects.filter(user=self.user).count()
+            if count >= 6:
+                raise ValidationError(_('Maximum 6 invoice details allowed per user'))
+        
+        # If this entry is set as default, unset other default entries for this user
+        if self.is_default:
+            InvoiceDetails.objects.filter(
+                user=self.user,
+                is_default=True
+            ).exclude(pk=self.pk).update(is_default=False)
+        
+        super().save(*args, **kwargs)
+
+# Keep the old Address model for backward compatibility
 class Address(models.Model):
     ADDRESS_TYPE_CHOICES = [
         ('shipping', _('Shipping')),
