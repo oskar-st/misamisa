@@ -14,8 +14,30 @@
                       <div class="subcategory-canvas">
                         <ul class="third-level-list">
                           {% for subsubcat in subcat.children.all|dictsort:"name" %}
-                            <li class="third-level-item">
+                            <li class="third-level-item{% if subsubcat.children.all %} has-children{% endif %}">
                               <a href="{% url 'category_or_product' slug=subsubcat.slug %}" class="third-level-link category-link">{{ subsubcat.name }}</a>
+                              {% if subsubcat.children.all %}
+                                <div class="fourth-level-canvas">
+                                  <ul class="fourth-level-list">
+                                    {% for fourthcat in subsubcat.children.all|dictsort:"name" %}
+                                      <li class="fourth-level-item{% if fourthcat.children.all %} has-children{% endif %}">
+                                        <a href="{% url 'category_or_product' slug=fourthcat.slug %}" class="fourth-level-link category-link">{{ fourthcat.name }}</a>
+                                        {% if fourthcat.children.all %}
+                                          <div class="fifth-level-canvas">
+                                            <ul class="fifth-level-list">
+                                              {% for fifthcat in fourthcat.children.all|dictsort:"name" %}
+                                                <li class="fifth-level-item">
+                                                  <a href="{% url 'category_or_product' slug=fifthcat.slug %}" class="fifth-level-link category-link">{{ fifthcat.name }}</a>
+                                                </li>
+                                              {% endfor %}
+                                            </ul>
+                                          </div>
+                                        {% endif %}
+                                      </li>
+                                    {% endfor %}
+                                  </ul>
+                                </div>
+                              {% endif %}
                             </li>
                           {% endfor %}
                         </ul>

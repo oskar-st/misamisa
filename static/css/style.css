@@ -1556,7 +1556,7 @@ header {
 .main-container {
   max-width: 1200px;
   margin: 0.4rem auto;
-  padding: 2rem;
+  padding: 0.5rem 2rem 2rem 2rem;
   background-color: var(--page-bg);
   border-radius: 8px;
   box-shadow: 0 4px 10px var(--shadow-md);
@@ -3385,6 +3385,102 @@ input[type=number]:focus,
   .addresses-page .address-actions {
     justify-content: center;
   }
+}
+
+.third-level-item.has-children > .third-level-link:after {
+  content: "▶";
+  font-size: 0.8em;
+  margin-left: 0.5em;
+  color: var(--accent-color);
+}
+
+.fourth-level-canvas {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 100%;
+  min-width: 160px;
+  background: var(--header-bg);
+  box-shadow: 0 2px 8px var(--shadow-sm);
+  border: 1px solid var(--card-border);
+  border-radius: 0 8px 8px 8px;
+  z-index: 1002;
+  padding: 0.5rem 0;
+}
+
+.third-level-item.dropdown-show > .fourth-level-canvas {
+  display: block;
+}
+
+.fourth-level-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.fourth-level-item {
+  position: relative;
+}
+
+.fourth-level-link {
+  display: block;
+  color: var(--text-color);
+  text-decoration: none;
+  padding: 0.4rem 1.2rem;
+  font-weight: 500;
+  border-radius: 0;
+  transition: background 0.2s, color 0.2s;
+}
+
+.fourth-level-link:hover {
+  background: var(--select-hover-bg);
+  color: var(--accent-color);
+}
+
+.fourth-level-item.has-children > .fourth-level-link:after {
+  content: "▶";
+  font-size: 0.8em;
+  margin-left: 0.5em;
+  color: var(--accent-color);
+}
+
+.fifth-level-canvas {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 100%;
+  min-width: 160px;
+  background: var(--header-bg);
+  box-shadow: 0 2px 8px var(--shadow-sm);
+  border: 1px solid var(--card-border);
+  border-radius: 0 8px 8px 8px;
+  z-index: 1003;
+  padding: 0.5rem 0;
+}
+
+.fourth-level-item.dropdown-show > .fifth-level-canvas {
+  display: block;
+}
+
+.fifth-level-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.fifth-level-link {
+  display: block;
+  color: var(--text-color);
+  text-decoration: none;
+  padding: 0.4rem 1.2rem;
+  font-weight: 500;
+  border-radius: 0;
+  transition: background 0.2s, color 0.2s;
+}
+
+.fifth-level-link:hover {
+  background: var(--select-hover-bg);
+  color: var(--accent-color);
 }
 
 /*# sourceMappingURL=style.css.map */

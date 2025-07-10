@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build-css": "sass static/scss:static/css"
+    "build-css": "sass static/scss:static/css && sass static/scss/admin.scss:static/admin/css/enhanced_tree_admin.css"
   },
   "author": "",
   "license": "ISC",

@@ -47,6 +47,34 @@
                                                        class="category-link {% if category and category.pk == subsubcategory.pk %}active{% endif %}">
                                                         {{ subsubcategory.name }}
                                                     </a>
+                                                    
+                                                    <!-- Fourth level categories -->
+                                                    {% if subsubcategory.children.all %}
+                                                        <ul class="subcategory-list">
+                                                            {% for fourthcategory in subsubcategory.children.all|dictsort:"name" %}
+                                                                <li class="category-item">
+                                                                    <a href="{% url 'category_or_product' slug=fourthcategory.slug %}" 
+                                                                       class="category-link {% if category and category.pk == fourthcategory.pk %}active{% endif %}">
+                                                                        {{ fourthcategory.name }}
+                                                                    </a>
+                                                                    
+                                                                    <!-- Fifth level categories -->
+                                                                    {% if fourthcategory.children.all %}
+                                                                        <ul class="subcategory-list">
+                                                                            {% for fifthcategory in fourthcategory.children.all|dictsort:"name" %}
+                                                                                <li class="category-item">
+                                                                                    <a href="{% url 'category_or_product' slug=fifthcategory.slug %}" 
+                                                                                       class="category-link {% if category and category.pk == fifthcategory.pk %}active{% endif %}">
+                                                                                        {{ fifthcategory.name }}
+                                                                                    </a>
+                                                                                </li>
+                                                                            {% endfor %}
+                                                                        </ul>
+                                                                    {% endif %}
+                                                                </li>
+                                                            {% endfor %}
+                                                        </ul>
+                                                    {% endif %}
                                                 </li>
                                             {% endfor %}
                                         </ul>

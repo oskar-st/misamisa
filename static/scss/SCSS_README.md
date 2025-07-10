@@ -8,10 +8,14 @@ This project uses SCSS (Sass) for styling with a modular approach. All styles ar
 static/
 ├── scss/
 │   ├── style.scss                    # Main SCSS file (imports all modules)
+│   ├── admin.scss                    # Django admin enhancements
 │   └── modules/
 │       └── _module-management.scss   # Module management styles
-└── css/
-    └── style.css                     # Compiled CSS (generated)
+├── css/
+│   └── style.css                     # Compiled CSS (generated)
+└── admin/
+    └── css/
+        └── enhanced_tree_admin.css   # Compiled admin CSS (generated)
 ```
 
 ## Getting Started
@@ -34,6 +38,8 @@ pip install libsass
 ```bash
 make build
 # or
+npm run build-css
+# or manually:
 python -m sass static/scss/style.scss:static/css/style.css --style compressed
 ```
 
@@ -192,12 +198,24 @@ The compiled CSS is automatically served by Django's static file handling. Make 
 <link rel="stylesheet" href="{% static 'css/style.css' %}">
 ```
 
+## Admin Styles
+
+The project includes enhanced Django admin styles for the category tree management:
+
+- **Source**: `static/scss/admin.scss`
+- **Compiled to**: `static/admin/css/enhanced_tree_admin.css`
+- **Features**: Enhanced MPTT tree interface with drag & drop, visual feedback, and color-coded levels
+
+The admin styles are automatically compiled when running `npm run build-css` and included in the Django admin via the `CategoryAdmin.Media` class.
+
 ## Troubleshooting
 
 ### CSS Not Updating
-- Make sure the SCSS watcher is running: `make dev`
+- Make sure to run `npm run build-css` after SCSS changes
+- For development, you can use `make dev` for the main styles  
 - Check that the import path is correct in `style.scss`
-- Verify the compiled CSS file exists: `static/css/style.css`
+- Verify the compiled CSS files exist: `static/css/style.css` and `static/admin/css/enhanced_tree_admin.css`
+- Run `python manage.py collectstatic` if serving static files
 
 ### SCSS Compilation Errors
 - Check SCSS syntax (missing semicolons, brackets, etc.)

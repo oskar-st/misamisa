@@ -64,7 +64,7 @@ def category_detail(request, slug):
     
     # Get hierarchical categories for sidebar
     sidebar_categories = Category.objects.filter(parent=None, is_active=True).prefetch_related(
-        'children__children'  # Prefetch up to 3 levels for performance
+        'children__children__children__children__children'  # Prefetch up to 6 levels for unlimited nesting
     ).order_by('name')
     
     context = {
@@ -123,7 +123,7 @@ def product_list_public(request, category_slug=None):
 
     # Get hierarchical categories for sidebar
     sidebar_categories = Category.objects.filter(parent=None, is_active=True).prefetch_related(
-        'children__children'  # Prefetch up to 3 levels for performance
+        'children__children__children__children__children'  # Prefetch up to 6 levels for unlimited nesting
     ).order_by('name')
     
     context = {

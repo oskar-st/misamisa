@@ -26,6 +26,19 @@ class CategoryAdmin(DjangoMpttAdmin):
     search_fields = ("name", "slug")
     prepopulated_fields = {"slug": ("name",)}
     readonly_fields = ("created_at", "updated_at")
+    
+    # MPTT Admin configuration for better drag & drop
+    tree_auto_open = 0  # Don't auto-expand
+    tree_load_on_demand = False  # Load all nodes for drag/drop
+    mptt_level_indent = 20  # Indentation per level
+    
+    # Enhanced admin with auto-refresh
+    class Media:
+        js = ('admin/js/enhanced_tree_admin.js',)
+        css = {
+            'all': ('admin/css/enhanced_tree_admin.css',)
+        }
+    
     fieldsets = (
         ("Basic Information", {
             "fields": ("name", "slug", "parent", "is_active")

@@ -67,7 +67,7 @@
 
   <!-- HEADER -->
   <header class="site-header">
-    <div class="header-inner container">
+    <div class="header-inner container          ">
       <div class="header-left">
         <a href="{% url 'home' %}" class="logo-link shop-link">
           <img src="{% static 'logo.png' %}" alt="Misamisa logo" class="logo">
@@ -586,6 +586,16 @@
             {
                 trigger: '.subcategory-item.has-children',
                 dropdown: '.subcategory-canvas',
+                showClass: 'dropdown-show'
+            },
+            {
+                trigger: '.third-level-item.has-children',
+                dropdown: '.fourth-level-canvas',
+                showClass: 'dropdown-show'
+            },
+            {
+                trigger: '.fourth-level-item.has-children',
+                dropdown: '.fifth-level-canvas',
                 showClass: 'dropdown-show'
             }
         ];
