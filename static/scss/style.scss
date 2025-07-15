@@ -43,6 +43,20 @@ input[type="button"]:disabled,
   cursor: pointer !important;
 }
 
+/* --- FILE INPUT HIDING --- */
+.file-input,
+input[type="file"],
+#module_file {
+  display: none !important;
+  visibility: hidden !important;
+  position: absolute !important;
+  left: -9999px !important;
+  opacity: 0 !important;
+  width: 0 !important;
+  height: 0 !important;
+  z-index: -1 !important;
+}
+
 /* --- VARIABLES --- */
 :root {
   --background-color: #fffaf3;

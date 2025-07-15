@@ -14,7 +14,7 @@ This module system provides a flexible, extensible architecture for Django appli
 
 ## Quick Start
 
-### 1. Load Modules
+### Load Modules
 
 ```bash
 # Load all modules
@@ -30,7 +30,7 @@ python manage.py load_modules --module design
 python manage.py load_modules --install --migrate
 ```
 
-### 2. Access Module Management
+### Access Module Management
 
 Visit `/modules/` in your browser to access the module management interface.
 
@@ -153,7 +153,7 @@ Create views for your module:
 
 ```python
 # modules/your_module/views.py
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpRequest, HttpResponse
 from django.template.response import TemplateResponse
 from django.contrib.auth.decorators import login_required
@@ -273,36 +273,67 @@ The module system provides API endpoints:
 - `GET /modules/api/?module=module_name` - Get specific module info
 - `POST /modules/api/` - Perform module operations (install, uninstall, activate, deactivate)
 
-## Example Modules
+## Module Distribution
 
-### Design Module
-- Theme management
-- Color customization
-- Font selection
-- Layout options
+For packaging modules as ZIP files and distribution, see [DISTRIBUTION_GUIDE.md](DISTRIBUTION_GUIDE.md).
 
-### Shipping Module
-- Shipping zones
-- Shipping methods
-- Cost calculation
-- Delivery tracking
+## Programmatic Module Management
 
-### Payment Module
-- Payment gateways
-- Transaction processing
-- Fee calculation
-- Payment analytics
+```python
+from modules.manager import module_manager
+
+# Get all payment modules
+payment_modules = module_manager.get_payment_modules()
+
+# Get a specific module
+module = module_manager.get_module('payment_gateway')
+
+# Install a module
+module_manager.install_module('payment_gateway')
+
+# Uninstall a module
+module_manager.uninstall_module('payment_gateway')
+```
+
+## Complete Module Removal
+
+The module system includes comprehensive module removal functionality:
+
+### What Complete Removal Does
+
+1. **Uninstall the module** - Calls the module's `uninstall()` method
+2. **Delete all database records** - Removes all data from the module's models
+3. **Remove module files** - Deletes the entire module directory from the filesystem
+4. **Clean up registry** - Removes the module from the module registry
+5. **Clear cached imports** - Removes any cached Python imports
+
+### How to Use
+
+#### Via Web Interface
+1. Go to `/modules/` in your admin panel
+2. Find the module you want to remove
+3. Click the **"Complete Remove"** button (red button with warning icon)
+4. Confirm the action in the warning dialog
+
+#### Via Django Shell
+```python
+from modules.manager import module_manager
+
+# Completely remove a module
+success = module_manager.completely_remove_module('module_name')
+```
+
+⚠️ **Warning**: This action is irreversible! All module files and data will be permanently deleted.
 
 ## Best Practices
 
 1. **Keep modules self-contained**: Each module should be independent
 2. **Use meaningful names**: Module names should be descriptive
-3. **Provide documentation**: Include README files for complex modules
-4. **Handle errors gracefully**: Always handle exceptions in module methods
-5. **Use migrations**: Create migrations for database changes
-6. **Test modules**: Write tests for module functionality
-7. **Version your modules**: Use semantic versioning
-8. **Document dependencies**: List any external dependencies
+3. **Handle errors gracefully**: Always handle exceptions in module methods
+4. **Use migrations**: Create migrations for database changes
+5. **Test modules**: Write tests for module functionality
+6. **Version your modules**: Use semantic versioning
+7. **Document dependencies**: List any external dependencies
 
 ## Troubleshooting
 
@@ -323,94 +354,11 @@ The module system provides API endpoints:
 
 ## Contributing
 
-When creating modules for reuse:
+When creating modules:
 
 1. Follow the established structure
 2. Include comprehensive documentation
 3. Add proper error handling
 4. Include example usage
 5. Test thoroughly
-6. Version appropriately
-
-## License
-
-This module system is part of your Django application and follows the same license terms.
-
-# Module Management System
-
-## Complete Module Removal
-
-The module system now includes a comprehensive module removal functionality that completely removes modules from the system.
-
-### What Complete Removal Does
-
-When you use the "Complete Remove" functionality, it will:
-
-1. **Uninstall the module** - Calls the module's `uninstall()` method
-2. **Delete all database records** - Removes all data from the module's models
-3. **Remove module files** - Deletes the entire module directory from the filesystem
-4. **Clean up registry** - Removes the module from the module registry
-5. **Clear cached imports** - Removes any cached Python imports
-
-### How to Use
-
-#### Via Web Interface
-
-1. Go to `/modules/` in your admin panel
-2. Find the module you want to remove
-3. Click the **"Complete Remove"** button (red button with warning icon)
-4. Confirm the action in the warning dialog
-5. The module will be completely removed from the system
-
-#### Via API
-
-```bash
-# Complete removal via AJAX
-curl -X POST /modules/complete-remove/module_name/ \
-  -H "X-CSRFToken: your_csrf_token"
-```
-
-#### Via Django Shell
-
-```python
-from modules.manager import module_manager
-
-# Completely remove a module
-success = module_manager.completely_remove_module('module_name')
-if success:
-    print("Module completely removed")
-else:
-    print("Failed to remove module")
-```
-
-### Warning
-
-⚠️ **This action is irreversible!** Once you complete the removal:
-
-- All module files will be deleted
-- All database records will be removed
-- All configurations will be lost
-- The module cannot be recovered without re-uploading
-
-### Safety Features
-
-- **Confirmation Dialog**: A detailed warning dialog appears before removal
-- **Visual Distinction**: The complete remove button is styled differently to indicate danger
-- **Admin Only**: Only admin users can perform complete removal
-- **Error Handling**: Comprehensive error handling prevents partial removals
-
-### Module States
-
-- **Installed**: Module is installed but can be uninstalled (keeps files)
-- **Uninstalled**: Module is not active but files remain
-- **Completely Removed**: Module and all its files are gone from the system
-
-### Recovery
-
-If you accidentally remove a module, you can:
-
-1. Re-upload the module ZIP file via the upload interface
-2. Re-install the module
-3. Re-configure the module settings
-
-However, any data that was in the database will be permanently lost. 
+6. Version appropriately 

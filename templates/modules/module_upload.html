@@ -63,9 +63,7 @@
         font-size: 0.9rem;
     }
     
-    .file-input {
-        display: none;
-    }
+
     
     .upload-button {
         background: #6772e5;
@@ -304,10 +302,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Click to upload
-    uploadArea.addEventListener('click', function() {
-        fileInput.click();
-    });
+    // Click to upload (removed - only use the button to avoid confusion)
     
     // File input change
     fileInput.addEventListener('change', function(e) {

@@ -157,21 +157,61 @@
 
 <script src="https://js.stripe.com/v3/"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+// Global variables for Stripe
+window.stripeInstance = null;
+window.stripeElements = null;
+let isInitialized = false;
+
+// Initialize on both DOMContentLoaded and HTMX events
+function initStripeModule() {
     const stripePublicKey = '{{ stripe_public_key }}';
-    const stripe = Stripe(stripePublicKey, {
-        betas: ['p24_pm_beta_1', 'blik_pm_beta_1']
-    });
     
+    // Wait for Stripe.js to be fully loaded
+    let stripe;
     let elements;
     let paymentElement;
-    let isInitialized = false;
+    
+    // Ensure Stripe is loaded
+    function waitForStripe() {
+        return new Promise((resolve, reject) => {
+            if (typeof Stripe !== 'undefined') {
+                stripe = Stripe(stripePublicKey, {
+                    betas: ['p24_pm_beta_1', 'blik_pm_beta_1']
+                });
+                resolve(stripe);
+            } else {
+                let attempts = 0;
+                const checkStripe = setInterval(() => {
+                    attempts++;
+                    if (typeof Stripe !== 'undefined') {
+                        clearInterval(checkStripe);
+                        stripe = Stripe(stripePublicKey, {
+                            betas: ['p24_pm_beta_1', 'blik_pm_beta_1']
+                        });
+                        resolve(stripe);
+                    } else if (attempts > 50) {
+                        clearInterval(checkStripe);
+                        reject(new Error('Stripe.js failed to load'));
+                    }
+                }, 100);
+            }
+        });
+    }
     
     // Initialize Stripe payment form
     async function initializeStripePayment() {
         if (isInitialized) return;
         
         try {
+            // Ensure Stripe is loaded
+            await waitForStripe();
+            
+            // Get CSRF token
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
+            if (!csrfToken) {
+                throw new Error('CSRF token not found');
+            }
+            
             const orderData = {
                 amount: parseFloat('{{ total|default:0 }}'),
                 currency: 'pln'
@@ -186,10 +226,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    'X-CSRFToken': csrfToken.value
                 },
                 body: JSON.stringify(orderData)
             });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
             
             const result = await response.json();
             
@@ -222,9 +266,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
                 
                 // Mount the payment element
-                paymentElement.mount('#stripe-payment-element');
-                
-                isInitialized = true;
+                const stripeElementContainer = document.getElementById('stripe-payment-element');
+                if (stripeElementContainer) {
+                    paymentElement.mount('#stripe-payment-element');
+                    
+                    // Store in global variables for form handler
+                    window.stripeInstance = stripe;
+                    window.stripeElements = elements;
+                    isInitialized = true;
+                } else {
+                    throw new Error('Stripe payment element container not found');
+                }
                 
             } else {
                 throw new Error(result.error || 'Failed to create payment intent');
@@ -232,8 +284,20 @@ document.addEventListener('DOMContentLoaded', function() {
             
         } catch (error) {
             console.error('Error initializing Stripe payment:', error);
-            document.getElementById('stripe-payment-element').innerHTML = 
-                '<div class="error-message">Error loading payment form. Please refresh the page.</div>';
+            const stripeElementContainer = document.getElementById('stripe-payment-element');
+            if (stripeElementContainer) {
+                stripeElementContainer.innerHTML = 
+                    '<div class="error-message">Error loading payment form: ' + error.message + '. Please refresh the page.</div>';
+            }
+        }
+    }
+    
+    // Function to check if Stripe payment method is selected and initialize
+    function checkAndInitializeStripe() {
+        const stripeRadio = document.querySelector('input[value="stripe_payment"]');
+        const stripeContainer = document.getElementById('stripe-payment-element');
+        if (stripeRadio && stripeRadio.checked && stripeContainer && !isInitialized) {
+            setTimeout(initializeStripePayment, 100); // Small delay to ensure everything is ready
         }
     }
     
@@ -246,22 +310,57 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // If Stripe is already selected, initialize immediately
-        if (stripeRadio.checked) {
-            initializeStripePayment();
-        }
+        // Check if Stripe is already selected on page load
+        checkAndInitializeStripe();
+        
+        // Also check after a short delay in case of timing issues
+        setTimeout(checkAndInitializeStripe, 500);
     }
-    
-    // Override the checkout form submission to handle Stripe payments
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', initStripeModule);
+
+// Initialize when HTMX loads new content
+document.addEventListener('htmx:afterSettle', function(evt) {
+    // Only reinitialize if the new content contains Stripe payment form
+    if (evt.detail.target.querySelector && evt.detail.target.querySelector('#stripe-payment-element')) {
+        // Reset initialization state for new content
+        isInitialized = false;
+        window.stripeInstance = null;
+        window.stripeElements = null;
+        setTimeout(initStripeModule, 100);
+    }
+});
+
+// Initialize when HTMX content is swapped in
+document.addEventListener('htmx:afterSwap', function(evt) {
+    // Only reinitialize if the new content contains Stripe payment form
+    if (evt.detail.target.querySelector && evt.detail.target.querySelector('#stripe-payment-element')) {
+        // Reset initialization state for new content
+        isInitialized = false;
+        window.stripeInstance = null;
+        window.stripeElements = null;
+        setTimeout(initStripeModule, 200);
+    }
+});
+
+// Handle checkout form submission (outside of initStripeModule to avoid duplicate listeners)
+function setupCheckoutFormHandler() {
     const checkoutForm = document.getElementById('checkout-form');
-    if (checkoutForm) {
+    if (checkoutForm && !checkoutForm.hasAttribute('data-stripe-handler-attached')) {
+        checkoutForm.setAttribute('data-stripe-handler-attached', 'true');
         checkoutForm.addEventListener('submit', async function(event) {
             const selectedPaymentMethod = document.querySelector('input[name="payment_method"]:checked');
             
             if (selectedPaymentMethod && selectedPaymentMethod.value === 'stripe_payment') {
                 event.preventDefault();
                 
-                if (!elements || !isInitialized) {
+                // Get current Stripe instance from global scope
+                const currentElements = window.stripeElements;
+                const currentStripe = window.stripeInstance;
+                
+                if (!currentElements || !currentStripe) {
                     alert('Payment form not loaded. Please wait a moment and try again.');
                     return;
                 }
@@ -275,8 +374,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 try {
                     // Confirm payment
-                    const {error} = await stripe.confirmPayment({
-                        elements: elements,
+                    const {error} = await currentStripe.confirmPayment({
+                        elements: currentElements,
                         confirmParams: {
                             return_url: window.location.origin + '/checkout/success/'
                         }
@@ -305,5 +404,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-});
+}
+
+// Setup form handler on page load
+document.addEventListener('DOMContentLoaded', setupCheckoutFormHandler);
+
+// Setup form handler after HTMX content loads
+document.addEventListener('htmx:afterSettle', setupCheckoutFormHandler);
 </script>

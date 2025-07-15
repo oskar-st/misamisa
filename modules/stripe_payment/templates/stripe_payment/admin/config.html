@@ -9,24 +9,24 @@
         
         <div class="form-group">
             <label for="stripe_public_key">{% trans 'Publishable Key' %}</label>
-            <input type="text" id="stripe_public_key" name="stripe_public_key" 
-                   value="{{ config.stripe_public_key|default:'' }}" 
+            <input type="text" id="stripe_public_key" name="STRIPE_PUBLIC_KEY" 
+                   value="{{ settings.STRIPE_PUBLIC_KEY|default:'' }}" 
                    class="form-control" placeholder="pk_test_...">
             <small class="form-text">{% trans 'Your Stripe publishable key (starts with pk_test_ or pk_live_)' %}</small>
         </div>
         
         <div class="form-group">
             <label for="stripe_secret_key">{% trans 'Secret Key' %}</label>
-            <input type="password" id="stripe_secret_key" name="stripe_secret_key" 
-                   value="{{ config.stripe_secret_key|default:'' }}" 
+            <input type="password" id="stripe_secret_key" name="STRIPE_SECRET_KEY" 
+                   value="{{ settings.STRIPE_SECRET_KEY|default:'' }}" 
                    class="form-control" placeholder="sk_test_...">
             <small class="form-text">{% trans 'Your Stripe secret key (starts with sk_test_ or sk_live_)' %}</small>
         </div>
         
         <div class="form-group">
             <label for="stripe_webhook_secret">{% trans 'Webhook Secret' %}</label>
-            <input type="password" id="stripe_webhook_secret" name="stripe_webhook_secret" 
-                   value="{{ config.stripe_webhook_secret|default:'' }}" 
+            <input type="password" id="stripe_webhook_secret" name="STRIPE_WEBHOOK_SECRET" 
+                   value="{{ settings.STRIPE_WEBHOOK_SECRET|default:'' }}" 
                    class="form-control" placeholder="whsec_...">
             <small class="form-text">{% trans 'Your Stripe webhook endpoint secret (optional)' %}</small>
         </div>

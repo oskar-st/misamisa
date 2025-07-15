@@ -173,7 +173,7 @@
             <li>Create a <a href="https://dashboard.stripe.com/register" target="_blank">Stripe account</a></li>
             <li>Go to the <a href="https://dashboard.stripe.com/apikeys" target="_blank">API Keys section</a></li>
             <li>Copy your Publishable Key and Secret Key</li>
-            <li>For webhooks, go to <a href="https://dashboard.stripe.com/webhooks" target="_blank">Webhooks</a> and add endpoint: <code>{{ request.scheme }}://{{ request.get_host }}/modules/stripe_payment/webhook/</code></li>
+            <li>For webhooks, go to <a href="https://dashboard.stripe.com/webhooks" target="_blank">Webhooks</a> and add endpoint: <code>{{ request.scheme }}://{{ request.get_host }}/stripe_payment/webhook/</code></li>
             <li>Copy the webhook signing secret</li>
             <li>Save the configuration above</li>
         </ol>

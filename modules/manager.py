@@ -24,6 +24,7 @@ class ModuleManager:
         self.modules_path = os.path.join(settings.BASE_DIR, "modules")
         self.discovered_modules: Dict[str, BaseModule] = {}
         self._uninstalled_modules_file = os.path.join(self.modules_path, "uninstalled_modules.json")
+        self._disabled_modules_file = os.path.join(self.modules_path, "disabled_modules.json")
         self.load_all_modules()
     
     def _get_uninstalled_modules(self) -> set:
@@ -41,6 +42,24 @@ class ModuleManager:
         try:
             with open(self._uninstalled_modules_file, 'w') as f:
                 json.dump(list(uninstalled_modules), f)
+        except Exception:
+            pass
+    
+    def _get_disabled_modules(self) -> set:
+        """Get list of disabled modules from file."""
+        try:
+            if os.path.exists(self._disabled_modules_file):
+                with open(self._disabled_modules_file, 'r') as f:
+                    return set(json.load(f))
+        except Exception:
+            pass
+        return set()
+    
+    def _save_disabled_modules(self, disabled_modules: set):
+        """Save list of disabled modules to file."""
+        try:
+            with open(self._disabled_modules_file, 'w') as f:
+                json.dump(list(disabled_modules), f)
         except Exception:
             pass
     
@@ -135,6 +154,7 @@ class ModuleManager:
         discovered = self.discover_modules()
         loaded = {}
         uninstalled_modules = self._get_uninstalled_modules()
+        disabled_modules = self._get_disabled_modules()
         
         for module_name in discovered:
             # Skip loading modules that are marked as uninstalled
@@ -147,7 +167,8 @@ class ModuleManager:
                 loaded[module_name] = module_instance
                 # Mark as installed if it's discovered and not uninstalled
                 module_instance.is_installed = True
-                module_instance.is_enabled = True
+                # Set enabled state based on persistent storage
+                module_instance.is_enabled = module_name not in disabled_modules
         
         return loaded
     
@@ -466,6 +487,11 @@ class ModuleManager:
             success = module.enable()
             if success:
                 module.is_enabled = True
+                # Remove from disabled modules list
+                disabled_modules = self._get_disabled_modules()
+                if module_name in disabled_modules:
+                    disabled_modules.remove(module_name)
+                    self._save_disabled_modules(disabled_modules)
             return success
         except Exception as e:
             print(f"Failed to enable module {module_name}: {e}")
@@ -481,6 +507,10 @@ class ModuleManager:
             success = module.disable()
             if success:
                 module.is_enabled = False
+                # Add to disabled modules list
+                disabled_modules = self._get_disabled_modules()
+                disabled_modules.add(module_name)
+                self._save_disabled_modules(disabled_modules)
             return success
         except Exception as e:
             print(f"Failed to disable module {module_name}: {e}")

@@ -71,16 +71,9 @@ class StripeModule(PaymentModuleBase):
     
     def get_stripe_public_key(self):
         """Get Stripe public key from configuration."""
-        # First try to get from environment variables (highest priority)
-        env_key = os.getenv('STRIPE_PUBLIC_KEY')
-        if env_key:
-            return env_key
-        
-        # Then try to get from saved config file
         config = self._get_config()
         if config and config.get('stripe_public_key'):
             return config['stripe_public_key']
-        
         # Fallback to Django settings
         return getattr(settings, 'STRIPE_PUBLIC_KEY', 'pk_test_your_test_key_here')
     
@@ -151,6 +144,7 @@ class StripeModule(PaymentModuleBase):
         """Get the admin configuration template."""
         return "stripe_payment/admin/config.html"
     
+    @csrf_exempt
     def create_payment_intent(self, request):
         """Create a payment intent with multiple payment method support."""
         try:
