@@ -296,6 +296,15 @@ class ModuleManager:
             if success:
                 module.is_installed = True
                 self.mark_module_installed(module_name)
+                
+                # Step 3: Disable the module by default for safety
+                # Add to disabled modules list to ensure it's disabled by default
+                disabled_modules = self._get_disabled_modules()
+                disabled_modules.add(module_name)
+                self._save_disabled_modules(disabled_modules)
+                module.is_enabled = False
+                
+                print(f"✅ Module {module_name} installed successfully and disabled by default")
             return success
         except Exception as e:
             print(f"Failed to install module {module_name}: {e}")
@@ -462,13 +471,56 @@ class ModuleManager:
             else:
                 print(f"No configuration file found for {module_name}")
             
-            # Step 8.5: Remove Stripe keys from .env if this is the Stripe module
+            # Step 8.5: Clear module configuration from Django settings
+            print("Step 8.5: Clearing module configuration from Django settings")
+            self._clear_module_settings(module_name)
+            
+            # Step 8.6: Clear any cached configuration in the module itself
+            print("Step 8.6: Clearing cached module configuration")
+            self._clear_module_cached_config(module_name)
+            
+            # Step 8.7: Remove Stripe keys from .env if this is the Stripe module
             if module_name == 'stripe_payment':
-                print("Step 8.5: Removing Stripe keys from .env file")
+                print("Step 8.7: Removing Stripe keys from .env file")
                 self._remove_stripe_keys_from_env()
             
-            # Step 9: Mark as uninstalled
-            self.mark_module_uninstalled(module_name)
+            # Step 9: Remove from uninstalled modules list
+            print("Step 9: Removing from uninstalled modules list")
+            uninstalled_modules = self._get_uninstalled_modules()
+            if module_name in uninstalled_modules:
+                uninstalled_modules.remove(module_name)
+                self._save_uninstalled_modules(uninstalled_modules)
+                print(f"Removed {module_name} from uninstalled modules list")
+            
+            # Step 10: Remove from disabled modules list
+            print("Step 10: Removing from disabled modules list")
+            disabled_modules = self._get_disabled_modules()
+            if module_name in disabled_modules:
+                disabled_modules.remove(module_name)
+                self._save_disabled_modules(disabled_modules)
+                print(f"Removed {module_name} from disabled modules list")
+            
+            # Step 11: Clean up template directories
+            print("Step 11: Cleaning up template directories")
+            template_dir = os.path.join(settings.BASE_DIR, 'templates', module_name)
+            if os.path.exists(template_dir):
+                shutil.rmtree(template_dir)
+                print(f"Removed template directory: {template_dir}")
+            
+            # Step 12: Clean up static directories
+            print("Step 12: Cleaning up static directories")
+            static_dir = os.path.join(settings.BASE_DIR, 'static', module_name)
+            if os.path.exists(static_dir):
+                shutil.rmtree(static_dir)
+                print(f"Removed static directory: {static_dir}")
+            
+            # Step 13: Clear Python cache files
+            print("Step 13: Clearing Python cache files")
+            self._clear_python_cache()
+            
+            # Step 14: Remove any remaining module-specific files
+            print("Step 14: Removing any remaining module-specific files")
+            self._remove_module_specific_files(module_name)
             
             print(f"✅ Module {module_name} completely removed from the system")
             return True
@@ -567,9 +619,50 @@ class ModuleManager:
     
     def _cleanup_database_records(self, module_name: str):
         """Clean up database records for a module."""
-        # This would need to be implemented based on your specific database structure
-        # For now, we'll just print a warning
-        print(f"Warning: Database cleanup for {module_name} not implemented")
+        try:
+            from django.db import connection
+            
+            # Clean up any custom tables that might have been created by the module
+            with connection.cursor() as cursor:
+                # Check for common module-specific table patterns
+                table_patterns = [
+                    f'{module_name}_transactions',
+                    f'{module_name}_config',
+                    f'{module_name}_settings',
+                    f'{module_name}_logs',
+                    f'{module_name}_cache',
+                    f'{module_name}_data'
+                ]
+                
+                for table_pattern in table_patterns:
+                    cursor.execute("""
+                        SELECT EXISTS (
+                            SELECT FROM information_schema.tables 
+                            WHERE table_name = %s
+                        )
+                    """, [table_pattern])
+                    
+                    if cursor.fetchone()[0]:
+                        cursor.execute(f"DROP TABLE IF EXISTS {table_pattern}")
+                        print(f"Dropped table: {table_pattern}")
+                
+                # Also check for any tables that might have been created with the module name
+                cursor.execute("""
+                    SELECT table_name 
+                    FROM information_schema.tables 
+                    WHERE table_name LIKE %s
+                """, [f'{module_name}%'])
+                
+                tables = cursor.fetchall()
+                for table in tables:
+                    table_name = table[0]
+                    cursor.execute(f"DROP TABLE IF EXISTS {table_name}")
+                    print(f"Dropped table: {table_name}")
+            
+            print(f"Database cleanup completed for {module_name}")
+            
+        except Exception as e:
+            print(f"Warning: Could not complete database cleanup for {module_name}: {e}")
     
     def _clear_module_cache(self, module_name: str):
         """Clear Python cache for a module."""
@@ -666,18 +759,151 @@ class ModuleManager:
         except Exception as e:
             print(f"Error removing Stripe keys from .env: {e}")
     
-    def _clear_python_cache(self):
-        """Clear all Python cache files."""
+    def _clear_module_settings(self, module_name: str):
+        """Clear module configuration from Django settings."""
         try:
-            # Clear all __pycache__ directories
-            for root, dirs, files in os.walk(self.modules_path):
+            # Clear from MODULE_CONFIGS if it exists
+            if hasattr(settings, 'MODULE_CONFIGS') and module_name in settings.MODULE_CONFIGS:
+                del settings.MODULE_CONFIGS[module_name]
+                print(f"Cleared {module_name} from MODULE_CONFIGS")
+            
+            # Clear any module-specific settings that might exist
+            module_settings_prefixes = [
+                f'{module_name.upper()}_',
+                f'{module_name.upper()}MODULE_',
+                f'{module_name.upper()}_MODULE_',
+            ]
+            
+            # Get all settings attributes
+            settings_attrs = dir(settings)
+            cleared_settings = []
+            
+            for attr in settings_attrs:
+                if not attr.startswith('_') and not attr.isupper():
+                    continue
+                
+                for prefix in module_settings_prefixes:
+                    if attr.startswith(prefix):
+                        if hasattr(settings, attr):
+                            delattr(settings, attr)
+                            cleared_settings.append(attr)
+                        break
+            
+            if cleared_settings:
+                print(f"Cleared module settings: {', '.join(cleared_settings)}")
+            else:
+                print(f"No module-specific settings found for {module_name}")
+                
+        except Exception as e:
+            print(f"Error clearing module settings for {module_name}: {e}")
+    
+    def _clear_module_cached_config(self, module_name: str):
+        """Clear any cached configuration in the module itself."""
+        try:
+            # Clear any cached configuration that might be stored in the module instance
+            module = self.get_module(module_name)
+            if module:
+                # Clear any cached configuration attributes
+                config_attrs = [
+                    '_config_cache',
+                    '_cached_config',
+                    'config_cache',
+                    'cached_config',
+                    '_stripe_config',
+                    '_module_config'
+                ]
+                
+                for attr in config_attrs:
+                    if hasattr(module, attr):
+                        delattr(module, attr)
+                        print(f"Cleared cached config attribute: {attr}")
+                
+                # Clear any configuration-related methods that might cache data
+                if hasattr(module, '_get_config'):
+                    # Force reload of configuration by clearing any internal cache
+                    if hasattr(module, '_config_cache'):
+                        delattr(module, '_config_cache')
+                        print("Cleared module's internal config cache")
+            
+            # Also clear any module-specific configuration that might be cached
+            # in the module's own configuration methods
+            module_config_methods = [
+                f'_get_{module_name}_config',
+                f'_load_{module_name}_config',
+                f'_cache_{module_name}_config'
+            ]
+            
+            # Check if any of these methods exist and clear their caches
+            for method_name in module_config_methods:
+                if hasattr(self, method_name):
+                    method = getattr(self, method_name)
+                    if hasattr(method, '__self__') and hasattr(method.__self__, '_cache'):
+                        delattr(method.__self__, '_cache')
+                        print(f"Cleared cache for {method_name}")
+            
+            print(f"Cleared cached configuration for {module_name}")
+                
+        except Exception as e:
+            print(f"Error clearing cached configuration for {module_name}: {e}")
+    
+    def _clear_python_cache(self):
+        """Clear Python cache files that might contain module references."""
+        try:
+            import glob
+            
+            # Clear __pycache__ directories
+            for root, dirs, files in os.walk(settings.BASE_DIR):
                 for dir_name in dirs:
                     if dir_name == '__pycache__':
                         cache_dir = os.path.join(root, dir_name)
                         shutil.rmtree(cache_dir)
-                        print(f"Cleared cache: {cache_dir}")
+                        print(f"Removed cache directory: {cache_dir}")
+            
+            # Clear .pyc files
+            for root, dirs, files in os.walk(settings.BASE_DIR):
+                for file_name in files:
+                    if file_name.endswith('.pyc'):
+                        pyc_file = os.path.join(root, file_name)
+                        os.remove(pyc_file)
+                        print(f"Removed cache file: {pyc_file}")
+                        
         except Exception as e:
-            print(f"Warning: Could not clear Python cache: {e}")
+            print(f"Error clearing Python cache: {e}")
+    
+    def _remove_module_specific_files(self, module_name: str):
+        """Remove any remaining module-specific files that might have been missed."""
+        try:
+            import glob
+            
+            # Search for any files containing the module name
+            search_patterns = [
+                f"**/*{module_name}*",
+                f"**/{module_name}_*",
+                f"**/*_{module_name}*"
+            ]
+            
+            for pattern in search_patterns:
+                for file_path in glob.glob(os.path.join(settings.BASE_DIR, pattern), recursive=True):
+                    # Skip downloads folder and certain system directories
+                    if any(skip_dir in file_path for skip_dir in ['downloads', '.git', 'venv', '__pycache__']):
+                        continue
+                    
+                    # Skip if it's not actually related to the module
+                    if not any(module_name in os.path.basename(file_path) for module_name in [module_name]):
+                        continue
+                    
+                    try:
+                        if os.path.isfile(file_path):
+                            os.remove(file_path)
+                            print(f"Removed module-specific file: {file_path}")
+                        elif os.path.isdir(file_path):
+                            shutil.rmtree(file_path)
+                            print(f"Removed module-specific directory: {file_path}")
+                    except Exception as e:
+                        print(f"Could not remove {file_path}: {e}")
+                        
+        except Exception as e:
+            print(f"Error removing module-specific files: {e}")
     
     def get_module(self, module_name: str) -> Optional[BaseModule]:
         """Get a specific module instance."""
@@ -729,6 +955,65 @@ class ModuleManager:
         except Exception as e:
             print(f"Error loading {module_name}: {e}")
             return None
+
+    def test_purge_function(self, module_name: str) -> bool:
+        """Test the purge function to ensure it works correctly."""
+        print(f"🧪 Testing purge function for module: {module_name}")
+        
+        # Check if module exists before purging
+        module_exists_before = module_name in self.discovered_modules
+        print(f"Module exists before purge: {module_exists_before}")
+        
+        # Run the purge
+        success = self.purge_module(module_name)
+        
+        # Check if module is completely gone
+        module_exists_after = module_name in self.discovered_modules
+        print(f"Module exists after purge: {module_exists_after}")
+        
+        # Check for any remaining files
+        remaining_files = []
+        for root, dirs, files in os.walk(settings.BASE_DIR):
+            for file_name in files:
+                if module_name in file_name:
+                    file_path = os.path.join(root, file_name)
+                    if 'downloads' not in file_path:  # Skip downloads folder
+                        remaining_files.append(file_path)
+        
+        remaining_dirs = []
+        for root, dirs, files in os.walk(settings.BASE_DIR):
+            for dir_name in dirs:
+                if module_name in dir_name:
+                    dir_path = os.path.join(root, dir_name)
+                    if 'downloads' not in dir_path:  # Skip downloads folder
+                        remaining_dirs.append(dir_path)
+        
+        print(f"Remaining files: {len(remaining_files)}")
+        print(f"Remaining directories: {len(remaining_dirs)}")
+        
+        if remaining_files or remaining_dirs:
+            print("⚠️  Warning: Some files/directories still exist:")
+            for file_path in remaining_files:
+                print(f"  - {file_path}")
+            for dir_path in remaining_dirs:
+                print(f"  - {dir_path}")
+        
+        # Check uninstalled/disabled lists
+        uninstalled_modules = self._get_uninstalled_modules()
+        disabled_modules = self._get_disabled_modules()
+        
+        in_uninstalled = module_name in uninstalled_modules
+        in_disabled = module_name in disabled_modules
+        
+        print(f"Module in uninstalled list: {in_uninstalled}")
+        print(f"Module in disabled list: {in_disabled}")
+        
+        if success and not module_exists_after and not remaining_files and not remaining_dirs and not in_uninstalled and not in_disabled:
+            print("✅ Purge function test PASSED - Module completely removed")
+            return True
+        else:
+            print("❌ Purge function test FAILED - Module not completely removed")
+            return False
 
 
 # Create global module manager instance

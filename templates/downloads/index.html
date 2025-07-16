@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Module Downloads</title>
+    <title>File Downloads</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -12,144 +12,302 @@
             padding: 20px;
             background-color: #f5f5f5;
         }
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        h1 {
-            color: #333;
-            text-align: center;
-            margin-bottom: 30px;
-        }
         .download-item {
-            background: #f8f9fa;
-            border: 1px solid #dee2e6;
+            background: white;
+            border: 1px solid #ddd;
             border-radius: 8px;
             padding: 20px;
             margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        .download-item.latest {
-            border: 2px solid #28a745;
-            background: linear-gradient(135deg, #f8fff9 0%, #ffffff 100%);
-        }
-        .download-title {
-            font-size: 18px;
-            font-weight: bold;
+        .download-item h3 {
+            margin-top: 0;
             color: #333;
-            margin-bottom: 10px;
         }
-        .download-description {
+        .download-item p {
             color: #666;
             margin-bottom: 15px;
-            line-height: 1.5;
         }
         .download-link {
             display: inline-block;
-            background-color: #007bff;
+            background: #007bff;
             color: white;
             padding: 10px 20px;
             text-decoration: none;
-            border-radius: 4px;
-            font-weight: 500;
+            border-radius: 5px;
+            transition: background 0.3s;
+            margin-right: 10px;
         }
         .download-link:hover {
-            background-color: #0056b3;
-            text-decoration: none;
+            background: #0056b3;
+        }
+        .delete-btn {
+            display: inline-block;
+            background: #dc3545;
             color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s;
+            border: none;
+            cursor: pointer;
         }
-        .download-link.recommended {
-            background-color: #28a745;
-        }
-        .download-link.recommended:hover {
-            background-color: #218838;
+        .delete-btn:hover {
+            background: #c82333;
         }
         .file-info {
-            font-size: 12px;
-            color: #888;
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 5px;
             margin-top: 10px;
+            font-size: 14px;
         }
-        .features-list {
-            list-style: none;
-            padding: 0;
-            margin: 15px 0;
-        }
-        .features-list li {
-            padding: 5px 0;
-            color: #666;
-        }
-        .features-list li:before {
-            content: "✓ ";
-            color: #28a745;
-            font-weight: bold;
-        }
-        .recommended-badge {
+        .refresh-btn {
             background: #28a745;
             color: white;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: bold;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            margin-right: 10px;
+        }
+        .refresh-btn:hover {
+            background: #218838;
+        }
+        .upload-section {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .upload-btn {
+            background: #17a2b8;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
             margin-left: 10px;
+        }
+        .upload-btn:hover {
+            background: #138496;
+        }
+        .file-input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+        .last-updated {
+            color: #666;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+        .actions {
+            margin-top: 15px;
+        }
+        .nav-links {
+            margin-bottom: 20px;
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+        }
+        .nav-links a {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: #6c757d;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: background-color 0.2s;
+        }
+        .nav-links a:hover {
+            background: #545b62;
+            color: white;
+            text-decoration: none;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Stripe Payment Module Downloads</h1>
-        
-        <!-- NEWEST VERSION - Clean Core Version 4 -->
-        <div class="download-item latest">
-            <div class="download-title">
-                🚀 Stripe Payment Module - Clean Core Version 4 (NEWEST)
-                <span class="recommended-badge">LATEST</span>
-            </div>
-            <div class="download-description">
-                <strong>Latest version with completely clean core system integration. Fixed validation - should upload successfully:</strong>
-                <ul class="features-list">
-                    <li>✅ Fixed module validation (static directories are now optional)</li>
-                    <li>✅ No hardcoded Stripe code in core system files</li>
-                    <li>✅ No hardcoded Stripe settings in modules/views.py</li>
-                    <li>✅ No hardcoded Stripe references in shop/views.py</li>
-                    <li>✅ No hardcoded Stripe URLs in modules/urls.py</li>
-                    <li>✅ No hardcoded Stripe dependencies in modules/manager.py</li>
-                    <li>✅ Module handles its own configuration</li>
-                    <li>✅ Module manages its own settings</li>
-                    <li>✅ Module provides its own payment form</li>
-                    <li>✅ Module handles its own API keys</li>
-                    <li>✅ True modular architecture</li>
-                    <li>✅ Fixed "Loading payment form..." issue</li>
-                    <li>✅ Removed phone number field as requested</li>
-                    <li>✅ Customer information moved to checkout level</li>
-                    <li>✅ Payment form only shows when Stripe is selected</li>
-                    <li>✅ Better integration with checkout flow</li>
-                    <li>✅ Improved error handling and user feedback</li>
-                    <li>✅ Latest Stripe API compatibility</li>
-                    <li>✅ Enhanced admin configuration</li>
-                    <li>✅ Multiple payment methods support (Card, Przelewy24, BLIK)</li>
-                    <li>✅ Stripe Embedded Checkout integration</li>
-                    <li>✅ Webhook support for payment confirmation</li>
-                    <li>✅ Configuration saving and loading</li>
-                    <li>✅ Proper URL routing for payment endpoints</li>
-                </ul>
-            </div>
-            <a href="/downloads/stripe_payment_module_clean_core_v4.zip" class="download-link recommended">
-                <i class="fas fa-download"></i> Download Latest Version (40KB)
-            </a>
-            <div class="file-info">Latest version with fixed validation - SHOULD UPLOAD SUCCESSFULLY</div>
-        </div>
-
-        <div style="text-align: center; margin-top: 30px; color: #666;">
-            <p><strong>Instructions:</strong></p>
-            <ol style="text-align: left; display: inline-block;">
-                <li>Download the latest version above</li>
-                <li>Go to <a href="/modules/upload/">Module Upload</a></li>
-                <li>Upload the ZIP file</li>
-                <li>Enable the module</li>
-                <li>Configure your Stripe API keys</li>
-            </ol>
-        </div>
+    <div class="nav-links">
+        <a href="/admin/">
+            <i class="fas fa-arrow-left"></i> Back to Admin Panel
+        </a>
     </div>
+    
+    <h1>File Downloads</h1>
+    
+    <div class="upload-section">
+        <h3>📤 Upload New File</h3>
+        <p>Select any file to upload to the downloads folder:</p>
+        <input type="file" id="fileInput" class="file-input">
+        <button class="upload-btn" onclick="uploadFile()">Upload</button>
+        <div id="uploadStatus"></div>
+    </div>
+    
+    <button class="refresh-btn" onclick="location.reload()">🔄 Refresh List</button>
+    
+    <div id="downloads-list">
+        <!-- Downloads will be loaded here -->
+    </div>
+
+    <script>
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+        }
+
+        function formatDate(date) {
+            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+        }
+
+        async function uploadFile() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            const statusDiv = document.getElementById('uploadStatus');
+            
+            if (!file) {
+                statusDiv.innerHTML = '<p style="color: red;">Please select a file first.</p>';
+                return;
+            }
+            
+            // Security check for dangerous file types
+            const dangerousExtensions = ['.exe', '.bat', '.cmd', '.com', '.pif', '.scr', '.vbs', '.js'];
+            const fileExtension = file.name.toLowerCase().substring(file.name.lastIndexOf('.'));
+            if (dangerousExtensions.includes(fileExtension)) {
+                statusDiv.innerHTML = `<p style="color: red;">File type ${fileExtension} is not allowed for security reasons.</p>`;
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            statusDiv.innerHTML = '<p style="color: blue;">Uploading...</p>';
+            
+            try {
+                const response = await fetch('/downloads/upload/', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (response.ok) {
+                    statusDiv.innerHTML = '<p style="color: green;">✅ File uploaded successfully!</p>';
+                    fileInput.value = '';
+                    loadDownloads(); // Refresh the list
+                } else {
+                    const error = await response.text();
+                    statusDiv.innerHTML = `<p style="color: red;">❌ Upload failed: ${error}</p>`;
+                }
+            } catch (error) {
+                statusDiv.innerHTML = `<p style="color: red;">❌ Upload failed: ${error.message}</p>`;
+            }
+        }
+
+        async function deleteFile(filename) {
+            if (!confirm(`Are you sure you want to delete "${filename}"?`)) {
+                return;
+            }
+            
+            try {
+                const response = await fetch('/downloads/delete/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({ filename: filename })
+                });
+                
+                if (response.ok) {
+                    loadDownloads(); // Refresh the list
+                } else {
+                    const error = await response.text();
+                    alert(`Delete failed: ${error}`);
+                }
+            } catch (error) {
+                alert(`Delete failed: ${error.message}`);
+            }
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        async function loadDownloads() {
+            try {
+                const response = await fetch('/downloads/list/');
+                const files = await response.json();
+                
+                const container = document.getElementById('downloads-list');
+                container.innerHTML = '';
+                
+                if (files.length === 0) {
+                    container.innerHTML = '<p>No files found in downloads folder.</p>';
+                    return;
+                }
+                
+                files.forEach(file => {
+                    const item = document.createElement('div');
+                    item.className = 'download-item';
+                    
+                    const name = file.name.replace(/_/g, ' ').replace(/-/g, ' ');
+                    const size = formatFileSize(file.size);
+                    const date = formatDate(new Date(file.modified));
+                    
+                    item.innerHTML = `
+                        <h3>${name}</h3>
+                        <p>File available for download</p>
+                        <div class="actions">
+                            <a href="${file.name}" class="download-link">📥 Download</a>
+                            <button class="delete-btn" onclick="deleteFile('${file.name}')">🗑️ Delete</button>
+                        </div>
+                        <div class="file-info">
+                            <strong>File:</strong> ${file.name}<br>
+                            <strong>Size:</strong> ${size}<br>
+                            <strong>Modified:</strong> ${date}
+                        </div>
+                    `;
+                    
+                    container.appendChild(item);
+                });
+                
+                // Update last refreshed time
+                const lastUpdated = document.createElement('div');
+                lastUpdated.className = 'last-updated';
+                lastUpdated.textContent = `Last updated: ${formatDate(new Date())}`;
+                container.appendChild(lastUpdated);
+                
+            } catch (error) {
+                console.error('Error loading downloads:', error);
+                document.getElementById('downloads-list').innerHTML = 
+                    '<p>Error loading downloads. Please refresh the page.</p>';
+            }
+        }
+
+        // Load downloads when page loads
+        loadDownloads();
+        
+        // Auto-refresh every 30 seconds
+        setInterval(loadDownloads, 30000);
+    </script>
 </body>
 </html> 

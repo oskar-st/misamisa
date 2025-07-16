@@ -20,6 +20,7 @@ class CustomAdminSite(admin.AdminSite):
         custom_urls = [
             path('dashboard/', self.admin_view(self.dashboard_view), name='dashboard'),
             path('modules/', self.admin_view(self.module_management_view), name='module_management'),
+            path('downloads/', self.admin_view(self.downloads_management_view), name='downloads_management'),
         ]
         return custom_urls + urls
     
@@ -28,6 +29,7 @@ class CustomAdminSite(admin.AdminSite):
         extra_context = extra_context or {}
         extra_context['show_dashboard_link'] = True
         extra_context['show_module_management'] = True
+        extra_context['show_downloads_management'] = True
         return super().index(request, extra_context)
     
     def dashboard_view(self, request):
@@ -99,6 +101,10 @@ class CustomAdminSite(admin.AdminSite):
     def module_management_view(self, request):
         """Redirect to module management interface"""
         return redirect('modules:module_list')
+    
+    def downloads_management_view(self, request):
+        """Redirect to downloads management interface"""
+        return redirect('downloads')
 
 class OrderItemAdmin(admin.ModelAdmin):
     list_display = ['order', 'product', 'quantity', 'price']

@@ -87,7 +87,9 @@
                                          data-payment-method="{{ payment_method.info.code }}"
                                          {% if not forloop.first %}style="display: none;"{% endif %}>
                                         {% if payment_method.form %}
-                                            {% include payment_method.template_path %}
+                                            {% with payment_method.template_context as bank_details %}
+                                                {% include payment_method.template_path %}
+                                            {% endwith %}
                                         {% else %}
                                             <div class="payment-no-form">
                                                 <p>{% trans 'No additional information required for this payment method.' %}</p>

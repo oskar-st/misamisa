@@ -229,8 +229,9 @@ def _get_module_config(module_name: str) -> dict:
         else:
             config = {}
         
-        # For Stripe module, also read from environment variables
-        if module_name == 'stripe_payment':
+        # For Stripe module, only read from environment variables if config file exists
+        # This prevents showing default values after module purge
+        if module_name == 'stripe_payment' and os.path.exists(config_file):
             stripe_env_keys = {
                 'stripe_public_key': os.getenv('STRIPE_PUBLIC_KEY', ''),
                 'stripe_secret_key': os.getenv('STRIPE_SECRET_KEY', ''),
@@ -245,16 +246,8 @@ def _get_module_config(module_name: str) -> dict:
     except Exception as e:
         print(f"Error loading module config: {e}")
     
-    # Return default configuration
-    return {
-        'name': '',
-        'description': '',
-        'version': '',
-        'author': '',
-        'category': '',
-        'enabled': False,
-        'test_mode': False
-    }
+    # Return empty configuration for purged modules
+    return {}
 
 
 def _update_django_settings(module_name: str, config_data: dict):
@@ -500,9 +493,41 @@ def module_upload(request: HttpRequest) -> TemplateResponse:
                 # Copy module to modules directory
                 shutil.copytree(module_root_dir, target_dir)
                 
+                # Copy templates to main templates directory if they exist
+                module_templates_dir = os.path.join(module_root_dir, 'templates')
+                if os.path.exists(module_templates_dir):
+                    main_templates_dir = os.path.join(settings.BASE_DIR, 'templates')
+                    for root, dirs, files in os.walk(module_templates_dir):
+                        # Calculate relative path from module templates
+                        rel_path = os.path.relpath(root, module_templates_dir)
+                        target_dir_path = os.path.join(main_templates_dir, rel_path)
+                        
+                        # Create target directory if it doesn't exist
+                        os.makedirs(target_dir_path, exist_ok=True)
+                        
+                        # Copy files
+                        for file in files:
+                            src_file = os.path.join(root, file)
+                            dst_file = os.path.join(target_dir_path, file)
+                            shutil.copy2(src_file, dst_file)
+                    print(f"Templates copied for module {module_name}")
+                
                 # Save uploaded ZIP for potential reinstallation
                 zip_storage_path = os.path.join(modules_dir, f"{module_name}_module.zip")
                 shutil.copy2(temp_file_path, zip_storage_path)
+                
+                # For AJAX requests, return success immediately after file is saved to avoid timeouts
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    return JsonResponse({
+                        'success': True, 
+                        'message': f'Module "{module_name}" uploaded successfully! You can install it from the module list.',
+                        'module_info': {
+                            'name': module_name,
+                            'version': manifest.get('version', '1.0.0'),
+                            'description': manifest.get('description', ''),
+                            'type': manifest.get('type', 'general')
+                        }
+                    })
                 
                 # Get dependencies from manifest
                 dependencies = manifest.get('install_requires', manifest.get('dependencies', []))
@@ -517,12 +542,19 @@ def module_upload(request: HttpRequest) -> TemplateResponse:
                             if os.path.exists(venv_pip):
                                 result = subprocess.run([
                                     venv_pip, 'install', dependency
-                                ], capture_output=True, text=True, check=True)
+                                ], capture_output=True, text=True, check=True, timeout=60)
                             else:
                                 result = subprocess.run([
                                     sys.executable, '-m', 'pip', 'install', dependency
-                                ], capture_output=True, text=True, check=True)
+                                ], capture_output=True, text=True, check=True, timeout=60)
                             print(f"Dependency {dependency} installed successfully")
+                        except subprocess.TimeoutExpired:
+                            error_msg = f"Timeout installing dependency {dependency} (60s limit)"
+                            print(error_msg)
+                            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                                return JsonResponse({'success': False, 'message': error_msg})
+                            messages.error(request, error_msg)
+                            return redirect('modules:upload')
                         except Exception as dep_error:
                             error_msg = f"Failed to install dependency {dependency}: {str(dep_error)}"
                             print(error_msg)
@@ -532,10 +564,26 @@ def module_upload(request: HttpRequest) -> TemplateResponse:
                             return redirect('modules:upload')
                 else:
                     print(f"No dependencies listed for {module_name}")
+                
+                # For non-AJAX requests, continue with installation
                 # Try loading the module again
-                module_instance = module_manager.load_module(module_name)
+                print(f"Loading module: {module_name}")
+                try:
+                    module_instance = module_manager.load_module(module_name)
+                    print(f"Module loaded: {module_instance is not None}")
+                    if module_instance:
+                        print(f"Installing module: {module_name}")
+                        install_success = module_manager.install_module(module_name)
+                        print(f"Module installation result: {install_success}")
+                    else:
+                        print(f"Failed to load module: {module_name}")
+                        install_success = False
+                except Exception as load_error:
+                    print(f"Error loading module {module_name}: {load_error}")
+                    module_instance = None
+                    install_success = False
+                
                 if module_instance:
-                    install_success = module_manager.install_module(module_name)
                     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
                         if install_success:
                             return JsonResponse({
@@ -571,9 +619,11 @@ def module_upload(request: HttpRequest) -> TemplateResponse:
             if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
                 return JsonResponse({'success': False, 'message': f'Error uploading module: {str(e)}'})
             messages.error(request, f'Error uploading module: {str(e)}')
+            return redirect('modules:upload')
         
+        # Fallback for successful upload but no specific response sent
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            return JsonResponse({'success': True, 'redirect': reverse('modules:module_list')})
+            return JsonResponse({'success': True, 'message': 'Module uploaded successfully!', 'redirect': reverse('modules:module_list')})
         return redirect('modules:module_list')
     
     context = {

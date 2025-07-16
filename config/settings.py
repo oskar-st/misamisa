@@ -74,7 +74,8 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             BASE_DIR / "templates",
-            BASE_DIR / "modules",  # Add modules directory for module templates
+            BASE_DIR / "modules/bank_wire_payment/templates",
+            BASE_DIR / "modules/stripe_payment/templates",
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -199,6 +200,12 @@ MODULE_SETTINGS = {
     'ENABLE_DASHBOARD': True,
     'ENABLE_API': True,
 }
+
+# File Upload Settings - Increase limits to 100MB
+DATA_UPLOAD_MAX_MEMORY_SIZE = 104857600  # 100MB in bytes
+FILE_UPLOAD_MAX_MEMORY_SIZE = 104857600  # 100MB in bytes
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000  # Increase field limit
+FILE_UPLOAD_TEMP_DIR = BASE_DIR / 'temp_uploads'  # Temporary upload directory
 
 # Message Framework Configuration - Force immediate consumption
 MESSAGE_STORAGE = 'django.contrib.messages.storage.fallback.FallbackStorage'

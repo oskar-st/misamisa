@@ -58,6 +58,11 @@
                 <i class="fas fa-puzzle-piece"></i> Module Management
             </a>
             {% endif %}
+            {% if show_downloads_management %}
+            <a href="{% url 'admin:downloads_management' %}" class="button">
+                <i class="fas fa-download"></i> File Downloads
+            </a>
+            {% endif %}
         </div>
     </div>
     {% endif %}

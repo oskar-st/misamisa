@@ -319,6 +319,11 @@ def checkout(request):
             if hasattr(module, 'get_public_config'):
                 module_config = module.get_public_config()
             
+            # Get template context from module if available
+            template_context = {}
+            if hasattr(module, 'get_template_context'):
+                template_context = module.get_template_context()
+            
             payment_methods.append({
                 'module_name': module_name,
                 'module': module,
@@ -326,6 +331,7 @@ def checkout(request):
                 'form': payment_form() if payment_form else None,
                 'template_path': module.get_payment_template(),
                 'config': module_config,
+                'template_context': template_context,
             })
     
     context = {

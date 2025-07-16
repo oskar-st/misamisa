@@ -1,17 +1,18 @@
-{% extends "base.html" %}
+{% extends 'admin/base_site.html' %}
 {% load static %}
 
 {% block title %}Upload Module{% endblock %}
 
-{% block extra_css %}
+{% block extrahead %}
 <style>
     .upload-container {
         max-width: 800px;
-        margin: 2rem auto;
-        padding: 2rem;
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin: 0 auto;
+        padding: 20px;
+        background: var(--primary);
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        border: 1px solid var(--hairline-color);
     }
     
     .upload-header {
@@ -22,7 +23,7 @@
     }
     
     .upload-header h1 {
-        color: #32325d;
+        color: var(--primary-fg);
         margin-bottom: 0.5rem;
     }
     
@@ -54,20 +55,20 @@
     
     .upload-text {
         font-size: 1.2rem;
-        color: #32325d;
+        color: var(--primary-fg);
         margin-bottom: 0.5rem;
     }
     
     .upload-hint {
-        color: #6b7c93;
+        color: var(--secondary-fg);
         font-size: 0.9rem;
     }
     
 
     
     .upload-button {
-        background: #6772e5;
-        color: white;
+        background: var(--button-bg);
+        color: var(--button-fg);
         border: none;
         padding: 0.75rem 1.5rem;
         border-radius: 6px;
@@ -79,7 +80,7 @@
     }
     
     .upload-button:hover {
-        background: #5469d4;
+        background: var(--button-hover-bg);
     }
     
     .upload-button:disabled {
@@ -190,12 +191,12 @@
     }
     
     .btn-primary {
-        background: #6772e5;
-        color: white;
+        background: var(--button-bg);
+        color: var(--button-fg);
     }
     
     .btn-primary:hover {
-        background: #5469d4;
+        background: var(--button-hover-bg);
     }
     
     .btn-secondary {
@@ -210,6 +211,7 @@
 {% endblock %}
 
 {% block content %}
+<div id="content-main">
 <div class="upload-container">
     <div class="upload-header">
         <h1>Upload Module</h1>
@@ -267,6 +269,7 @@
             </a>
         </div>
     </form>
+</div>
 </div>
 
 <script>
@@ -365,13 +368,17 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Response handling
         xhr.addEventListener('load', function() {
+            console.log('Upload response status:', xhr.status);
+            console.log('Upload response text:', xhr.responseText);
+            
             if (xhr.status === 200) {
                 try {
                     const response = JSON.parse(xhr.responseText);
+                    console.log('Parsed response:', response);
                     
                     if (response.success) {
                         // Show success message
-                        showAlert('success', response.message);
+                        showAlert('success', response.message || 'Module uploaded successfully!');
                         
                         // Redirect after a short delay
                         setTimeout(function() {
@@ -382,28 +389,41 @@ document.addEventListener('DOMContentLoaded', function() {
                             }
                         }, 2000);
                     } else {
-                        showAlert('error', response.message);
+                        showAlert('error', response.message || 'Upload failed.');
                         resetForm();
                     }
                 } catch (e) {
-                    showAlert('error', 'An unexpected error occurred.');
+                    console.error('JSON parse error:', e);
+                    console.error('Response text:', xhr.responseText);
+                    showAlert('error', 'An unexpected error occurred while processing the response.');
                     resetForm();
                 }
             } else {
-                showAlert('error', 'Upload failed. Please try again.');
+                console.error('HTTP error status:', xhr.status);
+                console.error('Response text:', xhr.responseText);
+                showAlert('error', `Upload failed with status ${xhr.status}. Please try again.`);
                 resetForm();
             }
         });
         
         // Error handling
         xhr.addEventListener('error', function() {
+            console.error('Network error during upload');
             showAlert('error', 'Upload failed. Please check your connection and try again.');
+            resetForm();
+        });
+        
+        // Timeout handling
+        xhr.addEventListener('timeout', function() {
+            console.error('Upload timeout');
+            showAlert('error', 'Upload timed out. Please try again.');
             resetForm();
         });
         
         // Start upload
         xhr.open('POST', window.location.href);
         xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        xhr.timeout = 300000; // 5 minutes timeout
         xhr.send(formData);
     });
     

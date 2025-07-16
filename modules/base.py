@@ -221,6 +221,12 @@ class PaymentModuleBase(BaseModule):
     def validate_payment_data(self, form_data: Dict) -> List[str]:
         """Validate payment form data"""
         pass
+        
+    def get_settings(self) -> Dict[str, Any]:
+        """Get module settings from manifest or return defaults"""
+        if self.manifest and self.manifest.settings:
+            return self.manifest.settings
+        return {}
     
     def get_admin_config_template(self) -> str:
         """Get admin configuration template for payment modules"""
