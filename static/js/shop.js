@@ -13,13 +13,12 @@ function setView(view) {
         swap: 'innerHTML',
         headers: { 'HX-Request': 'true' }
     }).then(() => {
-        // Update URL without page reload
-        history.pushState({}, '', url);
+        // Don't update URL - keep the original URL unchanged
         console.log('View switched successfully to:', view);
     }).catch(error => {
         console.error('Error loading view:', error);
-        // Fallback to page reload
-        window.location.search = params.toString();
+        // Don't reload the page - just log the error
+        // The view toggle buttons will still work for future attempts
     });
 }
 
