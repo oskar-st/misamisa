@@ -72,12 +72,8 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [
-            BASE_DIR / "templates",
-            BASE_DIR / "modules/bank_wire_payment/templates",
-            BASE_DIR / "modules/stripe_payment/templates",
-        ],
-        'APP_DIRS': True,
+        'DIRS': [BASE_DIR / "templates"],  # Only main templates
+        'APP_DIRS': True,  # This will find templates in module directories automatically
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',

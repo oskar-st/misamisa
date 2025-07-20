@@ -1,0 +1,8 @@
+# Static Assets Rules
+- All static assets go in the `static/` directory
+- Follow the 7-1 SCSS pattern in `static/src/scss/`
+- Place images in `static/assets/images/` organized by type
+- JavaScript goes in `static/src/js/` organized by purpose
+- Always run `npm run build` in `static/` directory before committing
+- Use `{% static 'path/to/asset' %}` in Django templates
+- Run `python manage.py collectstatic` after building assets

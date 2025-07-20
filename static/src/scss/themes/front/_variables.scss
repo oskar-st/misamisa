@@ -1,0 +1,36 @@
+// Frontend theme variables
+:root {
+  --header-bg: white;
+  --header-shadow: rgba(0,0,0,0.1);
+  --hero-gradient-start: #ffe8cc;
+  --hero-gradient-end: #fff3e0;
+  --hero-text: #444;
+  --hero-highlight: #cc6600;
+  --button-bg: #cc6600;
+  --button-text: white;
+  --button-hover-bg: #a75300;
+  --card-bg: #fff;
+  --card-border: #ddd;
+  --select-bg: transparent;
+  --select-hover-bg: #f2ede4;
+  --option-bg: #ffffff;
+  --page-bg: #ffffff;
+}
+
+html[data-theme="dark"] {
+  --header-bg: #2a2a2a;
+  --header-shadow: rgba(255,255,255,0.1);
+  --hero-gradient-start: #3a3a3a;
+  --hero-gradient-end: #2a2a2a;
+  --hero-text: #ccc;
+  --hero-highlight: #ff9d2d;
+  --button-bg: #ff9d2d;
+  --button-text: #1a1a1a;
+  --button-hover-bg: #ff8c00;
+  --card-bg: #2a2a2a;
+  --card-border: #555;
+  --select-bg: #3a3a3a;
+  --select-hover-bg: #2e2e2e;
+  --option-bg: #3a3a3a;
+  --page-bg: #2a2a2a;
+} 

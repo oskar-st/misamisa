@@ -1,0 +1,32 @@
+// Text utilities
+@use '../abstracts' as *;
+
+.text-start { text-align: left; }
+.text-center { text-align: center; }
+.text-end { text-align: right; }
+.text-justify { text-align: justify; }
+
+.text-lowercase { text-transform: lowercase; }
+.text-uppercase { text-transform: uppercase; }
+.text-capitalize { text-transform: capitalize; }
+
+.text-decoration-none { text-decoration: none; }
+.text-decoration-underline { text-decoration: underline; }
+.text-decoration-line-through { text-decoration: line-through; }
+
+.font-weight-light { font-weight: 300; }
+.font-weight-normal { font-weight: 400; }
+.font-weight-medium { font-weight: 500; }
+.font-weight-semibold { font-weight: 600; }
+.font-weight-bold { font-weight: 700; }
+
+.font-style-normal { font-style: normal; }
+.font-style-italic { font-style: italic; }
+
+.text-break { word-break: break-word; }
+.text-nowrap { white-space: nowrap; }
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+} 

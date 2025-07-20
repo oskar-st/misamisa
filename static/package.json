@@ -1,0 +1,20 @@
+{
+  "name": "misamisa-static",
+  "version": "1.0.0",
+  "description": "Static assets for MisaMisa project",
+  "main": "index.js",
+  "scripts": {
+    "build": "npm run build-css && npm run build-js",
+    "build-css": "sass src/scss/main.scss:dist/css/main.css --style compressed --source-map && sass src/scss/admin.scss:dist/css/admin.css --style compressed --source-map",
+    "build-js": "echo 'JavaScript bundling not yet implemented'",
+    "dev": "npm run dev-css",
+    "dev-css": "sass src/scss/main.scss:dist/css/main.css --style expanded --source-map --watch & sass src/scss/admin.scss:dist/css/admin.css --style expanded --source-map --watch",
+    "clean": "rm -rf dist/css/*.css dist/css/*.css.map dist/js/*.js dist/js/*.js.map",
+    "watch": "npm run dev-css"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "sass": "^1.89.2"
+  }
+} 

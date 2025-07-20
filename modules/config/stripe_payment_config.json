@@ -1,0 +1,5 @@
+{
+  "stripe_public_key": "pk_test_51RelLRQpzvp0gm1D0PZFrNFNTzb5BgzpXcvzmVJfWzPL47hgbgIuQKFuv40bOOe2QiSxuRuTLaK16DjdUjlCA9Ys00pDhpwoxj",
+  "stripe_secret_key": "sk_test_51RelLRQpzvp0gm1Dga9fxYQuh8ylEZA0W1E6RGXSTClfmI1IDJetrx6wfSnptMAUyJgAwaZJMtbbzNJKqpIlAyR60092DlsGj8",
+  "stripe_webhook_secret": ""
+}

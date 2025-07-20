@@ -13,7 +13,7 @@
   <link rel="apple-touch-icon" sizes="180x180" href="{% static 'favicon.ico' %}">
   <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon.ico' %}">
   <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon.ico' %}">
-  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+          <link rel="stylesheet" href="{% static 'dist/css/main.css' %}">
   <style>
     /* Prevent flash of double content */
     body.checking-content {
@@ -48,8 +48,8 @@
       transition: opacity 0.2s ease;
     }
   </style>
-  <script src="{% static 'js/main.js' %}" defer></script>
-  <script src="{% static 'js/sklep.js' %}" defer></script>
+  <script src="{% static 'dist/js/main.js' %}" defer></script>
+  <script src="{% static 'dist/js/shop.js' %}" defer></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
@@ -70,7 +70,7 @@
     <div class="header-inner container          ">
       <div class="header-left">
         <a href="{% url 'home' %}" class="logo-link shop-link">
-          <img src="{% static 'logo.png' %}" alt="Misamisa logo" class="logo">
+          <img src="{% static 'assets/images/logos/logo.png' %}" alt="Misamisa logo" class="logo">
         </a>
       </div>
       <nav class="header-center">
@@ -155,7 +155,7 @@
   </footer>
 
 
-  <script src="{% static 'js/sklep.js' %}"></script>
+  <script src="{% static 'dist/js/shop.js' %}"></script>
   
   <!-- HTMX Configuration for smooth navigation -->
   <script>

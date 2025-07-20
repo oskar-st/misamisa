@@ -1,0 +1,23 @@
+# Compiled CSS and source maps
+dist/css/*.css
+dist/css/*.css.map
+dist/js/*.js
+dist/js/*.js.map
+
+# Node modules (if using npm packages)
+node_modules/
+
+# Build artifacts
+*.log
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Temporary files
+*.tmp
+*.temp 

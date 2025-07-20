@@ -1,0 +1,46 @@
+// Header layout styles
+@use '../abstracts' as *;
+
+.header {
+  background: var(--header-bg);
+  box-shadow: 0 2px 4px var(--shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: z(sticky);
+}
+
+.header-container {
+  @include container;
+  @include flex-between;
+  padding: var(--spacing-md) 0;
+}
+
+.header-logo {
+  max-height: 40px;
+  width: auto;
+}
+
+.header-nav {
+  @include flex-center;
+  gap: var(--spacing-lg);
+}
+
+.header-nav-link {
+  color: var(--text-color);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color var(--transition-fast);
+  
+  &:hover {
+    color: var(--accent-color);
+  }
+  
+  &.active {
+    color: var(--accent-color);
+  }
+}
+
+.header-actions {
+  @include flex-center;
+  gap: var(--spacing-md);
+} 

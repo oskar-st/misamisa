@@ -1,0 +1,14 @@
+// Frontend theme component overrides
+.btn {
+  background: var(--button-bg);
+  color: var(--button-text);
+  
+  &:hover {
+    background: var(--button-hover-bg);
+  }
+}
+
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+} 

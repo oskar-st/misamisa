@@ -1,0 +1,75 @@
+// Cart component styles
+.cart-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+  text-decoration: none;
+  color: var(--text-color);
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.cart-link:hover { 
+  color: var(--accent-color); 
+}
+
+.cart-icon-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.cart-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: var(--accent-color);
+  color: var(--button-text);
+  border-radius: 10px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  min-width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px var(--shadow-md);
+}
+
+.cart-total {
+  font-weight: 600;
+  white-space: nowrap;
+  font-size: 1.05rem;
+  color: var(--text-color);
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+// Language switcher
+#language-switcher {
+  border: 1px solid var(--card-border);
+  background: var(--select-bg);
+  color: var(--text-color);
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+#language-switcher:hover {
+  background-color: var(--select-hover-bg);
+}
+
+#language-switcher option {
+  /* 
+    Styling <option> elements is notoriously inconsistent across browsers.
+    This aims to provide a better experience where supported.
+  */
+  background: var(--option-bg);
+  color: var(--text-color);
+} 
