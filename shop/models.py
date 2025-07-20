@@ -90,7 +90,6 @@ class Product(models.Model):
     )
     stock = models.PositiveIntegerField(_('stock'), default=0)
     is_active = models.BooleanField(_('is active'), default=True)
-    image = models.ImageField(_('image'), upload_to='products/', blank=True, null=True)
     created_at = models.DateTimeField(_('created at'), auto_now_add=True)
     updated_at = models.DateTimeField(_('updated at'), auto_now=True)
 
@@ -126,6 +125,56 @@ class Product(models.Model):
         if self.has_discount:
             return int(((self.price - self.discount_price) / self.price) * 100)
         return 0
+
+    @property
+    def primary_image(self):
+        """Returns the primary product image or the first available image"""
+        primary = self.images.filter(is_primary=True).first()
+        if primary:
+            return primary
+        return self.images.first()
+
+    @property
+    def has_images(self):
+        """Returns True if the product has any images"""
+        return self.images.exists()
+
+    # Enhanced product fields
+    weight = models.DecimalField(_('weight (g)'), max_digits=8, decimal_places=2, null=True, blank=True)
+    shelf_life_days = models.PositiveIntegerField(_('shelf life (days)'), null=True, blank=True)
+    package_dimensions = models.CharField(_('package dimensions'), max_length=100, blank=True)
+    ingredients = models.TextField(_('ingredients'), blank=True)
+    nutritional_info = models.JSONField(_('nutritional information'), default=dict, null=True, blank=True)
+    sku = models.CharField(_('SKU'), max_length=100, blank=True)
+    barcode = models.CharField(_('barcode'), max_length=100, blank=True)
+
+class ProductImage(models.Model):
+    """Model for product image gallery"""
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name='images',
+        verbose_name=_('product')
+    )
+    image = models.ImageField(_('image'), upload_to='products/')
+    alt_text = models.CharField(_('alt text'), max_length=200, blank=True)
+    is_primary = models.BooleanField(_('is primary image'), default=False)
+    order = models.PositiveIntegerField(_('order'), default=0)
+    created_at = models.DateTimeField(_('created at'), auto_now_add=True)
+
+    class Meta:
+        verbose_name = _('product image')
+        verbose_name_plural = _('product images')
+        ordering = ['order', 'created_at']
+
+    def __str__(self):
+        return f"{self.product.name} - Image {self.order + 1}"
+
+    def save(self, *args, **kwargs):
+        # Ensure only one primary image per product
+        if self.is_primary:
+            ProductImage.objects.filter(product=self.product, is_primary=True).update(is_primary=False)
+        super().save(*args, **kwargs)
 
 class ShippingMethod(models.Model):
     name = models.CharField(_('name'), max_length=100)

@@ -1,5 +1,7 @@
+{% extends 'base.html' %}
 {% load i18n static %}
 
+{% block content %}
 <div class="main-container">
     {% if breadcrumbs %}
         {% include 'components/breadcrumbs.html' %}
@@ -145,7 +147,7 @@
                         </svg>
                         {% trans 'Ingredients' %}
                     </h3>
-                    <p>{{ product.ingredients }}</p>
+                    <p class="ingredients-text">{{ product.ingredients }}</p>
                 </div>
                 {% endif %}
 
@@ -248,6 +250,26 @@
 </div>
 
 <script>
+// Quantity control functions
+function changeQuantity(inputId, change, maxStock) {
+    const input = document.getElementById(inputId);
+    const currentValue = parseInt(input.value) || 1;
+    const newValue = Math.max(1, Math.min(maxStock, currentValue + change));
+    input.value = newValue;
+}
+
+function validateQuantity(input, maxStock) {
+    let value = input.value.replace(/[^0-9]/g, '');
+    if (value === '') {
+        value = 1;
+    } else {
+        value = parseInt(value);
+        if (value < 1) value = 1;
+        if (value > maxStock) value = maxStock;
+    }
+    input.value = value;
+}
+
 // Image gallery functionality
 function initializeGallery() {
     const mainImage = document.getElementById('main-product-image');
@@ -394,4 +416,5 @@ function validateQuantity(input, maxStock) {
     }
     input.value = value;
 }
-</script> 
+</script>
+{% endblock %} 

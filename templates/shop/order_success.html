@@ -44,8 +44,8 @@
             <h3>{% trans 'Order Items' %}</h3>
             {% for item in order_items %}
             <div class="order-item">
-                {% if item.product.image %}
-                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+                {% if item.product.primary_image %}
+                    <img src="{{ item.product.primary_image.image.url }}" alt="{{ item.product.primary_image.alt_text|default:item.product.name }}">
                 {% endif %}
                 <div class="item-details">
                     <h4>{{ item.product.name }}</h4>

@@ -1,8 +1,9 @@
 from django.contrib import admin
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
-from .models import Category, Product, Order, OrderItem, ShippingMethod, PaymentMethod
+from .models import Category, Product, ProductImage, Order, OrderItem, ShippingMethod, PaymentMethod
 from django import forms
+import json
 
 # Conditional import for MPTT admin with drag & drop
 try:
@@ -49,30 +50,133 @@ class CategoryAdmin(DjangoMpttAdmin):
         }),
     )
 
+class ProductImageInline(admin.TabularInline):
+    model = ProductImage
+    extra = 1
+    fields = ('image', 'alt_text', 'is_primary', 'order')
+
 class AssignCategoryForm(forms.Form):
     category = forms.ModelChoiceField(queryset=Category.objects.all(), required=True, label=_('Category'))
 
+class ProductAdminForm(forms.ModelForm):
+    # Nutritional information fields
+    energy_value = forms.CharField(
+        label=_('Energy value'),
+        required=False,
+        help_text=_('e.g., 2377 kJ/ 571 kcal')
+    )
+    fat = forms.CharField(
+        label=_('Fat'),
+        required=False,
+        help_text=_('e.g., 38 g')
+    )
+    saturated_fatty_acids = forms.CharField(
+        label=_('Saturated fatty acids'),
+        required=False,
+        help_text=_('e.g., 31 g')
+    )
+    carbohydrates = forms.CharField(
+        label=_('Carbohydrates'),
+        required=False,
+        help_text=_('e.g., 51 g')
+    )
+    sugars = forms.CharField(
+        label=_('Sugars'),
+        required=False,
+        help_text=_('e.g., 18 g')
+    )
+    fiber = forms.CharField(
+        label=_('Fiber'),
+        required=False,
+        help_text=_('e.g., 2.7 g')
+    )
+    protein = forms.CharField(
+        label=_('Protein'),
+        required=False,
+        help_text=_('e.g., 7 g')
+    )
+    salt = forms.CharField(
+        label=_('Salt'),
+        required=False,
+        help_text=_('e.g., 0.4 g')
+    )
+
+    class Meta:
+        model = Product
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.pk:
+            # Load existing nutritional info into form fields
+            nutritional_info = self.instance.nutritional_info or {}
+            self.fields['energy_value'].initial = nutritional_info.get('Energy_value', '')
+            self.fields['fat'].initial = nutritional_info.get('Fat', '')
+            self.fields['saturated_fatty_acids'].initial = nutritional_info.get('Saturated_fatty_acids', '')
+            self.fields['carbohydrates'].initial = nutritional_info.get('Carbohydrates', '')
+            self.fields['sugars'].initial = nutritional_info.get('Sugars', '')
+            self.fields['fiber'].initial = nutritional_info.get('Fiber', '')
+            self.fields['protein'].initial = nutritional_info.get('Protein', '')
+            self.fields['salt'].initial = nutritional_info.get('Salt', '')
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        
+        # Build nutritional_info from form fields
+        nutritional_info = {}
+        if self.cleaned_data.get('energy_value'):
+            nutritional_info['Energy_value'] = self.cleaned_data['energy_value']
+        if self.cleaned_data.get('fat'):
+            nutritional_info['Fat'] = self.cleaned_data['fat']
+        if self.cleaned_data.get('saturated_fatty_acids'):
+            nutritional_info['Saturated_fatty_acids'] = self.cleaned_data['saturated_fatty_acids']
+        if self.cleaned_data.get('carbohydrates'):
+            nutritional_info['Carbohydrates'] = self.cleaned_data['carbohydrates']
+        if self.cleaned_data.get('sugars'):
+            nutritional_info['Sugars'] = self.cleaned_data['sugars']
+        if self.cleaned_data.get('fiber'):
+            nutritional_info['Fiber'] = self.cleaned_data['fiber']
+        if self.cleaned_data.get('protein'):
+            nutritional_info['Protein'] = self.cleaned_data['protein']
+        if self.cleaned_data.get('salt'):
+            nutritional_info['Salt'] = self.cleaned_data['salt']
+        
+        # Set nutritional_info (empty dict if no values)
+        instance.nutritional_info = nutritional_info if nutritional_info else {}
+        
+        if commit:
+            instance.save()
+        return instance
+
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
+    form = ProductAdminForm
     list_display = ('name', 'category', 'price', 'discount_price', 'current_price', 'stock', 'is_active', 'image_preview')
     list_filter = ('is_active', 'category', 'created_at')
-    search_fields = ('name', 'slug', 'description', 'category__name')
+    search_fields = ('name', 'slug', 'description', 'category__name', 'sku')
     prepopulated_fields = {'slug': ('name',)}
     list_select_related = ('category',)
     ordering = ('category__name', 'name')
+    inlines = [ProductImageInline]
     
     fieldsets = (
         ('Basic Information', {
             'fields': ('name', 'slug', 'category', 'description', 'is_active')
         }),
-        ('Pricing', {
-            'fields': ('price', 'discount_price')
+        ('Pricing & Stock', {
+            'fields': ('price', 'discount_price', 'stock', 'sku')
         }),
-        ('Inventory', {
-            'fields': ('stock',)
+        ('Product Details', {
+            'fields': ('weight', 'shelf_life_days', 'package_dimensions', 'barcode')
         }),
-        ('Media', {
-            'fields': ('image',)
+        ('Ingredients', {
+            'fields': ('ingredients',),
+            'classes': ('collapse',)
+        }),
+        ('Nutritional Information', {
+            'fields': ('energy_value', 'fat', 'saturated_fatty_acids', 'carbohydrates', 'sugars', 'fiber', 'protein', 'salt'),
+            'classes': ('collapse',),
+            'description': _('Note: Saturated fatty acids are included in total Fat. Sugars are included in total Carbohydrates.')
         }),
         ('Timestamps', {
             'fields': ('created_at', 'updated_at'),
@@ -131,6 +235,39 @@ class ProductAdmin(admin.ModelAdmin):
             )
         return obj.price
     current_price.short_description = _('Current Price')
+    
+    def image_preview(self, obj):
+        """Display a thumbnail preview of the product image"""
+        if obj.primary_image:
+            return format_html(
+                '<img src="{}" style="max-height: 50px; max-width: 50px;" />',
+                obj.primary_image.image.url
+            )
+        return _('No image')
+    image_preview.short_description = _('Image')
+
+@admin.register(ProductImage)
+class ProductImageAdmin(admin.ModelAdmin):
+    list_display = ('product', 'image_preview', 'alt_text', 'is_primary', 'order', 'created_at')
+    list_filter = ('is_primary', 'created_at')
+    search_fields = ('product__name', 'alt_text')
+    list_select_related = ('product',)
+    ordering = ('product__name', 'order')
+    
+    fieldsets = (
+        ('Image Information', {
+            'fields': ('product', 'image', 'alt_text')
+        }),
+        ('Display Settings', {
+            'fields': ('is_primary', 'order')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at',),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    readonly_fields = ('created_at', 'image_preview')
     
     def image_preview(self, obj):
         """Display a thumbnail preview of the product image"""

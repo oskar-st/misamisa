@@ -168,7 +168,7 @@ def product_detail_public(request, slug):
     if request.headers.get('HX-Request'):
         return render(request, 'shop/product_detail_content.html', context)
     
-    return render(request, 'shop/public_product_detail.html', context)
+    return render(request, 'shop/product_detail_enhanced.html', context)
 
 def cart_view(request):
     # Cart is stored in session as {product_id: quantity}
