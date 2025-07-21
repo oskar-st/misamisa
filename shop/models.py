@@ -167,6 +167,13 @@ class Product(models.Model):
     sku = models.CharField(_('SKU'), max_length=100, blank=True)
     barcode = models.CharField(_('barcode'), max_length=100, blank=True)
 
+    @property
+    def weight_int_grams(self):
+        """Returns the weight as an integer in grams (no decimals, no .00)"""
+        if self.weight is not None:
+            return int(self.weight)
+        return None
+
 class ProductImage(models.Model):
     """Model for product image gallery"""
     product = models.ForeignKey(

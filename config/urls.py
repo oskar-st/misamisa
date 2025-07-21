@@ -45,31 +45,36 @@ def downloads_list_api(request):
 @csrf_exempt
 @require_http_methods(["POST"])
 def downloads_upload_api(request):
-    """API endpoint to upload any files to downloads folder."""
+    """API endpoint to upload any files to downloads folder. Now supports multiple files."""
     try:
-        if 'file' not in request.FILES:
-            return JsonResponse({'error': 'No file provided'}, status=400)
-        
-        uploaded_file = request.FILES['file']
-        
-        # Security check - prevent dangerous file types
+        # Accept multiple files (up to 20)
+        files = request.FILES.getlist('file')
+        if not files:
+            # Fallback for single file (old clients)
+            if 'file' in request.FILES:
+                files = [request.FILES['file']]
+            else:
+                return JsonResponse({'error': 'No file provided'}, status=400)
+        if len(files) > 20:
+            return JsonResponse({'error': 'You can upload a maximum of 20 files at once.'}, status=400)
         dangerous_extensions = ['.exe', '.bat', '.cmd', '.com', '.pif', '.scr', '.vbs', '.js']
-        file_extension = Path(uploaded_file.name).suffix.lower()
-        if file_extension in dangerous_extensions:
-            return JsonResponse({'error': f'File type {file_extension} is not allowed for security reasons'}, status=400)
-        
-        # Save to downloads directory
         downloads_dir = Path(settings.BASE_DIR) / 'downloads'
         downloads_dir.mkdir(exist_ok=True)
-        
-        file_path = downloads_dir / uploaded_file.name
-        
-        with open(file_path, 'wb+') as destination:
-            for chunk in uploaded_file.chunks():
-                destination.write(chunk)
-        
-        return JsonResponse({'success': True, 'filename': uploaded_file.name})
-        
+        results = []
+        for uploaded_file in files:
+            file_extension = Path(uploaded_file.name).suffix.lower()
+            if file_extension in dangerous_extensions:
+                results.append({'filename': uploaded_file.name, 'success': False, 'error': f'File type {file_extension} is not allowed for security reasons'})
+                continue
+            file_path = downloads_dir / uploaded_file.name
+            try:
+                with open(file_path, 'wb+') as destination:
+                    for chunk in uploaded_file.chunks():
+                        destination.write(chunk)
+                results.append({'filename': uploaded_file.name, 'success': True})
+            except Exception as e:
+                results.append({'filename': uploaded_file.name, 'success': False, 'error': str(e)})
+        return JsonResponse({'results': results})
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 

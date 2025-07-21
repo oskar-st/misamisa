@@ -113,7 +113,7 @@
                         {% if product.weight %}
                         <div class="detail-item">
                             <span class="detail-label">{% trans 'Net weight' %}:</span>
-                            <span class="detail-value">{{ product.weight }} g</span>
+                            <span class="detail-value">{{ product.weight_int_grams }} g</span>
                         </div>
                         {% endif %}
                         {% if product.shelf_life_days %}

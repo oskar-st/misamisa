@@ -2,6 +2,7 @@ import os
 import urllib.request
 from django.core.management.base import BaseCommand
 from shop.models import Category, Product
+from shop.models import ProductImage
 from home.models import News
 from django.conf import settings
 from decimal import Decimal
@@ -86,21 +87,45 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS('Dummy images downloaded.'))
 
         # Create products
+        # Use jpgs from downloads/ for images
+        downloads_dir = os.path.join(settings.BASE_DIR, 'downloads')
+        jpg_files = [f for f in os.listdir(downloads_dir) if f.lower().endswith('.jpg')]
+        if not jpg_files:
+            self.stdout.write(self.style.WARNING('No jpg files found in downloads/ folder. Products will have no images.'))
         for idx, prod in enumerate(PRODUCTS):
             category = cat_objs[prod['category']]
-            image = img_paths[idx % len(img_paths)]
-            Product.objects.get_or_create(
+            product, _ = Product.objects.get_or_create(
                 name=prod['name'],
                 defaults={
-                    'slug': f"dummy-{prod['name'].lower().replace(' ', '-')}",
+                    'slug': f"dummy-{prod['name'].lower().replace(' ', '-')}" ,
                     'category': category,
                     'description': prod['desc'],
                     'price': Decimal(prod['price']),
                     'stock': prod['stock'],
                     'is_active': True,
-                    'image': image,
                 }
             )
+            # Attach a ProductImage from downloads/ if available
+            if jpg_files:
+                img_file = jpg_files[idx % len(jpg_files)]
+                img_path = os.path.join(downloads_dir, img_file)
+                # Copy to media/products/ for proper serving
+                media_img_dir = os.path.join(settings.MEDIA_ROOT, 'products')
+                os.makedirs(media_img_dir, exist_ok=True)
+                dest_img_path = os.path.join(media_img_dir, img_file)
+                if not os.path.exists(dest_img_path):
+                    with open(img_path, 'rb') as src, open(dest_img_path, 'wb') as dst:
+                        dst.write(src.read())
+                rel_img_path = f'products/{img_file}'
+                # Only add if not already present
+                if not product.images.filter(image=rel_img_path).exists():
+                    ProductImage.objects.create(
+                        product=product,
+                        image=rel_img_path,
+                        alt_text=product.name,
+                        is_primary=True,
+                        order=0
+                    )
         self.stdout.write(self.style.SUCCESS('Dummy products created.'))
 
         # Create news

@@ -54,6 +54,8 @@ class ProductImageInline(admin.TabularInline):
     model = ProductImage
     extra = 1
     fields = ('image', 'alt_text', 'is_primary', 'order')
+    class Media:
+        js = ('dist/js/admin/productimage_single_primary.js',)
 
 class AssignCategoryForm(forms.Form):
     category = forms.ModelChoiceField(queryset=Category.objects.all(), required=True, label=_('Category'))
