@@ -192,6 +192,13 @@ class ProductImage(models.Model):
         verbose_name = _('product image')
         verbose_name_plural = _('product images')
         ordering = ['order', 'created_at']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['product'],
+                condition=models.Q(is_primary=True),
+                name='unique_primary_image_per_product',
+            )
+        ]
 
     def __str__(self):
         return f"{self.product.name} - Image {self.order + 1}"
@@ -199,7 +206,7 @@ class ProductImage(models.Model):
     def save(self, *args, **kwargs):
         # Ensure only one primary image per product
         if self.is_primary:
-            ProductImage.objects.filter(product=self.product, is_primary=True).update(is_primary=False)
+            ProductImage.objects.filter(product=self.product, is_primary=True).exclude(pk=self.pk).update(is_primary=False)
         super().save(*args, **kwargs)
 
 class ShippingMethod(models.Model):

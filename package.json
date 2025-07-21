@@ -4,11 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build-css": "sass static/scss:static/css && sass static/scss/admin.scss:static/admin/css/enhanced_tree_admin.css"
+    "dev": "vite",
+    "build": "vite build"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "sass": "^1.89.2"
+    "sass": "^1.89.2",
+    "vite": "^7.0.5",
+    "vite-plugin-static-copy": "^3.1.1"
   }
 }

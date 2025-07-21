@@ -1,65 +1,45 @@
-// Theme toggle functionality
+// Theme toggle logic for dark/light mode
 export function initializeThemeToggle() {
-  const themeToggle = document.getElementById('theme-toggle');
-  const docElement = document.documentElement;
+    const html = document.documentElement;
+    const toggleBtn = document.getElementById('theme-toggle');
+    if (!toggleBtn) return;
 
-  if (!themeToggle) {
-    console.log('Theme toggle not found');
-    return;
-  }
-
-  const currentTheme = localStorage.getItem('theme') || 'light';
-  docElement.setAttribute('data-theme', currentTheme);
-  if (currentTheme === 'dark') {
-    themeToggle.classList.add('active');
-  } else {
-    themeToggle.classList.remove('active');
-  }
-  
-  // Prevent animation on page load, remove after theme is set
-  themeToggle.classList.add('no-animate');
-  setTimeout(() => {
-    themeToggle.classList.remove('no-animate');
-  }, 300);
-
-  themeToggle.addEventListener('click', (e) => {
-    e.stopPropagation(); // Prevent bubbling to document or other handlers
-    let newTheme = docElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-    docElement.setAttribute('data-theme', newTheme);
-    localStorage.setItem('theme', newTheme);
-    if (newTheme === 'dark') {
-      themeToggle.classList.add('active');
-    } else {
-      themeToggle.classList.remove('active');
+    // Get saved theme or system preference
+    function getPreferredTheme() {
+        const stored = localStorage.getItem('theme');
+        if (stored === 'dark' || stored === 'light') return stored;
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     }
-  });
+
+    // Set theme and update UI
+    function setTheme(theme) {
+        html.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
+        // Optionally update toggle UI (icon, etc.)
+        if (toggleBtn) {
+            toggleBtn.setAttribute('aria-pressed', theme === 'dark');
+            // Add or remove the .active class for animation
+            if (theme === 'dark') {
+                toggleBtn.classList.add('active');
+            } else {
+                toggleBtn.classList.remove('active');
+            }
+        }
+    }
+
+    // Toggle theme
+    function toggleTheme() {
+        const current = html.getAttribute('data-theme') || getPreferredTheme();
+        const next = current === 'dark' ? 'light' : 'dark';
+        setTheme(next);
+    }
+
+    // Initialize
+    setTheme(getPreferredTheme());
+    toggleBtn.addEventListener('click', toggleTheme);
 }
 
-// Logo link functionality
-export function initializeLogoLink() {
-  const logoLink = document.querySelector('.logo-link');
-  if (logoLink && window.location.pathname === '/') {
-    logoLink.addEventListener('click', function (e) {
-      e.preventDefault(); // Already on home — don't reload
-    });
-  }
-}
-
-// User menu dropdown functionality
-export function initializeUserMenu() {
-  const userMenu = document.querySelector('.user-menu');
-  const userDropdown = document.querySelector('.user-menu-dropdown');
-  let dropdownHideTimeout;
-  
-  if (userMenu && userDropdown) {
-    userMenu.addEventListener('mouseenter', () => {
-      clearTimeout(dropdownHideTimeout);
-      userDropdown.style.display = 'block';
-    });
-    userMenu.addEventListener('mouseleave', () => {
-      dropdownHideTimeout = setTimeout(() => {
-        userDropdown.style.display = 'none';
-      }, 200);
-    });
-  }
+// For main.js compatibility (if not using ES modules)
+if (typeof window !== 'undefined') {
+    window.initializeThemeToggle = initializeThemeToggle;
 } 

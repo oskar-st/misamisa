@@ -615,23 +615,17 @@
                         clearTimeout(activeTimers.get(timerId));
                         activeTimers.delete(timerId);
                     }
-                    
-                    // Close all other dropdowns of the same type before opening this one
-                    triggers.forEach((otherTrigger, otherIndex) => {
-                        if (otherTrigger !== trigger) {
-                            const otherTimerId = `${config.showClass}-${otherIndex}`;
-                            // Clear any timers for other dropdowns
-                            if (activeTimers.has(otherTimerId)) {
-                                clearTimeout(activeTimers.get(otherTimerId));
-                                activeTimers.delete(otherTimerId);
-                            }
-                            // Immediately close other dropdowns
-                            otherTrigger.classList.remove(config.showClass);
+
+                    // Close ALL other open dropdowns before opening this one
+                    document.querySelectorAll('.dropdown-show').forEach(el => {
+                        if (el !== trigger && !trigger.contains(el) && !el.contains(trigger)) {
+                            el.classList.remove('dropdown-show');
                         }
                     });
-                    
+
+                    // Now open the current dropdown
                     trigger.classList.add(config.showClass);
-                    
+
                     // Debug logging for subcategory canvas
                     if (config.dropdown === '.subcategory-canvas') {
                         console.log('Showing subcategory dropdown:', timerId);
