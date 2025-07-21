@@ -60,10 +60,12 @@ class AssignCategoryForm(forms.Form):
 
 class ProductAdminForm(forms.ModelForm):
     # Nutritional information fields
-    energy_value = forms.CharField(
-        label=_('Energy value'),
+    energy_value = forms.DecimalField(
+        label=_('Energy value (kcal)'),
         required=False,
-        help_text=_('e.g., 2377 kJ/ 571 kcal')
+        help_text=_('Enter energy value in kilocalories (kcal) only. kJ will be calculated automatically.'),
+        decimal_places=1,
+        max_digits=6
     )
     fat = forms.CharField(
         label=_('Fat'),
@@ -110,7 +112,25 @@ class ProductAdminForm(forms.ModelForm):
         if self.instance and self.instance.pk:
             # Load existing nutritional info into form fields
             nutritional_info = self.instance.nutritional_info or {}
-            self.fields['energy_value'].initial = nutritional_info.get('Energy_value', '')
+            
+            # Handle energy value - extract kcal from existing format
+            energy_value = nutritional_info.get('Energy_value', '')
+            if energy_value:
+                # Try to extract kcal from format like "2164 kJ/ 519 kcal" or just "519 kcal"
+                import re
+                from decimal import Decimal
+                kcal_match = re.search(r'(\d+(?:\.\d+)?)\s*kcal', energy_value)
+                if kcal_match:
+                    self.fields['energy_value'].initial = Decimal(kcal_match.group(1))
+                else:
+                    # If no kcal found, try to parse as just a number (old format)
+                    try:
+                        self.fields['energy_value'].initial = Decimal(energy_value)
+                    except (ValueError, TypeError):
+                        self.fields['energy_value'].initial = ''
+            else:
+                self.fields['energy_value'].initial = ''
+            
             self.fields['fat'].initial = nutritional_info.get('Fat', '')
             self.fields['saturated_fatty_acids'].initial = nutritional_info.get('Saturated_fatty_acids', '')
             self.fields['carbohydrates'].initial = nutritional_info.get('Carbohydrates', '')
@@ -125,7 +145,12 @@ class ProductAdminForm(forms.ModelForm):
         # Build nutritional_info from form fields
         nutritional_info = {}
         if self.cleaned_data.get('energy_value'):
-            nutritional_info['Energy_value'] = self.cleaned_data['energy_value']
+            kcal = self.cleaned_data['energy_value']
+            # Calculate kJ from kcal (1 kcal = 4.184 kJ)
+            # Convert Decimal to float for calculation
+            kcal_float = float(kcal)
+            kj = round(kcal_float * 4.184, 0)
+            nutritional_info['Energy_value'] = f"{int(kj)} kJ/ {kcal} kcal"
         if self.cleaned_data.get('fat'):
             nutritional_info['Fat'] = self.cleaned_data['fat']
         if self.cleaned_data.get('saturated_fatty_acids'):
@@ -176,7 +201,7 @@ class ProductAdmin(admin.ModelAdmin):
         ('Nutritional Information', {
             'fields': ('energy_value', 'fat', 'saturated_fatty_acids', 'carbohydrates', 'sugars', 'fiber', 'protein', 'salt'),
             'classes': ('collapse',),
-            'description': _('Note: Saturated fatty acids are included in total Fat. Sugars are included in total Carbohydrates.')
+            'description': _('Note: Enter energy value in kcal only - kJ will be calculated automatically. Saturated fatty acids are included in total Fat. Sugars are included in total Carbohydrates.')
         }),
         ('Timestamps', {
             'fields': ('created_at', 'updated_at'),

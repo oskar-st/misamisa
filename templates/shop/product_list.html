@@ -20,11 +20,13 @@
                     {% for product in products %}
                     <div class="product-card product-row">
                         <a href="{% url 'category_or_product' product.slug %}" class="product-link">
-                                            {% if product.primary_image %}
-                <img src="{{ product.primary_image.image.url }}" alt="{{ product.primary_image.alt_text|default:product.name }}" class="product-image" />
-                {% else %}
-                                <div class="no-image">{% trans 'No image' %}</div>
-                            {% endif %}
+                            <div class="product-image-container">
+                                {% if product.primary_image %}
+                                    <img src="{{ product.primary_image.image.url }}" alt="{{ product.primary_image.alt_text|default:product.name }}" class="product-image" />
+                                {% else %}
+                                    <div class="no-image">{% trans 'No image' %}</div>
+                                {% endif %}
+                            </div>
                             <span class="product-info">
                               <h2 class="product-title">{{ product.name }}</h2>
                               <span class="product-price">

@@ -139,6 +139,25 @@ class Product(models.Model):
         """Returns True if the product has any images"""
         return self.images.exists()
 
+    @property
+    def energy_value_display(self):
+        """Returns the energy value in the format 'kJ/ kcal' for display"""
+        energy_value = self.nutritional_info.get('Energy_value', '')
+        if energy_value:
+            return energy_value
+        return ''
+
+    @property
+    def energy_kcal_only(self):
+        """Returns only the kcal value as a number for calculations"""
+        energy_value = self.nutritional_info.get('Energy_value', '')
+        if energy_value:
+            import re
+            kcal_match = re.search(r'(\d+(?:\.\d+)?)\s*kcal', energy_value)
+            if kcal_match:
+                return float(kcal_match.group(1))
+        return None
+
     # Enhanced product fields
     weight = models.DecimalField(_('weight (g)'), max_digits=8, decimal_places=2, null=True, blank=True)
     shelf_life_days = models.PositiveIntegerField(_('shelf life (days)'), null=True, blank=True)
