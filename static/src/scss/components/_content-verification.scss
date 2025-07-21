@@ -1,0 +1,15 @@
+// Content verification and flash prevention styles
+body {
+  &.checking-content {
+    visibility: hidden;
+  }
+  
+  &.content-verified {
+    visibility: visible;
+  }
+}
+
+// HTMX transition styles
+.htmx-swapping {
+  transition: opacity 0.2s ease;
+} 

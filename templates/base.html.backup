@@ -13,7 +13,7 @@
   <link rel="apple-touch-icon" sizes="180x180" href="{% static 'favicon.ico' %}">
   <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon.ico' %}">
   <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon.ico' %}">
-  <link rel="stylesheet" href="{% static 'dist/css/main.css' %}">
+          <link rel="stylesheet" href="{% static 'dist/css/main.css' %}">
   <script src="{% static 'dist/js/main.js' %}" defer></script>
   <script src="{% static 'dist/js/shop.js' %}" defer></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -33,7 +33,7 @@
 
   <!-- HEADER -->
   <header class="site-header">
-    <div class="header-inner container">
+    <div class="header-inner container          ">
       <div class="header-left">
         <a href="{% url 'home' %}" class="logo-link shop-link">
           <img src="{% static 'assets/images/logos/logo.png' %}" alt="Misamisa logo" class="logo">
@@ -94,6 +94,14 @@
        hx-history="false"
        hx-indicator="#loading-indicator">
     {% block content %}
+    <!-- Optional homepage default content -->
+    <section class="hero">
+      <div class="hero-inner container">
+        <h1>{% trans "Welcome to" %} <span class="highlight">Misamisa</span> 🍪</h1>
+        <p>{% trans "Your favorite cookies — fresh, sweet, and handmade from the best ingredients!" %}</p>
+        <a href="{% url 'shop:public_product_list' %}" class="cta-btn shop-link">{% trans "See our offer" %}</a>
+      </div>
+    </section>
     {% endblock %}
   </div>
 
@@ -111,6 +119,7 @@
       </div>
     </div>
   </footer>
+
 
   <script src="{% static 'dist/js/shop.js' %}"></script>
 </body>

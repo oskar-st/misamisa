@@ -11,6 +11,10 @@ import './components/dropdown.js';
 import './components/tabs.js';
 import './components/forms.js';
 import './components/theme-toggle.js';
+import './components/htmx-navigation.js';
+import './components/dropdown-management.js';
+import './components/user-menu.js';
+import './components/notifications.js';
 
 // Import page-specific scripts
 import './pages/home.js';
