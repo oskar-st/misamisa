@@ -201,7 +201,7 @@ MODULE_SETTINGS = {
 DATA_UPLOAD_MAX_MEMORY_SIZE = 104857600  # 100MB in bytes
 FILE_UPLOAD_MAX_MEMORY_SIZE = 104857600  # 100MB in bytes
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000  # Increase field limit
-FILE_UPLOAD_TEMP_DIR = BASE_DIR / 'temp_uploads'  # Temporary upload directory
+# FILE_UPLOAD_TEMP_DIR = BASE_DIR / 'temp_uploads'  # Temporary upload directory
 
 # Message Framework Configuration - Force immediate consumption
 MESSAGE_STORAGE = 'django.contrib.messages.storage.fallback.FallbackStorage'
