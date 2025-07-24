@@ -11,8 +11,8 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, 'static/src/js/main.js'),
         'admin/productimage_single_primary': resolve(__dirname, 'static/src/js/admin/productimage_single_primary.js'),
-        mainStyle: resolve(__dirname, 'static/src/scss/main.scss'),
-        adminStyle: resolve(__dirname, 'static/src/scss/admin.scss'),
+        mainStyle: resolve(__dirname, 'static/src/scss/main.scss'), // changed back to mainStyle
+        adminStyle: resolve(__dirname, 'static/src/scss/admin.scss'), // changed back to adminStyle
       },
       output: {
         entryFileNames: (chunkInfo) => {
@@ -23,7 +23,7 @@ export default defineConfig({
         },
         assetFileNames: (assetInfo) => {
           if (assetInfo.name && assetInfo.name.endsWith('.css')) {
-            return 'css/[name]';
+            return 'css/[name].css'; // ensure .css extension
           }
           return 'assets/[name]';
         },

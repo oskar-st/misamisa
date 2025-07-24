@@ -286,16 +286,6 @@ function initializeGallery() {
     let currentImageIndex = 0;
     const images = Array.from(thumbnailItems);
 
-    function enforceGalleryImageSize() {
-        if (!galleryMainImage) return;
-        galleryMainImage.style.maxWidth = '1600px';
-        galleryMainImage.style.maxHeight = '1000px';
-        galleryMainImage.style.width = '100%';
-        galleryMainImage.style.height = 'auto';
-        galleryMainImage.style.objectFit = 'contain';
-        galleryMainImage.style.display = 'block';
-        galleryMainImage.style.margin = '0 auto';
-    }
 
     // Thumbnail click handler
     thumbnailItems.forEach((item, index) => {
@@ -330,7 +320,7 @@ function initializeGallery() {
         
         currentImageIndex = index;
         updateGalleryImage();
-        enforceGalleryImageSize();
+        // REMOVE: enforceGalleryImageSize();
         galleryModal.style.display = 'block';
         document.body.style.overflow = 'hidden';
     }

@@ -3940,7 +3940,7 @@ input[type=number]:focus,
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 2rem;
+  margin-bottom: 10rem;
 }
 
 .gallery-main-image img {
@@ -3981,6 +3981,11 @@ input[type=number]:focus,
   background: none !important;
   border: none !important;
   transform: none !important;
+}
+.gallery-nav-btn:focus {
+  outline: none;
+  box-shadow: none;
+  border: none;
 }
 
 .gallery-nav-btn svg {
