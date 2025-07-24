@@ -21,14 +21,22 @@
                 </div>
                 
                 {% if product.images.count > 1 %}
-                <div class="thumbnail-gallery">
-                    {% for product_image in product.images.all %}
-                    <div class="thumbnail-item" data-image-url="{{ product_image.image.url }}" data-alt="{{ product_image.alt_text|default:product.name }}">
-                        <img src="{{ product_image.image.url }}" 
-                             alt="{{ product_image.alt_text|default:product.name }}" 
-                             class="thumbnail-image" />
+                <div class="thumbnail-gallery-container">
+                    <button class="thumbnail-nav-btn thumbnail-nav-left" aria-label="Previous image">
+                        ‹
+                    </button>
+                    <div class="thumbnail-gallery">
+                        {% for product_image in product.images.all %}
+                        <div class="thumbnail-item" data-image-url="{{ product_image.image.url }}" data-alt="{{ product_image.alt_text|default:product.name }}">
+                            <img src="{{ product_image.image.url }}" 
+                                 alt="{{ product_image.alt_text|default:product.name }}" 
+                                 class="thumbnail-image" />
+                        </div>
+                        {% endfor %}
                     </div>
-                    {% endfor %}
+                    <button class="thumbnail-nav-btn thumbnail-nav-right" aria-label="Next image">
+                        ›
+                    </button>
                 </div>
                 {% endif %}
             </div>
@@ -259,10 +267,20 @@ function initializeGallery() {
     const galleryPrev = document.querySelector('.gallery-prev');
     const galleryNext = document.querySelector('.gallery-next');
     
+    // Thumbnail gallery navigation elements
+    const thumbnailGallery = document.querySelector('.thumbnail-gallery');
+    const thumbnailNavLeft = document.querySelector('.thumbnail-nav-left');
+    const thumbnailNavRight = document.querySelector('.thumbnail-nav-right');
+    
     if (!mainImage || !galleryModal) return; // Exit if elements don't exist
     
     let currentImageIndex = 0;
     const images = Array.from(thumbnailItems);
+
+    // Set first thumbnail as active by default
+    if (thumbnailItems.length > 0) {
+        thumbnailItems[0].classList.add('active');
+    }
 
     // Thumbnail click handler
     thumbnailItems.forEach((item, index) => {
@@ -335,6 +353,57 @@ function initializeGallery() {
     galleryPrev.addEventListener('click', prevImage);
     galleryNext.addEventListener('click', nextImage);
 
+    // Thumbnail gallery navigation functions
+    function navigateThumbnailsLeft() {
+        if (images.length > 0) {
+            currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
+            updateMainImage();
+            scrollToActiveThumbnail();
+        }
+    }
+
+    function navigateThumbnailsRight() {
+        if (images.length > 0) {
+            currentImageIndex = (currentImageIndex + 1) % images.length;
+            updateMainImage();
+            scrollToActiveThumbnail();
+        }
+    }
+
+    function updateMainImage() {
+        const currentImage = images[currentImageIndex];
+        const imageUrl = currentImage.dataset.imageUrl;
+        const altText = currentImage.dataset.alt;
+        
+        // Update main image
+        mainImage.src = imageUrl;
+        mainImage.alt = altText;
+        
+        // Update active thumbnail
+        thumbnailItems.forEach((thumb, index) => {
+            thumb.classList.toggle('active', index === currentImageIndex);
+        });
+    }
+
+    function scrollToActiveThumbnail() {
+        const activeThumbnail = thumbnailItems[currentImageIndex];
+        if (activeThumbnail && thumbnailGallery) {
+            activeThumbnail.scrollIntoView({
+                behavior: 'smooth',
+                block: 'nearest',
+                inline: 'center'
+            });
+        }
+    }
+
+    // Thumbnail gallery navigation event listeners
+    if (thumbnailNavLeft) {
+        thumbnailNavLeft.addEventListener('click', navigateThumbnailsLeft);
+    }
+    if (thumbnailNavRight) {
+        thumbnailNavRight.addEventListener('click', navigateThumbnailsRight);
+    }
+
     // Close gallery on outside click
     galleryModal.addEventListener('click', function(e) {
         if (e.target === galleryModal) {
@@ -352,6 +421,17 @@ function initializeGallery() {
             } else if (e.key === 'ArrowRight') {
                 nextImage();
             }
+        } else {
+            // Thumbnail gallery keyboard navigation (when modal is not open)
+            if (thumbnailGallery && images.length > 0) {
+                if (e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    navigateThumbnailsLeft();
+                } else if (e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    navigateThumbnailsRight();
+                }
+            }
         }
     });
 
@@ -364,17 +444,28 @@ function initializeGallery() {
     });
 }
 
+// Robust initialization that waits for CSS and DOM
+function initializeGalleryWhenReady() {
+    // Wait a bit for CSS to be fully applied
+    setTimeout(initializeGallery, 100);
+}
+
 // Initialize gallery on DOM ready and after HTMX loads
-document.addEventListener('DOMContentLoaded', initializeGallery);
-document.addEventListener('htmx:afterSwap', initializeGallery);
-document.addEventListener('htmx:afterRequest', initializeGallery);
+document.addEventListener('DOMContentLoaded', initializeGalleryWhenReady);
+document.addEventListener('htmx:afterSwap', initializeGalleryWhenReady);
+document.addEventListener('htmx:afterRequest', initializeGalleryWhenReady);
 
 // Also initialize immediately if DOM is already loaded
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initializeGallery);
+    document.addEventListener('DOMContentLoaded', initializeGalleryWhenReady);
 } else {
-    initializeGallery();
+    initializeGalleryWhenReady();
 }
+
+// Additional initialization after window load to ensure CSS is applied
+window.addEventListener('load', function() {
+    setTimeout(initializeGallery, 50);
+});
 
 function changeQuantity(inputId, change, maxStock) {
     const input = document.getElementById(inputId);

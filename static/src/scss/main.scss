@@ -3552,6 +3552,8 @@ input[type=number]:focus,
   height: 400px;
   object-fit: cover;
   display: block;
+  max-width: 500px;
+  aspect-ratio: 1;
 }
 
 .thumbnail-gallery {
@@ -3588,6 +3590,7 @@ input[type=number]:focus,
   width: 100%;
   height: 100%;
   object-fit: cover;
+  aspect-ratio: 1;
 }
 
 // Product Information Section
@@ -4264,13 +4267,16 @@ input[type=number]:focus,
 // Main Page Thumbnails
 // =============================
 .thumbnail-item {
-  width: 80px;
-  height: 80px;
+  width: 100px;
+  height: 100px;
   border-radius: 8px;
   overflow: hidden;
   background: var(--card-bg);
   cursor: pointer;
-  transition: none;
+  flex-shrink: 0;
+  border: none;
+  padding-bottom: 4px;
+  box-sizing: border-box;
 }
 .thumbnail-item img {
   width: 100%;
@@ -4278,16 +4284,138 @@ input[type=number]:focus,
   object-fit: cover;
 }
 .thumbnail-item:hover {
-  transform: none;
+  border: none;
 }
 .thumbnail-item.active {
-  border: 2px solid var(--accent-color);
+  border: none;
+  border-bottom: 2px solid var(--accent-color);
+  padding-bottom: 0;
 }
 
 @media (max-width: 768px) {
-   .thumbnail-item { width: 60px; height: 60px; }
+   .thumbnail-item { width: 80px; height: 80px; }
 }
 
 @media (max-width: 480px) {
-  .thumbnail-item { width: 50px; height: 50px; }
+  .thumbnail-item { width: 60px; height: 60px; }
+}
+
+.gallery-thumbnails {
+  /* ...existing styles... */
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* IE 10+ */
+}
+.gallery-thumbnails::-webkit-scrollbar {
+  display: none; /* Chrome/Safari/Webkit */
+}
+
+.thumbnail-gallery-container {
+  position: relative;
+  width: 500px;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.thumbnail-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(128, 128, 128, 0.8);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 10;
+  backdrop-filter: blur(4px);
+}
+
+.thumbnail-nav-btn {
+  font-size: 24px;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.thumbnail-nav-btn:hover {
+  background: var(--accent-color);
+  color: white;
+}
+
+
+
+.thumbnail-nav-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--accent-color);
+}
+
+.thumbnail-nav-left {
+  left: -24px;
+}
+
+.thumbnail-nav-right {
+  right: -24px;
+}
+
+// Responsive styles for thumbnail gallery
+@media (max-width: 768px) {
+  .thumbnail-gallery-container {
+    width: 100%;
+    max-width: 400px;
+  }
+  
+  .thumbnail-nav-btn {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .thumbnail-nav-left {
+    left: -20px;
+  }
+  
+  .thumbnail-nav-right {
+    right: -20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .thumbnail-gallery-container {
+    max-width: 320px;
+  }
+  
+  .thumbnail-nav-btn {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .thumbnail-nav-left {
+    left: -18px;
+  }
+  
+  .thumbnail-nav-right {
+    right: -18px;
+  }
+}
+
+.thumbnail-gallery {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: nowrap;
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* IE 10+ */
+  scroll-behavior: smooth;
+}
+.thumbnail-gallery::-webkit-scrollbar {
+  display: none; /* Chrome/Safari/Webkit */
 }
