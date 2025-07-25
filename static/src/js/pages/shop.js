@@ -1,4 +1,5 @@
-function setView(view) {
+// Expose setView function globally
+window.setView = function(view) {
     const list = document.getElementById('product-list');
     const gridBtn = document.getElementById('grid-btn');
     const listBtn = document.getElementById('list-btn');
