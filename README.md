@@ -157,9 +157,9 @@ static/src/scss/
 
 ## 🚀 Deployment
 
-### Docker (Recommended)
+### Podman (Recommended)
 ```bash
-docker-compose up -d
+podman-compose up -d
 ```
 
 ### Manual Deployment
