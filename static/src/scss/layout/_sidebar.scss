@@ -1,4 +1,207 @@
 // =============================================================================
 // SIDEBAR
 // =============================================================================
-// Sidebar navigation - will be populated during refactoring 
+// Sidebar navigation and layout components
+
+.sidebar-column {
+  width: 300px;
+  min-width: 300px;
+  flex-shrink: 0;
+}
+
+.shop-sidebar {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  padding: 1.5rem;
+  height: fit-content;
+  box-shadow: 0 2px 8px var(--shadow-sm);
+  position: sticky;
+  top: 100px;
+}
+
+.shop-sidebar h3 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-color);
+  margin: 0 0 1rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--accent-color);
+}
+
+.sidebar-categories {
+  margin-bottom: 2rem;
+}
+
+.sidebar-categories .category-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.sidebar-categories .category-item {
+  margin-bottom: 0.25rem;
+}
+
+.sidebar-categories .category-item .category-link {
+  display: block;
+  padding: 0.5rem 0.75rem;
+  color: var(--text-color);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border-radius: 4px;
+  transition: background 0.2s ease, color 0.2s ease, border-left-color 0.2s ease;
+  border-left: 3px solid transparent;
+}
+
+.sidebar-categories .category-item .category-link:hover {
+  background: var(--select-hover-bg);
+  color: var(--accent-color);
+  border-left-color: var(--accent-color);
+  text-decoration: none;
+}
+
+.sidebar-categories .category-item .category-link.active {
+  background: var(--select-hover-bg);
+  color: var(--accent-color);
+  border-left-color: var(--accent-color);
+  font-weight: 600;
+}
+
+.sidebar-categories .subcategory-list {
+  list-style: none;
+  margin: 0.25rem 0 0 0;
+  padding-left: 1rem;
+  border-left: 1px solid var(--card-border);
+}
+
+.sidebar-categories .subcategory-list .category-item {
+  margin-bottom: 0.2rem;
+}
+
+.sidebar-categories .subcategory-list .category-item .category-link {
+  font-size: 0.85rem;
+  padding: 0.4rem 0.5rem;
+  font-weight: 400;
+}
+
+.sidebar-categories .subcategory-list .subcategory-list {
+  padding-left: 0.75rem;
+}
+
+.sidebar-categories .subcategory-list .subcategory-list .category-link {
+  font-size: 0.8rem;
+  padding: 0.35rem 0.4rem;
+}
+
+.sidebar-filters {
+  border-top: 1px solid var(--card-border);
+  padding-top: 1.5rem;
+}
+
+.sidebar-filters h3 {
+  margin-bottom: 1rem;
+}
+
+.sidebar-filters .filter-section {
+  margin-bottom: 1.5rem;
+}
+
+.sidebar-filters .filter-section .filter-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.sidebar-filters .category-filter-form {
+  margin-bottom: 1.5rem;
+}
+
+.sidebar-filters .category-filter-form label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.sidebar-filters .category-filter-form select {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid var(--card-border);
+  border-radius: 4px;
+  background: var(--page-bg);
+  color: var(--text-color);
+  font-size: 0.85rem;
+}
+
+.sidebar-filters .category-filter-form select:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 2px rgba(204, 102, 0, 0.2);
+}
+
+.sidebar-filters .filters-placeholder {
+  padding: 1rem;
+  background: var(--select-hover-bg);
+  border-radius: 4px;
+  border: 1px dashed var(--card-border);
+  text-align: center;
+  color: #666;
+  font-size: 0.8rem;
+  font-style: italic;
+}
+
+// Responsive styles for sidebar
+@media (max-width: 1024px) {
+  .shop-sidebar {
+    width: 280px;
+    min-width: 280px;
+    padding: 1.25rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .shop-sidebar {
+    width: 100%;
+    min-width: auto;
+    order: 2;
+    position: static;
+    padding: 1rem;
+    margin-top: 1rem;
+  }
+}
+
+// Dark theme support
+[data-theme=dark] .shop-sidebar {
+  background: var(--card-bg);
+  border-color: var(--card-border);
+}
+
+[data-theme=dark] .shop-sidebar h3 {
+  color: var(--text-color);
+}
+
+[data-theme=dark] .shop-sidebar .sidebar-categories .category-item .category-link {
+  color: var(--text-color);
+}
+
+[data-theme=dark] .shop-sidebar .sidebar-categories .category-item .category-link:hover,
+[data-theme=dark] .shop-sidebar .sidebar-categories .category-item .category-link.active {
+  background: var(--select-hover-bg);
+  color: var(--accent-color);
+}
+
+[data-theme=dark] .shop-sidebar .filters-placeholder {
+  background: var(--select-hover-bg);
+  border-color: var(--card-border);
+  color: #999;
+} 

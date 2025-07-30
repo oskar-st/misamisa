@@ -1,8 +1,10 @@
 // =============================================================================
-// BASE INDEX
+// BASE
 // =============================================================================
-// Forward all base styles
+// Import all base styles
 
 @forward 'reset';
 @forward 'typography';
-@forward 'base'; 
+@forward 'base';
+@forward 'pages';
+@forward 'hero'; 

@@ -1,0 +1,40 @@
+// News Components
+// Styles for news feed and related components
+
+.news-feed .news-item {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px var(--shadow-sm);
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.news-item h2 {
+  margin-top: 0;
+}
+
+.news-item .post-meta {
+  font-size: 0.9rem;
+  color: var(--hero-text);
+  margin-bottom: 1rem;
+}
+
+.scroll-top-wrapper {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+#scroll-top {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  border: 1px solid var(--card-border);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#scroll-top:hover {
+  background-color: var(--button-hover-bg);
+} 

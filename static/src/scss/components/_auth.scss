@@ -1,0 +1,107 @@
+// Auth Components
+// Styles for authentication forms and user profile
+
+.auth-form {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: var(--card-bg);
+  border-radius: 8px;
+  box-shadow: 0 4px 10px var(--shadow-md);
+}
+
+.auth-form h2 {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: var(--hero-highlight);
+}
+
+.profile-container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.profile-info {
+  background-color: var(--card-bg);
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 4px var(--shadow-sm);
+}
+
+.profile-info p {
+  margin: 0.5rem 0;
+  font-size: 1.1rem;
+}
+
+.profile-actions {
+  text-align: center;
+}
+
+.success-message {
+  text-align: center;
+}
+
+.success-message h2 {
+  color: #28a745;
+  margin-bottom: 1.5rem;
+}
+
+.success-icon {
+  font-size: 4rem;
+  margin: 1rem 0;
+}
+
+.email-display {
+  background-color: var(--page-bg);
+  border: 2px solid var(--accent-color);
+  border-radius: 4px;
+  padding: 1rem;
+  margin: 1rem 0;
+  font-size: 1.1rem;
+}
+
+.instructions {
+  text-align: left;
+  margin: 2rem 0;
+}
+
+.instructions h3 {
+  color: var(--hero-highlight);
+  margin-bottom: 1rem;
+}
+
+.instructions ol {
+  padding-left: 1.5rem;
+}
+
+.instructions li {
+  margin: 0.5rem 0;
+  line-height: 1.6;
+}
+
+.help-text {
+  background-color: #f8f9fa;
+  border-left: 4px solid var(--accent-color);
+  padding: 1rem;
+  margin: 1.5rem 0;
+  text-align: left;
+}
+
+.help-text p {
+  margin: 0.5rem 0;
+}
+
+footer {
+  background-color: var(--header-bg);
+  border-top: 1px solid var(--card-border);
+  padding: 1.5rem 0;
+  margin-top: 0;
+  text-align: center;
+}
+
+footer p {
+  margin: 0;
+  color: var(--hero-text);
+  font-size: 0.9rem;
+} 

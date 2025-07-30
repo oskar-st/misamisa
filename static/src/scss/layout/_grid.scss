@@ -1,4 +1,32 @@
 // =============================================================================
 // GRID
 // =============================================================================
-// Container, grid systems - will be populated during refactoring 
+// Container, grid systems and layout components
+
+.shop-layout {
+  display: flex;
+  gap: 2rem;
+}
+
+.shop-content {
+  flex: 1;
+  min-width: 0;
+}
+
+// Responsive styles for shop layout
+@media (max-width: 1024px) {
+  .shop-layout {
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .shop-layout {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .shop-content {
+    order: 1;
+  }
+} 

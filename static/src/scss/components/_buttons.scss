@@ -1,4 +1,162 @@
-// =============================================================================
-// BUTTONS
-// =============================================================================
-// Button styles - will be populated during refactoring 
+// Button Components
+// Styles for buttons and form controls
+
+.cta-btn, .btn, button, input[type=submit] {
+  height: 30px;
+  min-height: 30px;
+  max-height: 30px;
+  border-radius: 5px !important;
+  font-size: 1rem;
+  padding: 0 1.2em;
+  line-height: 1.1;
+  box-shadow: none;
+  cursor: pointer !important;
+}
+
+.cta-btn:hover, .cta-btn:focus {
+  background-color: var(--button-hover-bg);
+  color: var(--button-text);
+  box-shadow: 0 2px 4px var(--shadow-md);
+  text-decoration: none;
+  outline: none;
+  cursor: pointer !important;
+}
+
+.cta-btn:active {
+  background-color: var(--accent-color);
+  color: var(--button-text);
+  box-shadow: 0 1px 2px var(--shadow-sm);
+}
+
+.cta-btn:disabled, .cta-btn[aria-disabled=true] {
+  background: #ccc;
+  color: #888;
+  cursor: not-allowed;
+  box-shadow: none;
+  opacity: 0.7;
+}
+
+.cta-btn.btn-primary {
+  background: var(--accent-color);
+  color: var(--button-text);
+  border: 1px solid var(--accent-color);
+  transition: all 0.2s ease;
+}
+
+.cta-btn.btn-primary:hover {
+  background: var(--button-hover-bg);
+  border-color: var(--button-hover-bg);
+  color: var(--button-text);
+  box-shadow: 0 2px 4px var(--shadow-md);
+}
+
+.cta-btn.btn-primary:active {
+  background: var(--button-hover-bg);
+  border-color: var(--button-hover-bg);
+  box-shadow: 0 2px 4px var(--shadow-md);
+}
+
+.cta-btn.btn-primary.checkout-btn {
+  height: 30px;
+  min-height: 30px;
+  max-height: 30px;
+  font-size: 1.1rem;
+  padding: 0 1.5em;
+  line-height: 30px;
+  font-weight: 600;
+  display: inline-block;
+  text-align: center;
+  text-decoration: none;
+}
+
+.cta-btn.btn-sm.remove-btn {
+  background: #dc3545 !important;
+  border-color: #dc3545 !important;
+  color: white !important;
+}
+
+.cta-btn.btn-sm.remove-btn:hover {
+  background: #c82333 !important;
+  border-color: #c82333 !important;
+}
+
+.cta-btn.btn-sm {
+  height: 26px;
+  min-height: 26px;
+  max-height: 26px;
+  font-size: 0.85rem;
+  padding: 0 0.8em;
+  line-height: 1.1;
+}
+
+.btn, .cta-btn, button, input[type=submit] {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: bold;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--button-bg);
+  color: var(--button-text);
+}
+
+.btn-primary, .cta-btn.btn-primary {
+  background: var(--accent-color);
+  color: var(--button-text);
+}
+
+.btn-primary:hover, .cta-btn.btn-primary:hover {
+  background: var(--button-hover-bg);
+  color: var(--button-text);
+}
+
+.btn-secondary {
+  background: #6c757d;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background: #545b62;
+  color: white;
+}
+
+.btn-success {
+  background: #28a745;
+  color: white;
+}
+
+.btn-success:hover {
+  background: #1e7e34;
+  color: white;
+}
+
+.btn-warning {
+  background: #ffc107;
+  color: #212529;
+}
+
+.btn-warning:hover {
+  background: #e0a800;
+  color: #212529;
+}
+
+.btn-danger {
+  background: #dc3545;
+  color: white;
+}
+
+.btn-danger:hover {
+  background: #c82333;
+  color: white;
+}
+
+.btn:disabled, .cta-btn:disabled, button:disabled, input[type=submit]:disabled {
+  background: #ccc;
+  color: #888;
+  cursor: not-allowed;
+  opacity: 0.7;
+} 

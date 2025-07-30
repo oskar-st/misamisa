@@ -1,12 +1,21 @@
 // =============================================================================
-// COMPONENTS INDEX
+// COMPONENTS
 // =============================================================================
-// Forward all component styles
+// Import all component styles
 
 @forward 'buttons';
 @forward 'forms';
-@forward 'cards';
-@forward 'alerts';
-@forward 'modals';
-@forward 'tables';
-@forward 'pagination'; 
+@forward 'modules';
+@forward 'shop';
+@forward 'gallery';
+@forward 'cart';
+@forward 'loading';
+@forward 'action-links';
+@forward 'products';
+@forward 'product-detail';
+@forward 'checkout';
+@forward 'gallery-modal';
+@forward 'pagination';
+@forward 'auth';
+@forward 'news';
+@forward 'contact'; 

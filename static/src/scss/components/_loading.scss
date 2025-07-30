@@ -1,0 +1,52 @@
+// Loading Components
+// Styles for loading indicators and spinners
+
+#loading-indicator {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--card-bg);
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px var(--shadow-md);
+  border: 1px solid var(--card-border);
+  z-index: 9999;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+  pointer-events: none;
+}
+
+#loading-indicator.htmx-request {
+  opacity: 1;
+  visibility: visible;
+}
+
+#loading-indicator .loading-spinner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--text-color);
+  font-weight: 500;
+}
+
+#loading-indicator .loading-spinner::before {
+  content: "";
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--card-border);
+  border-top: 2px solid var(--accent-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+#main-content {
+  transition: opacity 0.15s ease, background-color 0.15s ease;
+  min-height: 50vh;
+}
+
+#main-content.htmx-swapping {
+  background-color: var(--background-color);
+} 

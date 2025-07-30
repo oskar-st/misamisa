@@ -1,4 +1,169 @@
-// =============================================================================
-// FORMS
-// =============================================================================
-// Form elements - will be populated during refactoring 
+// Form Components
+// Styles for form elements and controls
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.form-group input, .form-control {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--card-border);
+  border-radius: 4px;
+  background-color: var(--page-bg);
+  color: var(--text-color);
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.form-group input:focus, .form-control:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 2px rgba(204, 102, 0, 0.2);
+}
+
+.form-group iframe {
+  border: 1px solid var(--card-border);
+  border-radius: 4px;
+  background-color: var(--page-bg);
+}
+
+.form-group .cf-turnstile {
+  display: flex;
+  justify-content: center;
+  margin: 0.5rem 0;
+}
+
+.form-group .cf-turnstile iframe {
+  border: none;
+  background: transparent;
+}
+
+.help-text {
+  font-size: 0.95rem;
+  color: var(--hero-text);
+  background: var(--card-bg);
+  border-left: 4px solid var(--accent-color);
+  padding: 1rem;
+  margin: 1.5rem 0 0.5rem 0;
+  line-height: 1.5;
+  text-align: left;
+  border-radius: 4px;
+  box-shadow: 0 1px 4px var(--shadow-sm);
+  transition: background 0.3s, color 0.3s;
+}
+
+[data-theme=dark] .help-text {
+  color: var(--hero-text);
+  background: var(--card-bg);
+  border-left: 4px solid var(--accent-color);
+  box-shadow: 0 1px 4px var(--shadow-sm);
+}
+
+.help-text p {
+  margin: 0.5rem 0;
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}
+
+.error-message span {
+  display: block;
+}
+
+.messages {
+  margin-bottom: 1.5rem;
+}
+
+.alert {
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.alert-success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.alert-error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.auth-links {
+  text-align: center;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--card-border);
+}
+
+.auth-links a:not(.cta-btn) {
+  color: var(--accent-color);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.auth-links a:not(.cta-btn):hover {
+  text-decoration: underline;
+}
+
+// NIP field validation
+.nip-field.valid {
+  border-color: #28a745;
+  box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.1);
+}
+
+.nip-field.valid[data-gus-verified=true] {
+  border-color: #17a2b8;
+  box-shadow: 0 0 0 2px rgba(23, 162, 184, 0.2);
+}
+
+.nip-field.invalid {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.1);
+}
+
+.nip-field.checking {
+  border-color: #ffc107;
+  box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.1);
+}
+
+.nip-validation-message {
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+  display: none;
+}
+
+.nip-validation-message.valid {
+  color: #28a745;
+  display: block;
+}
+
+.nip-validation-message.valid[data-gus-verified=true] {
+  color: #17a2b8;
+  font-weight: 600;
+}
+
+.nip-validation-message.invalid {
+  color: #dc3545;
+  display: block;
+}
+
+.nip-validation-message.checking {
+  color: #ffc107;
+  display: block;
+} 

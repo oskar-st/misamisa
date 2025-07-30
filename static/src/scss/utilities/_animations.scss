@@ -1,4 +1,8 @@
-// =============================================================================
-// ANIMATIONS
-// =============================================================================
-// Transitions, keyframes - will be populated during refactoring 
+// Animation Utilities
+// Reusable animations and keyframes
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+} 

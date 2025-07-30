@@ -1,0 +1,31 @@
+// Action Links Components
+// Styles for action links and buttons
+
+.action-links {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.action-links .button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: #79aec8;
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.action-links .button:hover {
+  background: #417690;
+  color: white;
+  text-decoration: none;
+}
+
+.action-links .button i {
+  font-size: 1.1em;
+} 

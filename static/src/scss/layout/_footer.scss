@@ -1,4 +1,39 @@
-// =============================================================================
-// FOOTER
-// =============================================================================
-// Site footer - will be populated during refactoring 
+// Footer Layout
+// Styles for footer and related components
+
+footer {
+  background: var(--primary);
+  border-top: 1px solid var(--border-color);
+  margin-top: 2rem;
+  padding: 2rem 0;
+}
+
+footer .footer-content {
+  text-align: center;
+}
+
+footer .footer-links {
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+footer .footer-link {
+  color: var(--link-fg);
+  text-decoration: none;
+  font-size: 0.9rem;
+  padding: 0.5rem;
+}
+
+footer .footer-link:hover {
+  color: var(--link-hover-color);
+  text-decoration: underline;
+}
+
+footer p {
+  color: var(--link-fg);
+  font-size: 0.8rem;
+  margin: 0;
+} 

@@ -1,4 +1,125 @@
 // =============================================================================
 // BASE
 // =============================================================================
-// Base HTML element styles - will be populated during refactoring 
+// Base styles for HTML elements
+
+body, button, input, select, textarea {
+  font-family: "Montserrat", "Segoe UI", Arial, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: var(--background-color);
+  color: var(--text-color);
+  transition: background 0.3s ease, color 0.3s ease;
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.main-container {
+  max-width: 1200px;
+  margin: 0.4rem auto;
+  padding: 0.5rem 2rem 2rem 2rem;
+  background-color: var(--page-bg);
+  border-radius: 8px;
+  box-shadow: 0 4px 10px var(--shadow-md);
+}
+
+// Global cursor rules
+button,
+input[type=submit],
+input[type=button],
+.cta-btn,
+.btn,
+.qty-btn,
+.view-btn,
+a.cta-btn {
+  cursor: pointer !important;
+}
+
+button:hover,
+input[type=submit]:hover,
+input[type=button]:hover,
+.cta-btn:hover,
+.btn:hover,
+.qty-btn:hover,
+.view-btn:hover,
+a.cta-btn:hover {
+  cursor: pointer !important;
+}
+
+button:disabled,
+input[type=submit]:disabled,
+input[type=button]:disabled,
+.cta-btn:disabled,
+.btn:disabled,
+.qty-btn:disabled,
+.view-btn:disabled {
+  cursor: not-allowed !important;
+}
+
+*[onclick],
+*[onclick]:hover {
+  cursor: pointer !important;
+}
+
+// File input hiding
+input[type=file],
+#module_file {
+  display: none !important;
+  visibility: hidden !important;
+  position: absolute !important;
+  left: -9999px !important;
+  opacity: 0 !important;
+  width: 0 !important;
+  height: 0 !important;
+  z-index: -1 !important;
+}
+
+// Number input spinners removal
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button,
+.cart-qty-input::-webkit-inner-spin-button,
+.cart-qty-input::-webkit-outer-spin-button,
+.product-detail-qty::-webkit-inner-spin-button,
+.product-detail-qty::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+  opacity: 0;
+  pointer-events: none;
+  display: none;
+}
+
+input[type=number],
+.cart-qty-input,
+.product-detail-qty {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+input[type=number]:focus::-webkit-inner-spin-button,
+input[type=number]:focus::-webkit-outer-spin-button,
+.cart-qty-input:focus::-webkit-inner-spin-button,
+.cart-qty-input:focus::-webkit-outer-spin-button,
+.product-detail-qty:focus::-webkit-inner-spin-button,
+.product-detail-qty:focus::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+  opacity: 0;
+  pointer-events: none;
+  display: none;
+}
+
+input[type=number]:focus,
+.cart-qty-input:focus,
+.product-detail-qty:focus {
+  -moz-appearance: textfield;
+  appearance: textfield;
+} 

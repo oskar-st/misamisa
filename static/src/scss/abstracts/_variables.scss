@@ -1,4 +1,78 @@
 // =============================================================================
 // VARIABLES
 // =============================================================================
-// Global CSS variables and SCSS vars - will be populated during refactoring 
+// CSS custom properties and variables
+
+:root {
+  --background-color: #fffaf3;
+  --text-color: #333;
+  --text-muted: #666;
+  --accent-color: #d77e00;
+  --accent-hover: #cc6600;
+
+  --header-bg: white;
+  --header-shadow: rgba(0,0,0,0.1);
+  
+
+  --hero-gradient-start: #ffe8cc;
+  --hero-gradient-end: #fff3e0;
+  --hero-text: #444;
+  --hero-highlight: #cc6600;
+  
+  --button-bg: #cc6600;
+  --button-text: white;
+  --button-hover-bg: #a75300;
+  
+  --card-bg: #fff;
+  --card-border: #ddd;
+  --page-bg: #ffffff;
+  
+  --select-bg: transparent;
+  --select-hover-bg: #f2ede4;
+  --option-bg: #ffffff;
+  
+  --shadow-sm: rgba(0,0,0,0.05);
+  --shadow-md: rgba(129, 10, 10, 0.05);
+  
+  --link-fg: #007bff;
+  --link-hover-color: #0056b3;
+  --primary-fg: #333;
+  --secondary-fg: #666;
+}
+
+html[data-theme=dark] {
+  --background-color: #1a1a1a;
+  --text-color: #f0f0f0;
+  --text-muted: #999;
+  --accent-color: #ff9d2d;
+  --accent-hover: #ff8c00;
+  
+  --header-bg: #2a2a2a;
+  --header-shadow: rgba(255,255,255,0.1);
+ 
+  --hero-gradient-start: #3a3a3a;
+  --hero-gradient-end: #2a2a2a;
+  --hero-text: #ccc;
+  --hero-highlight: #ff9d2d;
+  
+  --button-bg: #ff9d2d;
+  --button-text: #1a1a1a;
+  --button-hover-bg: #ff8c00;
+  
+  
+  --card-bg: #2a2a2a;
+  --card-border: #555;
+  --page-bg: #2a2a2a;
+
+  --select-bg: #3a3a3a;
+  --select-hover-bg: #2e2e2e;
+  --option-bg: #3a3a3a;
+ 
+  --shadow-sm: rgba(255,255,255,0.05);
+  --shadow-md: rgba(255,255,255,0.1);
+ 
+  --link-fg: #66b3ff;
+  --link-hover-color: #99ccff;
+  --primary-fg: #f0f0f0;
+  --secondary-fg: #ccc;
+} 

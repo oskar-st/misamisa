@@ -1,0 +1,33 @@
+// Contact Components
+// Styles for contact pages and information
+
+.contact-info {
+  background: var(--primary);
+  padding: 2rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  margin: 2rem 0;
+}
+
+.contact-info h3 {
+  margin-top: 0;
+  color: var(--primary-fg);
+}
+
+.contact-info p {
+  margin-bottom: 1.5rem;
+}
+
+.contact-info p:last-child {
+  margin-bottom: 0;
+}
+
+.contact-info a {
+  color: var(--link-fg);
+  text-decoration: none;
+}
+
+.contact-info a:hover {
+  color: var(--link-hover-color);
+  text-decoration: underline;
+} 
