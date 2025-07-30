@@ -1,6 +1,6 @@
 # Static Assets Structure
 
-This directory contains all static assets for the MisaMisa project, organized using a modern build process with SCSS compilation and asset optimization.
+This directory contains all static assets for the MisaMisa project, organized using Vite for modern build process with SCSS compilation and asset optimization.
 
 ## Directory Structure
 
@@ -8,67 +8,92 @@ This directory contains all static assets for the MisaMisa project, organized us
 /static/
 ├── .gitignore                      # Ignore compiled CSS, maps, etc.
 ├── README.md                       # This file - build instructions, conventions
+├── MIGRATION_SUMMARY.md            # Migration documentation
+├── package.json                    # Dependencies and build scripts
+├── favicon.ico                     # Site favicon
 │
 ├── dist/                           # Compiled/built assets (ignored by Git)
 │   ├── css/
-│   │   ├── main.css                # Compiled Frontend CSS
-│   │   ├── main.css.map            # Source maps for debugging
-│   │   ├── admin.css               # Compiled Admin CSS
-│   │   └── admin.css.map
-│   ├── js/
-│   │   ├── main.js                 # Bundled frontend JS
-│   │   ├── main.js.map
-│   │   ├── admin.js                # Bundled admin JS
-│   │   └── admin.js.map
-│   └── images/                     # Optimized images (if using build process)
+│   │   ├── mainStyle.css           # Compiled Frontend CSS
+│   │   └── adminStyle.css          # Compiled Admin CSS
+│   └── js/
+│       ├── main.js                 # Bundled frontend JS
+│       ├── shop.js                 # Shop-specific JS
+│       └── admin/                  # Admin JS files
 │
 ├── src/                            # Source files
 │   ├── scss/                       # SCSS source files (7-1 pattern)
 │   │   ├── abstracts/              # Variables, mixins, functions
+│   │   │   ├── _variables.scss     # Global CSS variables and SCSS vars
+│   │   │   ├── _mixins.scss        # Reusable mixins
+│   │   │   ├── _functions.scss     # SCSS functions
+│   │   │   └── _index.scss         # Forward all abstracts
 │   │   ├── base/                   # Global styles (reset, typography, base)
-│   │   ├── layout/                 # Structural styles (grid, header, footer)
+│   │   │   ├── _reset.scss         # Normalize/reset styles
+│   │   │   ├── _typography.scss    # Global font styles, headings
+│   │   │   ├── _base.scss          # Base HTML element styles
+│   │   │   └── _index.scss         # Forward all base styles
 │   │   ├── components/             # Reusable UI components
+│   │   │   ├── _buttons.scss       # Button styles
+│   │   │   ├── _forms.scss         # Form elements
+│   │   │   ├── _cards.scss         # Card components
+│   │   │   ├── _alerts.scss        # Alert and notification styles
+│   │   │   ├── _modals.scss        # Modal dialogs
+│   │   │   ├── _tables.scss        # Table component styles
+│   │   │   ├── _pagination.scss    # Pagination component styles
+│   │   │   └── _index.scss         # Forward all components
+│   │   ├── layout/                 # Structural styles (grid, header, footer)
+│   │   │   ├── _header.scss        # Site header styles
+│   │   │   ├── _footer.scss        # Site footer styles
+│   │   │   ├── _sidebar.scss       # Sidebar navigation styles
+│   │   │   ├── _navigation.scss    # Main navigation styles
+│   │   │   ├── _grid.scss          # Grid system and layout utilities
+│   │   │   └── _index.scss         # Forward all layout styles
 │   │   ├── utilities/              # Utility classes and helpers
-│   │   ├── vendor/                 # Third-party CSS/SCSS
+│   │   │   ├── _helpers.scss       # Helper classes and utilities
+│   │   │   ├── _animations.scss    # Animation and transition utilities
+│   │   │   └── _index.scss         # Forward all utility styles
 │   │   ├── themes/                 # Theme-specific styles
-│   │   │   ├── front/              # Frontend theme
-│   │   │   └── admin/              # Admin theme
+│   │   │   ├── _dark.scss          # Dark theme styles
+│   │   │   └── _index.scss         # Forward theme styles
+│   │   ├── backup/                 # Backup files (existing)
 │   │   ├── main.scss               # Main entry point (frontend)
 │   │   └── admin.scss              # Admin entry point
 │   │
 │   └── js/                         # JavaScript source files
 │       ├── lib/                    # Reusable JS libraries/utilities
+│       │   ├── utils.js            # Utility functions
+│       │   ├── api.js              # API communication
+│       │   └── validation.js       # Form validation
 │       ├── components/             # UI component JavaScript
+│       │   ├── theme-toggle.js     # Dark/light theme toggle
+│       │   ├── notifications.js    # Notification system
+│       │   ├── user-menu.js        # User menu functionality
+│       │   ├── dropdown-management.js # Dropdown management
+│       │   ├── htmx-navigation.js  # HTMX navigation handling
+│       │   ├── forms.js            # Enhanced form behavior
+│       │   ├── tabs.js             # Tab switching
+│       │   └── dropdown.js         # Dropdown functionality
 │       ├── pages/                  # Page-specific JavaScript
+│       │   ├── shop.js             # Shop page functionality
+│       │   ├── products.js         # Product page features
+│       │   ├── contact.js          # Contact form handling
+│       │   └── home.js             # Homepage functionality
 │       ├── admin/                  # Admin-specific JavaScript
-│       ├── vendor/                 # Third-party JavaScript
-│       ├── main.js                 # Frontend entry point
-│       └── admin.js                # Admin entry point
+│       │   └── productimage_single_primary.js # Product image handling
+│       └── main.js                 # Frontend entry point
 │
-├── assets/                         # Static assets (not processed)
-│   ├── images/                     # Images organized by type
-│   │   ├── logos/                  # Logo files
-│   │   ├── backgrounds/            # Background images
-│   │   ├── icons/                  # Icon sets
-│   │   ├── placeholders/           # Placeholder images
-│   │   └── content/                # Content images
-│   ├── fonts/                      # Font files
-│   └── documents/                  # Static documents
-│
-├── config/                         # Build configuration
-│   ├── webpack.config.js           # Webpack configuration (future)
-│   ├── postcss.config.js           # PostCSS configuration (future)
-│   └── babel.config.js             # Babel configuration (future)
-│
-└── package.json                    # Dependencies and build scripts
+└── assets/                         # Static assets (not processed)
+    └── images/                     # Images organized by type
+        ├── logos/                  # Logo files
+        └── backgrounds/            # Background images
 ```
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js 16+ (for build tools)
-- Python 3.7+ (for current SCSS compilation)
+- Node.js 16+ (for Vite build tools)
 
 ### Installation
 
@@ -87,15 +112,15 @@ npm run build
 
 ### Watch Mode (Development)
 
-Watch SCSS files and automatically compile on changes:
+Watch SCSS and JS files and automatically compile on changes:
 
 ```bash
 npm run dev
 ```
 
 This will:
-- Watch all SCSS files for changes
-- Compile to expanded CSS (easier to debug)
+- Watch all SCSS and JS files for changes
+- Compile to expanded CSS and JS (easier to debug)
 - Generate source maps for debugging
 
 ### Production Build
@@ -118,78 +143,90 @@ npm run build
 
 ## SCSS Architecture (7-1 Pattern)
 
-### Abstracts (`src/scss/abstracts/`)
-- `_variables.scss` - Global CSS variables and SCSS vars
-- `_mixins.scss` - Reusable mixins
-- `_functions.scss` - SCSS functions
-- `_index.scss` - Forward all abstracts
+The SCSS structure follows the 7-1 pattern with organized partials and index files for clean imports.
 
-### Base (`src/scss/base/`)
+### Directory Descriptions
+
+**Abstracts (`abstracts/`)** - Contains all Sass tools and helpers used across the project
+- `_variables.scss` - Global CSS variables and SCSS variables
+- `_mixins.scss` - Reusable mixins for common patterns
+- `_functions.scss` - Custom SCSS functions
+- `_index.scss` - Forwards all abstract files
+
+**Base (`base/`)** - Contains the boilerplate code for the project
 - `_reset.scss` - Normalize/reset styles
-- `_typography.scss` - Global font styles, headings
+- `_typography.scss` - Global font styles and typography rules
 - `_base.scss` - Base HTML element styles
-- `_index.scss` - Forward all base styles
+- `_index.scss` - Forwards all base styles
 
-### Layout (`src/scss/layout/`)
-- `_grid.scss` - Grid system
-- `_header.scss` - Site header
-- `_footer.scss` - Site footer
-- `_navigation.scss` - Main navigation
-- `_index.scss` - Forward all layout styles
+**Components (`components/`)** - Contains all reusable components
+- `_buttons.scss` - Button styles and variants
+- `_forms.scss` - Form elements and validation styles
+- `_cards.scss` - Card component styles
+- `_alerts.scss` - Alert and notification styles
+- `_modals.scss` - Modal dialog styles
+- `_tables.scss` - Table component styles
+- `_pagination.scss` - Pagination component styles
+- `_index.scss` - Forwards all component styles
 
-### Components (`src/scss/components/`)
-- `_buttons.scss` - Button styles
-- `_forms.scss` - Form elements
-- `_cards.scss` - Card components
-- `_modals.scss` - Modal dialogs
-- `_index.scss` - Forward all components
+**Layout (`layout/`)** - Contains all the major layout components
+- `_header.scss` - Site header styles
+- `_footer.scss` - Site footer styles
+- `_sidebar.scss` - Sidebar navigation styles
+- `_navigation.scss` - Main navigation styles
+- `_grid.scss` - Grid system and layout utilities
+- `_index.scss` - Forwards all layout styles
 
-### Utilities (`src/scss/utilities/`)
-- `_spacing.scss` - Margin/padding utilities
-- `_display.scss` - Display utilities
-- `_text.scss` - Text utilities
-- `_colors.scss` - Color utilities
-- `_index.scss` - Forward all utilities
+**Utilities (`utilities/`)** - Contains utility classes and helpers
+- `_helpers.scss` - Helper classes and utilities
+- `_animations.scss` - Animation and transition utilities
+- `_index.scss` - Forwards all utility styles
 
-### Themes (`src/scss/themes/`)
-- `front/` - Frontend theme styles
-- `admin/` - Admin theme styles
+**Themes (`themes/`)** - Contains theme-specific styles
+- `_dark.scss` - Dark theme styles
+- `_index.scss` - Forwards theme styles
+
+**Main Files**
+- `main.scss` - Main entry point for frontend styles (4,583 lines - to be refactored)
+- `admin.scss` - Admin interface styles (222 lines - existing)
 
 ## JavaScript Organization
 
 ### Lib (`src/js/lib/`)
-- `utils.js` - Utility functions
-- `api.js` - API communication
-- `validation.js` - Form validation
+- `utils.js` - Utility functions (1 line - empty)
+- `api.js` - API communication (1 line - empty)
+- `validation.js` - Form validation (1 line - empty)
 
 ### Components (`src/js/components/`)
-- `dropdown.js` - Dropdown functionality
-- `tabs.js` - Tab switching
-- `forms.js` - Enhanced form behavior
+- `theme-toggle.js` - Dark/light theme toggle (45 lines)
+- `notifications.js` - Notification system (123 lines)
+- `user-menu.js` - User menu functionality (55 lines)
+- `dropdown-management.js` - Dropdown management (141 lines)
+- `htmx-navigation.js` - HTMX navigation handling (296 lines)
+- `forms.js` - Enhanced form behavior (1 line - empty)
+- `tabs.js` - Tab switching (1 line - empty)
+- `dropdown.js` - Dropdown functionality (1 line - empty)
 
 ### Pages (`src/js/pages/`)
-- `home.js` - Homepage functionality
-- `products.js` - Product page features
-- `contact.js` - Contact form handling
+- `shop.js` - Shop page functionality (135 lines)
+- `products.js` - Product page features (1 line - empty)
+- `contact.js` - Contact form handling (1 line - empty)
+- `home.js` - Homepage functionality (1 line - empty)
 
 ### Admin (`src/js/admin/`)
-- `dashboard.js` - Dashboard functionality
-- `user-management.js` - User admin features
-- `settings.js` - Settings page logic
+- `productimage_single_primary.js` - Product image handling (19 lines)
 
 ## Asset Organization
 
 ### Images (`assets/images/`)
 - `logos/` - Logo files (SVG, PNG)
 - `backgrounds/` - Background images
-- `icons/` - Icon sets organized by type
-- `placeholders/` - Placeholder images
-- `content/` - Content images (gallery, testimonials)
 
-### Fonts (`assets/fonts/`)
-- `primary/` - Primary font family
-- `secondary/` - Secondary font family
-- `icons/` - Icon fonts
+### Compiled Assets (`dist/`)
+- `css/mainStyle.css` - Compiled frontend styles (66KB)
+- `css/adminStyle.css` - Compiled admin styles (3.9KB)
+- `js/main.js` - Bundled frontend JavaScript (9.6KB)
+- `js/shop.js` - Shop-specific JavaScript (2.4KB)
 
 ## Integration with Django
 
@@ -199,7 +236,7 @@ The compiled assets are served by Django's static file handling:
 2. Include assets in your templates:
 ```html
 {% load static %}
-<link rel="stylesheet" href="{% static 'dist/css/main.css' %}">
+<link rel="stylesheet" href="{% static 'dist/css/mainStyle.css' %}">
 <script src="{% static 'dist/js/main.js' %}"></script>
 ```
 
@@ -215,18 +252,19 @@ The compiled assets are served by Django's static file handling:
 
 ## Troubleshooting
 
-### CSS Not Updating
-- Make sure to run `npm run build` after SCSS changes
+### CSS/JS Not Updating
+- Make sure to run `npm run build` after SCSS/JS changes
 - Check that import paths are correct in main SCSS files
-- Verify compiled CSS files exist in `dist/css/`
+- Verify compiled CSS and JS files exist in `dist/css/` and `dist/js/`
 
 ### Build Errors
 - Check SCSS syntax (missing semicolons, brackets, etc.)
-- Verify import paths are correct
-- Look for undefined variables or mixins
+- Check JavaScript syntax and imports
+- Verify import paths are correct in both SCSS and JS files
+- Look for undefined variables or mixins in SCSS
 - Make sure all dependencies are installed
 
 ### Performance
-- Use compressed CSS in production: `npm run build`
+- Use compressed CSS and JS in production: `npm run build`
 - Consider using source maps only in development
 - Optimize images and other assets 
