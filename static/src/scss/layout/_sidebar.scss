@@ -7,6 +7,22 @@
   width: 300px;
   min-width: 300px;
   flex-shrink: 0;
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.sidebar-title {
+  margin-bottom: 1rem;
+  width: 300px;
+  margin-top: 0;
+}
+
+.shop-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--text-color);
+  text-align: left;
 }
 
 .shop-sidebar {
@@ -18,13 +34,14 @@
   box-shadow: 0 2px 8px var(--shadow-sm);
   position: sticky;
   top: 100px;
+  margin-top: 0;
 }
 
 .shop-sidebar h3 {
-  font-size: 0.95rem;
-  font-weight: 700;
+  font-size: 0.85rem;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
   color: var(--text-color);
   margin: 0 0 1rem 0;
   padding-bottom: 0.5rem;

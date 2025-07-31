@@ -88,7 +88,7 @@
 .addresses-page .address-actions .btn {
   width: 80px;
   height: 30px;
-  padding: 0;
+  padding: 0 0.5em;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -96,6 +96,7 @@
   white-space: nowrap;
   box-sizing: border-box;
   font-size: 0.8rem;
+  line-height: 1.1;
 }
 
 .addresses-page .inline-form {

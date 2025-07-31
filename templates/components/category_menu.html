@@ -3,13 +3,27 @@
     <ul class="category-menu-list">
       {% for category in top_categories %}
         <li class="category-menu-item{% if category.children.all %} has-dropdown{% endif %}">
-          <a href="{% url 'category_or_product' slug=category.slug %}" class="category-menu-link category-link">{{ category.name }}</a>
+          <a href="{% url 'category_or_product' slug=category.slug %}" 
+             class="category-menu-link category-link"
+             hx-get="{% url 'category_or_product' slug=category.slug %}"
+             hx-target="#main-content"
+             hx-push-url="true"
+             hx-swap="innerHTML"
+             hx-indicator="#loading-indicator"
+             hx-preserve-scroll="true">{{ category.name }}</a>
           {% if category.children.all %}
             <div class="category-dropdown">
               <ul class="subcategory-list">
                 {% for subcat in category.children.all|dictsort:"name" %}
                   <li class="subcategory-item{% if subcat.children.all %} has-children{% endif %}">
-                    <a href="{% url 'category_or_product' slug=subcat.slug %}" class="subcategory-link category-link">{{ subcat.name }}</a>
+                    <a href="{% url 'category_or_product' slug=subcat.slug %}" 
+                       class="subcategory-link category-link"
+                       hx-get="{% url 'category_or_product' slug=subcat.slug %}"
+                       hx-target="#main-content"
+                       hx-push-url="true"
+                       hx-swap="innerHTML"
+                       hx-indicator="#loading-indicator"
+                       hx-preserve-scroll="true">{{ subcat.name }}</a>
                     {% if subcat.children.all %}
                       <div class="subcategory-canvas">
                         <ul class="third-level-list">

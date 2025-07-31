@@ -15,7 +15,13 @@
             <!-- All Products Link -->
             <li class="category-item">
                 <a href="{% url 'shop:public_product_list' %}" 
-                   class="category-link {% if not category %}active{% endif %}">
+                   class="category-link {% if not category %}active{% endif %}"
+                   hx-get="{% url 'shop:public_product_list' %}"
+                   hx-target="#main-content"
+                   hx-push-url="true"
+                   hx-swap="innerHTML"
+                   hx-indicator="#loading-indicator"
+                   hx-preserve-scroll="true">
                     {% trans 'All Products' %}
                 </a>
             </li>
@@ -24,7 +30,13 @@
             {% for root_category in sidebar_categories %}
                 <li class="category-item">
                     <a href="{% url 'category_or_product' slug=root_category.slug %}" 
-                       class="category-link {% if category and category.pk == root_category.pk %}active{% endif %}">
+                       class="category-link {% if category and category.pk == root_category.pk %}active{% endif %}"
+                       hx-get="{% url 'category_or_product' slug=root_category.slug %}"
+                       hx-target="#main-content"
+                       hx-push-url="true"
+                       hx-swap="innerHTML"
+                       hx-indicator="#loading-indicator"
+                       hx-preserve-scroll="true">
                         {{ root_category.name }}
                     </a>
                     

@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1>HTMX Debug Page</h1>
+    
+    <div class="debug-section">
+        <h2>Test Links</h2>
+        <p>Click these links to test HTMX functionality:</p>
+        
+        <ul>
+            <li><a href="{% url 'home' %}" class="category-link">Home Page</a></li>
+            <li><a href="{% url 'shop:public_product_list' %}" class="category-link">Shop Page</a></li>
+            <li><a href="{% url 'about' %}" class="category-link">About Page</a></li>
+        </ul>
+    </div>
+    
+    <div class="debug-section">
+        <h2>Console Output</h2>
+        <div id="console-output" style="background: #f5f5f5; padding: 10px; border: 1px solid #ccc; height: 200px; overflow-y: auto; font-family: monospace;"></div>
+    </div>
+    
+    <div class="debug-section">
+        <h2>HTMX Status</h2>
+        <div id="htmx-status"></div>
+    </div>
+</div>
+
+<script>
+// Override console.log to capture output
+const originalLog = console.log;
+const originalError = console.error;
+const consoleOutput = document.getElementById('console-output');
+
+console.log = function(...args) {
+    originalLog.apply(console, args);
+    consoleOutput.innerHTML += '<div style="color: green;">' + args.join(' ') + '</div>';
+    consoleOutput.scrollTop = consoleOutput.scrollHeight;
+};
+
+console.error = function(...args) {
+    originalError.apply(console, args);
+    consoleOutput.innerHTML += '<div style="color: red;">ERROR: ' + args.join(' ') + '</div>';
+    consoleOutput.scrollTop = consoleOutput.scrollHeight;
+};
+
+// Check HTMX status
+document.addEventListener('DOMContentLoaded', function() {
+    const htmxStatus = document.getElementById('htmx-status');
+    
+    if (typeof htmx !== 'undefined') {
+        htmxStatus.innerHTML = '<div style="color: green;">✓ HTMX is loaded</div>';
+        console.log('HTMX version:', htmx.version);
+    } else {
+        htmxStatus.innerHTML = '<div style="color: red;">✗ HTMX is NOT loaded</div>';
+        console.error('HTMX is not available');
+    }
+    
+    // Test category links
+    const categoryLinks = document.querySelectorAll('.category-link');
+    console.log('Found category links:', categoryLinks.length);
+    
+    categoryLinks.forEach((link, index) => {
+        console.log(`Link ${index + 1}:`, link.href, 'HTMX attributes:', {
+            'hx-get': link.getAttribute('hx-get'),
+            'hx-target': link.getAttribute('hx-target'),
+            'hx-swap': link.getAttribute('hx-swap')
+        });
+    });
+});
+</script>
+
+<style>
+.debug-section {
+    margin: 20px 0;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.debug-section h2 {
+    margin-top: 0;
+    color: #333;
+}
+</style>
+{% endblock %} 

@@ -18,7 +18,8 @@ class CustomUserCreationForm(UserCreationForm):
     )
     password2 = forms.CharField(
         label=_('Confirm Password'),
-        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': _('Confirm your password')})
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': _('Confirm your password')}),
+        help_text=_('Enter the same password as before, for verification.')
     )
     # captcha = TurnstileField(
     #     label=_('Security Check'),

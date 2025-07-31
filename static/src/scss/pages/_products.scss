@@ -13,13 +13,13 @@
 .product-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1.5rem;
+  gap: 0.5rem;
 }
 
 .product-list-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 2em;
+  gap: 0.5rem;
   justify-items: center;
 }
 
@@ -31,13 +31,13 @@
 #product-list.product-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 2em;
+  gap: 0.5rem;
 }
 
 #product-list.product-list {
   display: flex;
   flex-direction: column;
-  gap: 2em;
+  gap: 0.5rem;
 }
 
 #product-list.product-list .product-card {

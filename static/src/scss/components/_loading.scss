@@ -43,10 +43,10 @@
 }
 
 #main-content {
-  transition: opacity 0.15s ease, background-color 0.15s ease;
+  // Remove all transitions to eliminate flickering completely
   min-height: 50vh;
 }
 
 #main-content.htmx-swapping {
-  background-color: var(--background-color);
+  // No visual changes during swaps to prevent flickering
 } 

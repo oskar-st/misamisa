@@ -145,6 +145,7 @@ def product_list_public(request, category_slug=None):
     
     # For htmx requests, return just the main content with minimal overhead
     if request.headers.get('HX-Request'):
+        print(f"HTMX request detected for: {request.path}")
         return render(request, 'shop/product_list_content.html', context)
     
     return render(request, 'shop/product_list.html', context)
@@ -173,6 +174,7 @@ def product_detail_public(request, slug):
     
     # For htmx requests, create a minimal content template
     if request.headers.get('HX-Request'):
+        print(f"HTMX request detected for product: {request.path}")
         return render(request, 'shop/product_detail_content.html', context)
     
     return render(request, 'shop/product_detail_enhanced.html', context)

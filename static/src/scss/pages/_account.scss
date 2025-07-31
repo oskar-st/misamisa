@@ -9,7 +9,7 @@
   padding: 2rem;
   background-color: var(--card-bg);
   border-radius: 8px;
-  box-shadow: 0 4px 10px var(--shadow-md);
+  border: 1px solid var(--card-border);
 }
 
 .auth-form h2 {

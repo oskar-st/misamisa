@@ -12,7 +12,7 @@ import './components/dropdown-management.js';
 import './components/notifications.js';
 
 // Import page-specific functionality
-import { initializeShop } from './pages/shop.js';
+import { initializeShop, reinitializeShopAfterHtmx } from './pages/shop.js';
 import { initializeAdmin } from './admin/productimage_single_primary.js';
 
 // Initialize frontend functionality
@@ -27,7 +27,16 @@ document.addEventListener('DOMContentLoaded', function() {
   initializeUserMenu();
   
   // Initialize page-specific functionality
-  if (document.querySelector('.shop-page') || document.querySelector('#product-list-container')) {
+  console.log('Checking for shop page elements...');
+  const shopPage = document.querySelector('.shop-page');
+  const productListContainer = document.querySelector('#product-list-container');
+  console.log('Shop elements found:', {
+    shopPage: !!shopPage,
+    productListContainer: !!productListContainer
+  });
+  
+  if (shopPage || productListContainer) {
+    console.log('Initializing shop functionality...');
     initializeShop();
   }
   

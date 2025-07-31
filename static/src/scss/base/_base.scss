@@ -1,18 +1,22 @@
-// =============================================================================
-// BASE
-// =============================================================================
-// Base styles for HTML elements
+// Base styles
+// Standard styles for commonly used HTML elements
 
-body, button, input, select, textarea {
-  font-family: "Montserrat", "Segoe UI", Arial, sans-serif;
+// Reset and base styles
+* {
+  box-sizing: border-box;
 }
 
-body {
-  margin: 0;
-  background: var(--background-color);
-  color: var(--text-color);
-  transition: background 0.3s ease, color 0.3s ease;
+html {
+  scroll-behavior: smooth;
+}
+
+body, button, input, select, textarea {
+  font-family: var(--font-family);
   line-height: 1.6;
+  color: var(--text-color);
+  background-color: var(--background-color);
+  margin: 0;
+  padding: 0;
 }
 
 .container {
@@ -27,7 +31,6 @@ body {
   padding: 0.5rem 2rem 2rem 2rem;
   background-color: var(--page-bg);
   border-radius: 8px;
-  box-shadow: 0 4px 10px var(--shadow-md);
 }
 
 // Global cursor rules

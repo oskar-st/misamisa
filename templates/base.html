@@ -14,13 +14,13 @@
   <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon.ico' %}">
   <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon.ico' %}">
   <link rel="stylesheet" href="{% static 'dist/css/mainStyle.css' %}">
-  <script src="{% static 'dist/js/main.js' %}" defer></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
   
   <!-- htmx for smooth navigation -->
-  <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+  <script src="{% static 'assets/js/htmx.min.js' %}"></script>
+  <script src="{% static 'dist/js/main.js' %}" defer></script>
   {% block extra_head %}{% endblock %}
 </head>
 <body style="font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;"{% if request.session.show_login_success %} data-show-login="true"{% endif %}>
@@ -90,7 +90,6 @@
 
   <!-- MAIN CONTENT TARGET -->
   <div id="main-content" 
-       hx-history="false"
        hx-indicator="#loading-indicator">
     {% block content %}
     {% endblock %}
