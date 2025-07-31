@@ -1,4 +1,99 @@
 // =============================================================================
 // CHECKOUT PAGE
 // =============================================================================
-// Checkout process page specific styles - will be populated during refactoring 
+// Checkout process page specific styles
+
+.checkout-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.order-summary {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.order-summary h3 {
+  margin: 0 0 1.5rem 0;
+  color: var(--text-color);
+  border-bottom: 2px solid var(--accent-color);
+  padding-bottom: 0.5rem;
+}
+
+.order-items {
+  margin-bottom: 1.5rem;
+}
+
+.order-item {
+  background: var(--page-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 4px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.order-item:last-child {
+  margin-bottom: 0;
+}
+
+.order-item h4 {
+  margin: 0 0 0.5rem 0;
+  color: var(--text-color);
+}
+
+.item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  color: var(--hero-text);
+  font-size: 0.9rem;
+}
+
+.order-total {
+  border-top: 2px solid var(--card-border);
+  padding-top: 1rem;
+  text-align: right;
+}
+
+.order-total h4 {
+  margin: 0;
+  color: var(--text-color);
+  font-size: 1.2rem;
+}
+
+.customer-info-section {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.customer-info-section h3 {
+  margin: 0 0 1.5rem 0;
+  color: var(--text-color);
+  border-bottom: 2px solid var(--accent-color);
+  padding-bottom: 0.5rem;
+}
+
+.customer-form {
+  margin-bottom: 2rem;
+}
+
+.payment-section {
+  margin-bottom: 2rem;
+}
+
+.payment-section h3 {
+  margin: 0 0 1.5rem 0;
+  color: var(--text-color);
+  border-bottom: 2px solid var(--accent-color);
+  padding-bottom: 0.5rem;
+}
+
+.payment-methods {
+  margin-bottom: 2rem;
+} 

@@ -1,0 +1,137 @@
+// =============================================================================
+// ADDRESSES PAGE
+// =============================================================================
+// Addresses management page specific styles
+
+.addresses-page {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem 0;
+}
+
+.addresses-page .page-header {
+  margin-bottom: 3rem;
+  text-align: center;
+}
+
+.addresses-page .page-header h1 {
+  color: var(--text-color);
+  margin-bottom: 0.5rem;
+}
+
+.addresses-page .page-description {
+  color: var(--hero-text);
+  font-size: 1.1rem;
+}
+
+.addresses-page .address-section {
+  margin-bottom: 4rem;
+}
+
+.addresses-page .address-section .section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--accent-color);
+}
+
+.addresses-page .address-section .section-header h2 {
+  color: var(--text-color);
+  margin: 0;
+}
+
+.addresses-page .address-section .section-header .limit-message {
+  color: var(--hero-text);
+  font-style: italic;
+}
+
+.addresses-page .address-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.addresses-page .address-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  padding: 1.5rem;
+  position: relative;
+}
+
+.addresses-page .address-content h3 {
+  color: var(--text-color);
+  margin: 0 0 1rem 0;
+  font-size: 1.1rem;
+}
+
+.addresses-page .address-text {
+  color: var(--hero-text);
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.addresses-page .vat-id {
+  color: var(--accent-color);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.addresses-page .address-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.addresses-page .address-actions .btn {
+  width: 80px;
+  height: 30px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  white-space: nowrap;
+  box-sizing: border-box;
+  font-size: 0.8rem;
+}
+
+.addresses-page .inline-form {
+  display: inline;
+}
+
+.addresses-page .empty-state {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: var(--hero-text);
+}
+
+.addresses-page .empty-state .empty-icon {
+  margin-bottom: 1rem;
+  stroke: var(--hero-text);
+}
+
+.addresses-page .empty-state h3 {
+  color: var(--text-color);
+  margin-bottom: 0.5rem;
+}
+
+.addresses-page .empty-state p {
+  margin-bottom: 2rem;
+}
+
+@media (max-width: 768px) {
+  .addresses-page .section-header {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+  .addresses-page .address-grid {
+    grid-template-columns: 1fr;
+  }
+  .addresses-page .address-actions {
+    justify-content: center;
+  }
+} 

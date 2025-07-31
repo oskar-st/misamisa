@@ -1,4 +1,41 @@
 // =============================================================================
 // CONTACT PAGE
 // =============================================================================
-// Contact page specific styles - will be populated during refactoring 
+// Contact page specific styles
+
+.contact-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+}
+
+.contact-container h1 {
+  color: var(--text-color);
+  margin-bottom: 1.5rem;
+}
+
+.contact-container h3 {
+  color: var(--text-color);
+  margin: 1.5rem 0 1rem 0;
+}
+
+.contact-container p {
+  color: var(--text-color);
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.contact-container .back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--accent-color);
+  text-decoration: none;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.contact-container .back-link:hover {
+  color: var(--accent-hover-color);
+  text-decoration: none;
+} 

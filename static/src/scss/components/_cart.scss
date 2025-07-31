@@ -1,22 +1,6 @@
-// Cart Components
-// Styles for shopping cart tables and related components
+// =============================================================================
+// CART COMPONENTS
+// =============================================================================
+// Reusable cart components - page-specific styles moved to pages/_cart.scss
 
-.cart-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: var(--card-bg);
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px var(--shadow-sm);
-  margin-bottom: 2rem;
-}
-
-.cart-table th,
-.cart-table td {
-  padding: 0.7em 1em;
-  border-bottom: 1px solid var(--card-border);
-  color: var(--text-color);
-  background: var(--card-bg);
-  text-align: left;
-  vertical-align: middle;
-} 
+// Cart-specific reusable components will be added here 

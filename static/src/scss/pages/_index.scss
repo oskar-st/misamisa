@@ -3,12 +3,14 @@
 // =============================================================================
 // Import all page-specific styles
 
-// @forward 'home';
-// @forward 'about';
-// @forward 'contact';
-// @forward 'products';
-// @forward 'product-detail';
-// @forward 'cart';
-// @forward 'checkout';
-// @forward 'account';
-// @forward 'admin'; 
+@forward 'home';
+@forward 'about';
+@forward 'contact';
+@forward 'legal';
+@forward 'addresses';
+@forward 'products';
+@forward 'product-detail';
+@forward 'cart';
+@forward 'checkout';
+@forward 'account';
+@forward 'admin'; 

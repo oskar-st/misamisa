@@ -1,31 +1,31 @@
 // =============================================================================
-// ABOUT PAGE
+// LEGAL PAGE
 // =============================================================================
-// About page specific styles
+// Legal pages (privacy policy, terms, etc.) specific styles
 
-.about-container {
+.legal-container {
   max-width: 800px;
   margin: 2rem auto;
   padding: 2rem;
 }
 
-.about-container h1 {
+.legal-container h1 {
   color: var(--text-color);
   margin-bottom: 1.5rem;
 }
 
-.about-container h3 {
+.legal-container h3 {
   color: var(--text-color);
   margin: 1.5rem 0 1rem 0;
 }
 
-.about-container p {
+.legal-container p {
   color: var(--text-color);
   line-height: 1.6;
   margin-bottom: 1rem;
 }
 
-.about-container .back-link {
+.legal-container .back-link {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
@@ -35,7 +35,7 @@
   margin-bottom: 1rem;
 }
 
-.about-container .back-link:hover {
+.legal-container .back-link:hover {
   color: var(--accent-hover-color);
   text-decoration: none;
 } 

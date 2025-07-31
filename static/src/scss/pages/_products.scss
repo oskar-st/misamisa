@@ -1,4 +1,46 @@
 // =============================================================================
 // PRODUCTS PAGE
 // =============================================================================
-// Products listing page specific styles - will be populated during refactoring 
+// Products listing page specific styles
+
+.sklep-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.product-list-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 2em;
+  justify-items: center;
+}
+
+.product-list-grid .product-card {
+  max-width: 300px;
+  width: 100%;
+}
+
+#product-list.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 2em;
+}
+
+#product-list.product-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2em;
+}
+
+#product-list.product-list .product-card {
+  max-width: none;
+  width: 100%;
+} 
