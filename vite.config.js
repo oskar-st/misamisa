@@ -12,8 +12,8 @@ export default defineConfig({
         main: resolve(__dirname, 'static/src/js/main.js'),
         shop: resolve(__dirname, 'static/src/js/pages/shop.js'),
         'admin/productimage_single_primary': resolve(__dirname, 'static/src/js/admin/productimage_single_primary.js'),
-        mainStyle: resolve(__dirname, 'static/src/scss/main.scss'), // changed back to mainStyle
-        adminStyle: resolve(__dirname, 'static/src/scss/admin.scss'), // changed back to adminStyle
+        mainStyle: resolve(__dirname, 'static/src/scss/main.scss'), 
+        adminStyle: resolve(__dirname, 'static/src/scss/admin.scss'),
       },
       output: {
         entryFileNames: (chunkInfo) => {
