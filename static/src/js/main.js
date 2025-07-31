@@ -1,11 +1,6 @@
 // Main JavaScript entry point for frontend
 // Import all frontend JavaScript modules
 
-// Import utility libraries
-import './lib/utils.js';
-import './lib/api.js';
-import './lib/validation.js';
-
 // Import components
 import { initializeDropdowns } from './components/dropdown.js';
 import { initializeTabs } from './components/tabs.js';
@@ -16,10 +11,9 @@ import { initializeUserMenu } from './components/user-menu.js';
 import './components/dropdown-management.js';
 import './components/notifications.js';
 
-// Import page-specific scripts
-import './pages/home.js';
-import './pages/products.js';
-import './pages/contact.js';
+// Import page-specific functionality
+import { initializeShop } from './pages/shop.js';
+import { initializeAdmin } from './admin/productimage_single_primary.js';
 
 // Initialize frontend functionality
 document.addEventListener('DOMContentLoaded', function() {
@@ -33,6 +27,14 @@ document.addEventListener('DOMContentLoaded', function() {
   initializeUserMenu();
   
   // Initialize page-specific functionality
+  if (document.querySelector('.shop-page') || document.querySelector('#product-list-container')) {
+    initializeShop();
+  }
+  
+  if (document.querySelector('.admin-page') || document.querySelector('input[name$="-is_primary"]')) {
+    initializeAdmin();
+  }
+  
   if (document.querySelector('.home-page')) {
     initializeHomePage();
   }

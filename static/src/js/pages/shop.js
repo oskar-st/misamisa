@@ -1,5 +1,5 @@
-// Expose setView function globally
-window.setView = function(view) {
+// Shop page functionality
+function setView(view) {
     const list = document.getElementById('product-list');
     const gridBtn = document.getElementById('grid-btn');
     const listBtn = document.getElementById('list-btn');
@@ -110,26 +110,26 @@ function setupPaginationJump() {
   });
 }
 
-// Initialize view functionality
-function initializeProductView() {
+// Initialize shop functionality
+function initializeShop() {
+  // Expose setView function globally for template use
+  window.setView = setView;
+  
   applyViewFromContainer();
   setupAjaxPagination();
   setupPaginationJump();
+  
+  // Reinitialize after htmx content swaps
+  document.body.addEventListener('htmx:afterSwap', function(evt) {
+      if (evt.detail.target.id === 'main-content') {
+          applyViewFromContainer();
+          setupAjaxPagination();
+          setupPaginationJump();
+      }
+  });
+  
+  console.log('Shop functionality initialized');
 }
 
-// Export for use in base template
-window.initializeShopFunctionality = initializeProductView;
-
-// On page load, set the view based on the query parameter (for initial render only)
-window.addEventListener('DOMContentLoaded', initializeProductView);
-
-// Reinitialize after htmx content swaps
-document.body.addEventListener('htmx:afterSwap', function(evt) {
-    if (evt.detail.target.id === 'main-content') {
-        initializeProductView();
-    }
-});
-
-function scrollToTop() {
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
+// Export for use in main.js
+export { initializeShop };

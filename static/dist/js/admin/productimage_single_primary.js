@@ -1,1 +1,0 @@
-(function(){function e(){const n=document.querySelectorAll('input[type="checkbox"][name$="-is_primary"]');n.forEach(function(t){t.addEventListener("change",function(){this.checked&&n.forEach(function(c){c!==t&&(c.checked=!1)})})})}document.addEventListener("DOMContentLoaded",e),document.body.addEventListener("formset:added",e)})();
