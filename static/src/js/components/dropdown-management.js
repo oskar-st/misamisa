@@ -1,4 +1,6 @@
 // Enhanced Dropdown Management with better nested dropdown support
+import { initializeDropdownThemeToggle } from './user-menu.js';
+
 function setupDropdownBehavior() {
     const dropdownItems = [
         {
@@ -134,7 +136,11 @@ document.addEventListener('DOMContentLoaded', setupDropdownBehavior);
 // Reinitialize after HTMX swaps
 document.addEventListener('htmx:afterSwap', function() {
     setTimeout(setupDropdownBehavior, 50);
-    setTimeout(initializeDropdownThemeToggle, 50);
+    setTimeout(() => {
+        if (typeof initializeDropdownThemeToggle === 'function') {
+            initializeDropdownThemeToggle();
+        }
+    }, 50);
 });
 
 // Export for use in main.js

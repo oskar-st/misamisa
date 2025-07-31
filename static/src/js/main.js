@@ -12,8 +12,8 @@ import { initializeTabs } from './components/tabs.js';
 import { initializeForms } from './components/forms.js';
 import { initializeThemeToggle } from './components/theme-toggle.js';
 import './components/htmx-navigation.js';
-import './components/dropdown-management.js';
 import { initializeUserMenu } from './components/user-menu.js';
+import './components/dropdown-management.js';
 import './components/notifications.js';
 
 // Import page-specific scripts

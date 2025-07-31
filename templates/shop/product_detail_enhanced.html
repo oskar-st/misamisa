@@ -471,7 +471,14 @@ function initializeGallery() {
         });
     });
 
-    window.addEventListener('resize', enforceGalleryImageSize);
+    window.addEventListener('resize', function() {
+        // Gallery image size enforcement can be added here if needed
+        // For now, we'll just ensure the gallery modal is properly sized
+        if (galleryModal.style.display === 'block') {
+            // Ensure modal is properly positioned and sized
+            galleryModal.style.display = 'flex';
+        }
+    });
 }
 
 // Robust initialization that waits for CSS and DOM
