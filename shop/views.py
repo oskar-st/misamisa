@@ -13,10 +13,11 @@ import json
 from django.contrib import messages
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q
+from django.db.models import Q, Prefetch
 from modules.manager import module_manager
 from django.conf import settings
 from .cart_utils import save_cart_to_database, validate_and_clean_cart, get_cart_change_messages
+
 
 def get_cart_items(request):
     """Get cart items from session."""
@@ -88,9 +89,13 @@ def product_detail(request, slug):
 # --- PUBLIC VIEWS ---
 def product_list_public(request, category_slug=None):
     """Display all products, with optional category filtering"""
-    categories = Category.objects.filter(is_active=True).order_by('name')
+    
+    # Optimize category query - only fetch what we need
+    categories = Category.objects.filter(is_active=True).values('id', 'name', 'slug').order_by('name')
     category = None
-    products = Product.objects.filter(is_active=True).select_related('category')
+    products = Product.objects.filter(is_active=True).select_related('category').prefetch_related(
+        'images'  # Prefetch product images
+    )
     
     # Handle category filtering - first check parameter, then GET request
     if not category_slug:
@@ -104,7 +109,7 @@ def product_list_public(request, category_slug=None):
         except Category.DoesNotExist:
             pass
 
-    # Pagination
+    # Pagination - keep at 12 products per page
     paginator = Paginator(products, 12)  # 12 products per page
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -121,10 +126,12 @@ def product_list_public(request, category_slug=None):
         title = _('All Products')
         breadcrumbs.append({'title': _('Shop'), 'url': reverse('shop:public_product_list')})
 
-    # Get hierarchical categories for sidebar
+    # Optimize sidebar categories - only fetch what's needed for display
     sidebar_categories = Category.objects.filter(parent=None, is_active=True).prefetch_related(
-        'children__children__children__children__children'  # Prefetch up to 6 levels for unlimited nesting
-    ).order_by('name')
+        Prefetch('children', queryset=Category.objects.filter(is_active=True).prefetch_related(
+            Prefetch('children', queryset=Category.objects.filter(is_active=True))
+        ))
+    ).order_by('name')[:10]  # Limit to first 10 top-level categories
     
     context = {
         'categories': categories,
@@ -136,7 +143,7 @@ def product_list_public(request, category_slug=None):
         'sidebar_categories': sidebar_categories,
     }
     
-    # For htmx requests, return just the main content
+    # For htmx requests, return just the main content with minimal overhead
     if request.headers.get('HX-Request'):
         return render(request, 'shop/product_list_content.html', context)
     

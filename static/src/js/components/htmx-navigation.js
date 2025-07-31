@@ -29,8 +29,8 @@ function setupHtmxNavigation() {
         console.log(`Added htmx to product link ${index + 1}:`, link.href);
     });
     
-    // Add htmx to pagination links
-    const paginationLinks = document.querySelectorAll('.pagination a:not([hx-get])');
+    // Add htmx to pagination links - FIXED SELECTOR
+    const paginationLinks = document.querySelectorAll('.pagination-link:not([hx-get])');
     console.log('Found pagination links:', paginationLinks.length);
     
     paginationLinks.forEach((link, index) => {
@@ -39,6 +39,8 @@ function setupHtmxNavigation() {
         link.setAttribute('hx-push-url', 'true');
         link.setAttribute('hx-swap', 'innerHTML');
         link.setAttribute('hx-indicator', '#loading-indicator');
+        // Add caching for pagination
+        link.setAttribute('hx-cache', 'true');
         console.log(`Added htmx to pagination link ${index + 1}:`, link.href);
     });
     
@@ -103,8 +105,10 @@ document.addEventListener('DOMContentLoaded', function() {
 // Smooth transitions with theme preservation
 document.addEventListener('htmx:beforeSwap', function(e) {
     const mainContent = document.getElementById('main-content');
-    mainContent.classList.add('htmx-swapping');
-    mainContent.style.opacity = '0.7';
+    if (mainContent) {
+        mainContent.classList.add('htmx-swapping');
+        mainContent.style.opacity = '0.7';
+    }
 });
 
 document.addEventListener('htmx:afterSwap', function(e) {
@@ -186,110 +190,6 @@ document.addEventListener('htmx:configRequest', function(e) {
     e.detail.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate';
     e.detail.headers['Pragma'] = 'no-cache';
     e.detail.headers['Expires'] = '0';
-});
-
-// Prevent HTMX from restoring partial content from history
-document.addEventListener('htmx:beforeHistoryRestore', function(e) {
-    console.log('Preventing HTMX history restore, using full page reload instead');
-    e.preventDefault();
-    
-    // Immediately hide content to prevent flash
-    document.body.classList.add('checking-content');
-    document.body.classList.remove('content-verified');
-    window.location.reload();
-});
-
-// Handle browser back/forward button properly
-let isNavigating = false;
-window.addEventListener('popstate', function(e) {
-    console.log('Browser back/forward detected');
-    
-    if (isNavigating) return;
-    isNavigating = true;
-    
-    // Immediately hide content to prevent flash
-    document.body.classList.add('checking-content');
-    document.body.classList.remove('content-verified');
-    
-    // Always do a full page reload for back/forward navigation
-    window.location.reload();
-});
-
-// Immediate detection and prevention of double content
-(function() {
-    // Start with hidden content to prevent flash
-    document.body.classList.add('checking-content');
-    
-    function verifyContent() {
-        const headers = document.querySelectorAll('header');
-        const footers = document.querySelectorAll('footer');
-        
-        if (headers.length > 1 || footers.length > 1) {
-            console.warn('Double content detected, reloading immediately');
-            window.location.reload();
-            return false;
-        }
-        
-        // Content is verified as correct, show it
-        document.body.classList.remove('checking-content');
-        document.body.classList.add('content-verified');
-        return true;
-    }
-    
-    // Check immediately when script executes
-    if (!verifyContent()) {
-        return;
-    }
-    
-    // Also check when DOM is fully loaded
-    document.addEventListener('DOMContentLoaded', function() {
-        if (!verifyContent()) {
-            return;
-        }
-    });
-    
-    // Check after any potential DOM changes
-    if (window.MutationObserver) {
-        const observer = new MutationObserver(function(mutations) {
-            mutations.forEach(function(mutation) {
-                if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
-                    // Check for double content after DOM changes
-                    setTimeout(verifyContent, 10);
-                }
-            });
-        });
-        
-        observer.observe(document.body, {
-            childList: true,
-            subtree: true
-        });
-    }
-})();
-
-// Intercept HTMX history saves to prevent storing partial content
-document.addEventListener('htmx:pushedIntoHistory', function(e) {
-    console.log('HTMX pushed to history:', e.detail.path);
-    
-    // Replace the HTMX history entry with a marker that will trigger full reload
-    const currentState = history.state || {};
-    const newState = {
-        ...currentState,
-        htmxFullReload: true,
-        path: e.detail.path
-    };
-    
-    history.replaceState(newState, '', e.detail.path);
-});
-
-// Disable HTMX history for specific problematic pages
-document.addEventListener('htmx:beforeRequest', function(e) {
-    const targetPath = e.detail.pathInfo.requestPath;
-    
-    // For cart and profile pages, disable history to prevent caching issues
-    if (targetPath.includes('/cart/') || targetPath.includes('/profile/')) {
-        console.log('Disabling HTMX history for:', targetPath);
-        e.detail.xhr.setRequestHeader('HX-History', 'false');
-    }
 });
 
 // Export for use in main.js

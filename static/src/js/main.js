@@ -7,13 +7,13 @@ import './lib/api.js';
 import './lib/validation.js';
 
 // Import components
-import './components/dropdown.js';
-import './components/tabs.js';
-import './components/forms.js';
-import './components/theme-toggle.js';
+import { initializeDropdowns } from './components/dropdown.js';
+import { initializeTabs } from './components/tabs.js';
+import { initializeForms } from './components/forms.js';
+import { initializeThemeToggle } from './components/theme-toggle.js';
 import './components/htmx-navigation.js';
 import './components/dropdown-management.js';
-import './components/user-menu.js';
+import { initializeUserMenu } from './components/user-menu.js';
 import './components/notifications.js';
 
 // Import page-specific scripts
@@ -30,7 +30,6 @@ document.addEventListener('DOMContentLoaded', function() {
   initializeTabs();
   initializeForms();
   initializeThemeToggle();
-  initializeLogoLink();
   initializeUserMenu();
   
   // Initialize page-specific functionality
@@ -47,28 +46,18 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
-// Component initialization functions
-function initializeDropdowns() {
-  // Dropdown initialization logic
-}
-
-function initializeTabs() {
-  // Tab initialization logic
-}
-
-function initializeForms() {
-  // Form initialization logic
-}
-
 // Page-specific initialization functions
 function initializeHomePage() {
   // Homepage specific functionality
+  console.log('Home page initialized');
 }
 
 function initializeProductsPage() {
   // Products page specific functionality
+  console.log('Products page initialized');
 }
 
 function initializeContactPage() {
   // Contact page specific functionality
+  console.log('Contact page initialized');
 }

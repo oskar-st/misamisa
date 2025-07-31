@@ -1,4 +1,4 @@
-{% load i18n static %}
+{% load i18n static shop_extras %}
 
 <div class="main-container">
     <!-- BREADCRUMBS -->
@@ -19,11 +19,7 @@
                     <div class="product-card product-row">
                         <a href="{% url 'category_or_product' product.slug %}" class="product-link">
                             <div class="product-image-container">
-                                {% if product.primary_image %}
-                                    <img src="{{ product.primary_image.image.url }}" alt="{{ product.primary_image.alt_text|default:product.name }}" class="product-image" />
-                                {% else %}
-                                    <div class="no-image">{% trans 'No image' %}</div>
-                                {% endif %}
+                                <img src="{{ product|get_product_image }}" alt="{{ product|get_product_alt_text }}" class="product-image" />
                             </div>
                             <span class="product-info">
                               <h2 class="product-title">{{ product.name }}</h2>

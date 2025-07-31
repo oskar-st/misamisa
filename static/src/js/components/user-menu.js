@@ -48,8 +48,17 @@ function handleDropdownThemeToggle(e) {
     }
 }
 
+// Initialize user menu functionality
+function initializeUserMenu() {
+    // Initialize dropdown theme toggle
+    initializeDropdownThemeToggle();
+    
+    // Add any other user menu initialization here
+    console.log('User menu initialized');
+}
+
 // Initialize dropdown theme toggle on page load
 document.addEventListener('DOMContentLoaded', initializeDropdownThemeToggle);
 
 // Export for use in main.js
-export { initializeDropdownThemeToggle, handleDropdownThemeToggle }; 
+export { initializeDropdownThemeToggle, handleDropdownThemeToggle, initializeUserMenu }; 
