@@ -1,5 +1,9 @@
 // Shop page functionality - localStorage-based view toggle
 
+// Debounce timer for view toggle
+let viewToggleDebounceTimer = null;
+let isViewToggling = false;
+
 // Get view preference from localStorage
 function getViewPreference() {
   return localStorage.getItem('shopViewPreference') || 'grid';
@@ -55,8 +59,18 @@ function updateViewToggleState(view) {
   }
 }
 
-// Switch view without changing URL
+// Switch view without changing URL (with debouncing)
 function switchView(newView) {
+  // Prevent multiple simultaneous requests
+  if (isViewToggling) {
+    return;
+  }
+  
+  // Clear any existing debounce timer
+  if (viewToggleDebounceTimer) {
+    clearTimeout(viewToggleDebounceTimer);
+  }
+  
   // Save preference
   saveViewPreference(newView);
   
@@ -66,18 +80,28 @@ function switchView(newView) {
   // Apply styling immediately for instant feedback
   applyViewStyling(newView);
   
-  // Get current URL without view parameters
-  const currentUrl = new URL(window.location.href);
-  currentUrl.searchParams.delete('view'); // Remove view parameter if it exists
-  
-  // Use HTMX to fetch new content with view preference in headers
-  htmx.ajax('GET', currentUrl.toString(), {
-    target: '#product-list-container',
-    swap: 'outerHTML',
-    headers: {
-      'X-View-Preference': newView
-    }
-  });
+  // Debounce the HTMX request to prevent race conditions
+  viewToggleDebounceTimer = setTimeout(() => {
+    isViewToggling = true;
+    
+    // Get current URL without view parameters
+    const currentUrl = new URL(window.location.href);
+    currentUrl.searchParams.delete('view'); // Remove view parameter if it exists
+    
+    // Use HTMX to fetch new content with view preference in headers
+    htmx.ajax('GET', currentUrl.toString(), {
+      target: '#product-list-container',
+      swap: 'outerHTML',
+      headers: {
+        'X-View-Preference': newView
+      }
+    }).then(() => {
+      isViewToggling = false;
+    }).catch((error) => {
+      console.error('View toggle request failed:', error);
+      isViewToggling = false;
+    });
+  }, 150); // 150ms debounce delay
 }
 
 // Initialize view toggle functionality
@@ -149,27 +173,22 @@ document.addEventListener('htmx:configRequest', function(event) {
 function updateSidebarActiveStates() {
   const currentPath = window.location.pathname;
   
-  // Remove all active classes from sidebar links
-  const sidebarLinks = document.querySelectorAll('.sidebar-categories .category-link');
-  sidebarLinks.forEach(link => {
+  // Remove all active classes from ALL sidebar and menu links
+  const allLinks = document.querySelectorAll('.category-link, .category-menu-link, .sidebar-categories a, .category-menu a');
+  
+  allLinks.forEach(link => {
     link.classList.remove('active');
   });
   
-  // Find and activate the matching link
-  sidebarLinks.forEach(link => {
-    const linkPath = new URL(link.href).pathname;
-    if (linkPath === currentPath) {
-      link.classList.add('active');
-    }
-  });
-  
-  // Also update top menu active states if they exist
-  const topMenuLinks = document.querySelectorAll('.category-menu-link');
-  topMenuLinks.forEach(link => {
-    link.classList.remove('active');
-    const linkPath = new URL(link.href).pathname;
-    if (linkPath === currentPath) {
-      link.classList.add('active');
+  // Find and activate the matching links
+  allLinks.forEach(link => {
+    try {
+      const linkPath = new URL(link.href).pathname;
+      if (linkPath === currentPath) {
+        link.classList.add('active');
+      }
+    } catch (error) {
+      // Silently handle invalid links
     }
   });
 }
@@ -178,11 +197,31 @@ function updateSidebarActiveStates() {
 document.addEventListener('htmx:afterSwap', function(event) {
   // Check if this is a product list container update or main content update
   if (event.target.id === 'product-list-container' || event.target.id === 'main-content') {
-    // Re-initialize view toggle after container swap
-    initializeViewToggle();
-    // Update sidebar active states after navigation
-    updateSidebarActiveStates();
+    // Reset all state flags
+    isViewToggling = false;
+    isPaginationJumping = false;
+    
+    // Small delay to ensure DOM is ready after swap
+    setTimeout(() => {
+      // Re-initialize ALL shop functionality after container swap
+      initializeShop(); // This calls both setupPaginationJump() and initializeViewToggle()
+      
+      // Update sidebar active states after navigation
+      updateSidebarActiveStates();
+    }, 50);
   }
+});
+
+// Add error handling for HTMX swap errors
+document.addEventListener('htmx:swapError', function(event) {
+  console.error('HTMX swap error:', event.detail);
+  isViewToggling = false; // Reset state on error
+});
+
+// Add error handling for HTMX response errors
+document.addEventListener('htmx:responseError', function(event) {
+  console.error('HTMX response error:', event.detail);
+  isViewToggling = false; // Reset state on error
 });
 
 // Initialize shop functionality
@@ -200,19 +239,66 @@ document.addEventListener('DOMContentLoaded', initializeShop);
 // Expose initializeShop globally for HTMX navigation
 window.initializeShop = initializeShop;
 
+// Prevent multiple event listeners with a flag
+let paginationListenersAttached = false;
+let isPaginationJumping = false;
+
 function setupPaginationJump() {
   const jumpInput = document.getElementById('pagination-jump-input');
+  
   if (jumpInput) {
+    // Check if listeners are already attached to this specific element
+    if (jumpInput.dataset.listenersAttached === 'true') {
+      return;
+    }
+    
+    // Mark this element as having listeners
+    jumpInput.dataset.listenersAttached = 'true';
+    
+    // Create the event handler inline to avoid scope issues
     jumpInput.addEventListener('keypress', function(e) {
       if (e.key === 'Enter') {
         e.preventDefault();
-        const page = this.value;
+        
+        // Prevent multiple simultaneous pagination requests
+        if (isPaginationJumping) {
+          return;
+        }
+        
+        const page = parseInt(this.value);
+        const maxPages = parseInt(this.getAttribute('max'));
+        
+        // Validate page number
+        if (isNaN(page) || page < 1 || page > maxPages) {
+          this.value = ''; // Clear invalid input
+          return;
+        }
+        
+        isPaginationJumping = true;
+        
+        // Build URL for HTMX request
         const url = new URL(window.location);
         url.searchParams.set('page', page);
-        window.location.href = url.toString();
+        
+        // Use HTMX for pagination jump to maintain consistency
+        htmx.ajax('GET', url.toString(), {
+          target: '#product-list-container',
+          swap: 'outerHTML',
+          headers: {
+            'X-View-Preference': getViewPreference()
+          }
+        }).then(() => {
+          isPaginationJumping = false;
+          // Update URL in browser
+          window.history.pushState({}, '', url.toString());
+        }).catch((error) => {
+          console.error('Pagination jump failed:', error);
+          isPaginationJumping = false;
+        });
       }
     });
   }
+  // Note: No error logging when pagination input not found - it's normal for pages with few items
 }
 
 // Export for use in main.js

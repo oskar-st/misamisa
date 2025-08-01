@@ -5,10 +5,20 @@
                 {% if page_obj.has_previous %}
                     {% if category %}
                         <a href="/{{ category.slug }}/?page={{ page_obj.previous_page_number }}{% if request.GET.view %}&view={{ request.GET.view }}{% endif %}"
-                           class="pagination-link page-arrow pagination" aria-label="Previous page">
+                           class="pagination-link page-arrow pagination" aria-label="Previous page"
+                           hx-get="/{{ category.slug }}/?page={{ page_obj.previous_page_number }}"
+                           hx-target="#product-list-container"
+                           hx-push-url="true"
+                           hx-swap="outerHTML"
+                           hx-indicator="#loading-indicator">
                     {% else %}
                         <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.view %}&view={{ request.GET.view }}{% endif %}"
-                           class="pagination-link page-arrow pagination" aria-label="Previous page">
+                           class="pagination-link page-arrow pagination" aria-label="Previous page"
+                           hx-get="?page={{ page_obj.previous_page_number }}"
+                           hx-target="#product-list-container"
+                           hx-push-url="true"
+                           hx-swap="outerHTML"
+                           hx-indicator="#loading-indicator">
                     {% endif %}
                         <span class="arrow-bg">
                           <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -33,10 +43,20 @@
                 {% if page_obj.has_next %}
                     {% if category %}
                         <a href="/{{ category.slug }}/?page={{ page_obj.next_page_number }}{% if request.GET.view %}&view={{ request.GET.view }}{% endif %}"
-                           class="pagination-link page-arrow pagination" aria-label="Next page">
+                           class="pagination-link page-arrow pagination" aria-label="Next page"
+                           hx-get="/{{ category.slug }}/?page={{ page_obj.next_page_number }}"
+                           hx-target="#product-list-container"
+                           hx-push-url="true"
+                           hx-swap="outerHTML"
+                           hx-indicator="#loading-indicator">
                     {% else %}
                         <a href="?page={{ page_obj.next_page_number }}{% if request.GET.view %}&view={{ request.GET.view }}{% endif %}"
-                           class="pagination-link page-arrow pagination" aria-label="Next page">
+                           class="pagination-link page-arrow pagination" aria-label="Next page"
+                           hx-get="?page={{ page_obj.next_page_number }}"
+                           hx-target="#product-list-container"
+                           hx-push-url="true"
+                           hx-swap="outerHTML"
+                           hx-indicator="#loading-indicator">
                     {% endif %}
                         <span class="arrow-bg">
                           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style="transform: scaleX(-1);">
