@@ -54,7 +54,6 @@ function initializeUserMenu() {
     initializeDropdownThemeToggle();
     
     // Add any other user menu initialization here
-    console.log('User menu initialized');
 }
 
 // Initialize dropdown theme toggle on page load

@@ -15,8 +15,8 @@
             {% endif %}
             
             {% if products %}
-                <div id="product-list-container" data-view="{{ request.GET.view|default:'grid' }}">
-                    <div id="product-list" class="product-list-grid product-grid">
+                <div id="product-list-container">
+                    <div id="product-list">
                         {% for product in products %}
                         <div class="product-card product-row">
                             <a href="{% url 'category_or_product' product.slug %}" class="product-link">
@@ -55,4 +55,6 @@
         </div>
     </div>
 </div>
+
+
 {% endblock %} 

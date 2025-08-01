@@ -1,282 +1,219 @@
-// Shop page functionality
+// Shop page functionality - localStorage-based view toggle
 
-// Global view management
-window.shopViewState = {
-    currentView: 'grid',
-    initialized: false
-};
-
-function setView(view) {
-    console.log('setView called with:', view);
-    
-    const list = document.getElementById('product-list');
-    const gridBtn = document.getElementById('grid-btn');
-    const listBtn = document.getElementById('list-btn');
-    
-    console.log('Elements found:', {
-        list: !!list,
-        gridBtn: !!gridBtn,
-        listBtn: !!listBtn
-    });
-    
-    if (!list || !gridBtn || !listBtn) {
-        console.log('Missing elements for view toggle');
-        return;
-    }
-    
-    console.log('Switching to view:', view);
-    
-    // Update global state
-    window.shopViewState.currentView = view;
-    
-    // Store view preference in localStorage
-    localStorage.setItem('shop-view-preference', view);
-    
-    // Update URL parameters (only if not grid to keep URLs clean)
-    if (view !== 'grid') {
-        const url = new URL(window.location);
-        url.searchParams.set('view', view);
-        window.history.replaceState({}, '', url);
-    } else {
-        // Remove view parameter if switching to grid
-        const url = new URL(window.location);
-        url.searchParams.delete('view');
-        window.history.replaceState({}, '', url);
-    }
-    
-    // Update the container's data-view attribute
-    const container = document.getElementById('product-list-container');
-    if (container) {
-        container.setAttribute('data-view', view);
-    }
-    
-    // Apply the view using CSS classes only
-    if (view === 'list') {
-        list.classList.remove('product-grid');
-        list.classList.add('product-list');
-        listBtn.classList.add('active');
-        gridBtn.classList.remove('active');
-        console.log('Applied list view classes');
-    } else {
-        list.classList.remove('product-list');
-        list.classList.add('product-grid');
-        gridBtn.classList.add('active');
-        listBtn.classList.remove('active');
-        
-        // Check if there's only one product and add single-product class
-        const productCards = list.querySelectorAll('.product-card');
-        console.log('Product cards in setView:', productCards.length);
-        
-        if (productCards.length === 1) {
-            list.classList.add('single-product');
-            console.log('Single product detected in setView, adding single-product class');
-        } else {
-            // Remove single-product class if not single product
-            list.classList.remove('single-product');
-            console.log('Multiple products detected, removing single-product class');
-        }
-        console.log('Applied grid view classes');
-    }
-    
-    console.log('View switched successfully to:', view);
+// Get view preference from localStorage
+function getViewPreference() {
+  return localStorage.getItem('shopViewPreference') || 'grid';
 }
 
-function applyViewFromContainer() {
-    const container = document.getElementById('product-list-container');
-    if (!container) {
-        console.log('No product-list-container found');
-        return;
+// Save view preference to localStorage
+function saveViewPreference(view) {
+  localStorage.setItem('shopViewPreference', view);
+}
+
+// Get the current view from the DOM element (server-rendered)
+function getCurrentViewFromDOM() {
+  const productList = document.getElementById('product-list');
+  if (productList) {
+    if (productList.classList.contains('product-list')) {
+      return 'list';
+    } else if (productList.classList.contains('product-grid')) {
+      return 'grid';
     }
-    
-    // Check URL parameters first, then localStorage, then fallback to data-view attribute
-    const urlParams = new URLSearchParams(window.location.search);
-    const urlView = urlParams.get('view');
-    const storedView = localStorage.getItem('shop-view-preference');
-    const dataView = container.getAttribute('data-view');
-    const view = urlView || storedView || dataView || 'grid';
-    
-    const list = document.getElementById('product-list');
-    const gridBtn = document.getElementById('grid-btn');
-    const listBtn = document.getElementById('list-btn');
-    
-    if (!list || !gridBtn || !listBtn) {
-        console.log('Missing elements for view toggle');
-        return;
-    }
-    
-    console.log('Applying view:', view, 'url:', urlView, 'stored:', storedView, 'data:', dataView);
-    
-    // Update global state
-    window.shopViewState.currentView = view;
-    
-    // Update container data-view attribute
-    container.setAttribute('data-view', view);
-    
-    // Remove all view classes first
-    list.classList.remove('product-grid', 'product-list', 'single-product');
+  }
+  return 'grid'; // Default fallback
+}
+
+// Apply view styling to the product list
+function applyViewStyling(view) {
+  const productList = document.getElementById('product-list');
+  if (productList) {
+    // Remove existing view classes
+    productList.classList.remove('product-grid', 'product-list');
+    // Add the appropriate view class
+    productList.classList.add(`product-${view}`);
+    // Update data attribute
+    productList.setAttribute('data-view', view);
+  }
+}
+
+// Handle active button state after view changes
+function updateViewToggleState(view) {
+  const gridBtn = document.getElementById('grid-btn');
+  const listBtn = document.getElementById('list-btn');
+  
+  if (gridBtn && listBtn) {
+    // Remove active class from both buttons
     gridBtn.classList.remove('active');
     listBtn.classList.remove('active');
     
+    // Add active class to the correct button
     if (view === 'list') {
-        list.classList.add('product-list');
-        listBtn.classList.add('active');
+      listBtn.classList.add('active');
     } else {
-        list.classList.add('product-grid');
-        gridBtn.classList.add('active');
-        
-        // Check if there's only one product and add single-product class
-        const productCards = list.querySelectorAll('.product-card');
-        console.log('Product cards found:', productCards.length);
-        
-        if (productCards.length === 1) {
-            list.classList.add('single-product');
-            console.log('Single product detected, adding single-product class');
-        }
+      gridBtn.classList.add('active');
     }
+  }
 }
 
-// Enhanced view toggle setup with event delegation
-function setupViewToggle() {
-    console.log('Setting up view toggle...');
-    
-    // Remove any existing event listeners to prevent duplicates
-    const gridBtn = document.getElementById('grid-btn');
-    const listBtn = document.getElementById('list-btn');
-    
-    console.log('View toggle buttons found:', {
-        gridBtn: !!gridBtn,
-        listBtn: !!listBtn,
-        gridBtnClasses: gridBtn?.className,
-        listBtnClasses: listBtn?.className
-    });
-    
-    if (gridBtn) {
-        // Remove existing listeners
-        gridBtn.replaceWith(gridBtn.cloneNode(true));
-        const newGridBtn = document.getElementById('grid-btn');
-        
-        // Add new listener
-        newGridBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            console.log('Grid button clicked');
-            setView('grid');
-        });
-        console.log('Grid button listener added');
+// Switch view without changing URL
+function switchView(newView) {
+  // Save preference
+  saveViewPreference(newView);
+  
+  // Update button states
+  updateViewToggleState(newView);
+  
+  // Apply styling immediately for instant feedback
+  applyViewStyling(newView);
+  
+  // Get current URL without view parameters
+  const currentUrl = new URL(window.location.href);
+  currentUrl.searchParams.delete('view'); // Remove view parameter if it exists
+  
+  // Use HTMX to fetch new content with view preference in headers
+  htmx.ajax('GET', currentUrl.toString(), {
+    target: '#product-list-container',
+    swap: 'outerHTML',
+    headers: {
+      'X-View-Preference': newView
     }
-    
-    if (listBtn) {
-        // Remove existing listeners
-        listBtn.replaceWith(listBtn.cloneNode(true));
-        const newListBtn = document.getElementById('list-btn');
-        
-        // Add new listener
-        newListBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            console.log('List button clicked');
-            setView('list');
-        });
-        console.log('List button listener added');
-    }
-    
-    console.log('View toggle setup completed');
+  });
 }
 
-// htmx pagination (handled automatically by hx-boost)
-function setupAjaxPagination() {
-    // htmx handles this automatically with hx-boost
-    // Just add htmx attributes to pagination links in template
+// Initialize view toggle functionality
+function initializeViewToggle() {
+  const gridBtn = document.getElementById('grid-btn');
+  const listBtn = document.getElementById('list-btn');
+  
+  if (gridBtn && listBtn) {
+    // Add event listeners
+    gridBtn.addEventListener('click', () => switchView('grid'));
+    listBtn.addEventListener('click', () => switchView('list'));
+    
+    // Apply saved view preference on page load
+    const savedView = getViewPreference();
+    const currentView = getCurrentViewFromDOM();
+    
+    // If saved preference differs from server-rendered view, apply the saved preference
+    if (savedView !== currentView) {
+      updateViewToggleState(savedView);
+      applyViewStyling(savedView);
+      
+      // Fetch content with correct view immediately on page load
+      setTimeout(() => {
+        const currentUrl = new URL(window.location.href);
+        currentUrl.searchParams.delete('view'); // Remove view parameter if it exists
+        
+        htmx.ajax('GET', currentUrl.toString(), {
+          target: '#product-list-container',
+          swap: 'outerHTML',
+          headers: {
+            'X-View-Preference': savedView
+          }
+        });
+      }, 100); // Small delay to avoid race conditions
+    } else {
+      // Just update button states to match current view
+      updateViewToggleState(currentView);
+    }
+  }
 }
 
-function setupPaginationJump() {
-    document.querySelectorAll('.pagination-jump-form').forEach(form => {
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const input = form.querySelector('.pagination-jump-input');
-            const page = parseInt(input.value, 10);
-            const min = parseInt(input.getAttribute('min'), 10);
-            const max = parseInt(input.getAttribute('max'), 10);
-            if (isNaN(page) || page < min || page > max) {
-                input.focus();
-                input.classList.add('error');
-                setTimeout(() => input.classList.remove('error'), 1000);
-                return;
-            }
-            const url = new URL(window.location);
-            url.searchParams.set('page', page);
-            fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-                .then(response => response.text())
-                .then(html => {
-                    const temp = document.createElement('div');
-                    temp.innerHTML = html;
-                    const newContainer = temp.querySelector('#product-list-container');
-                    if (newContainer) {
-                        document.getElementById('product-list-container').replaceWith(newContainer);
-                        applyViewFromContainer();
-                        setupAjaxPagination();
-                        setupPaginationJump();
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                    } else {
-                        window.location = url;
-                    }
-                });
-        });
-    });
+// Add view preference header to all HTMX requests
+document.addEventListener('htmx:configRequest', function(event) {
+  // Add view preference header to all requests
+  const viewPreference = getViewPreference();
+  if (!event.detail.headers) {
+    event.detail.headers = {};
+  }
+  event.detail.headers['X-View-Preference'] = viewPreference;
+  
+  // Add target information to headers for Django to know what template to use
+  const triggerElement = event.detail.elt;
+  if (triggerElement) {
+    const hxTarget = triggerElement.getAttribute('hx-target');
+    if (hxTarget) {
+      event.detail.headers['X-HX-Target'] = hxTarget;
+    }
+  }
+  
+  // Remove view parameter from URL if it exists
+  const url = new URL(event.detail.path, window.location.origin);
+  if (url.searchParams.has('view')) {
+    url.searchParams.delete('view');
+    event.detail.path = url.pathname + url.search;
+  }
+});
+
+// Update sidebar active states based on current URL
+function updateSidebarActiveStates() {
+  const currentPath = window.location.pathname;
+  
+  // Remove all active classes from sidebar links
+  const sidebarLinks = document.querySelectorAll('.sidebar-categories .category-link');
+  sidebarLinks.forEach(link => {
+    link.classList.remove('active');
+  });
+  
+  // Find and activate the matching link
+  sidebarLinks.forEach(link => {
+    const linkPath = new URL(link.href).pathname;
+    if (linkPath === currentPath) {
+      link.classList.add('active');
+    }
+  });
+  
+  // Also update top menu active states if they exist
+  const topMenuLinks = document.querySelectorAll('.category-menu-link');
+  topMenuLinks.forEach(link => {
+    link.classList.remove('active');
+    const linkPath = new URL(link.href).pathname;
+    if (linkPath === currentPath) {
+      link.classList.add('active');
+    }
+  });
 }
+
+// Listen for HTMX after-swap events to update button states and reinitialize
+document.addEventListener('htmx:afterSwap', function(event) {
+  // Check if this is a product list container update or main content update
+  if (event.target.id === 'product-list-container' || event.target.id === 'main-content') {
+    // Re-initialize view toggle after container swap
+    initializeViewToggle();
+    // Update sidebar active states after navigation
+    updateSidebarActiveStates();
+  }
+});
 
 // Initialize shop functionality
 function initializeShop() {
-    console.log('initializeShop called');
-    
-    // Expose setView function globally for template use
-    window.setView = setView;
-    
-    // Setup view toggle with event delegation
-    setupViewToggle();
-    
-    // Only initialize once per page load
-    if (!window.shopInitialized) {
-        console.log('Shop not initialized yet, applying view state...');
-        setTimeout(() => {
-            applyViewFromContainer();
-            window.shopInitialized = true;
-            console.log('Shop functionality initialized');
-        }, 100);
-    } else {
-        console.log('Shop already initialized, skipping...');
-    }
+  // Setup pagination jump form
+  setupPaginationJump();
+  
+  // Initialize view toggle
+  initializeViewToggle();
 }
 
-// HTMX-aware reinitialization
-function reinitializeShopAfterHtmx() {
-    console.log('Reinitializing shop after HTMX swap');
-    
-    // Reset initialization flag
-    window.shopInitialized = false;
-    
-    // Re-setup view toggle immediately
-    setupViewToggle();
-    
-    // Preserve current view state before reinitializing
-    const currentView = window.shopViewState?.currentView || localStorage.getItem('shop-view-preference') || 'grid';
-    
-    // Apply view state with a slight delay to ensure content is fully loaded
-    setTimeout(() => {
-        console.log('Applying view state after HTMX swap...');
-        applyViewFromContainer();
-        
-        // Ensure the view state is properly applied
-        if (currentView && currentView !== 'grid') {
-            setView(currentView);
-        }
-        
-        window.shopInitialized = true;
-        console.log('Shop functionality reinitialized after HTMX with view:', currentView);
-    }, 100); // Increased delay to ensure content is fully loaded
-}
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', initializeShop);
 
-// Make initializeShop available globally for HTMX reinitialization
+// Expose initializeShop globally for HTMX navigation
 window.initializeShop = initializeShop;
-window.reinitializeShopAfterHtmx = reinitializeShopAfterHtmx;
+
+function setupPaginationJump() {
+  const jumpInput = document.getElementById('pagination-jump-input');
+  if (jumpInput) {
+    jumpInput.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const page = this.value;
+        const url = new URL(window.location);
+        url.searchParams.set('page', page);
+        window.location.href = url.toString();
+      }
+    });
+  }
+}
 
 // Export for use in main.js
-export { initializeShop, reinitializeShopAfterHtmx };
+export { initializeShop };

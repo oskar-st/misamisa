@@ -1,0 +1,26 @@
+{% load i18n static shop_extras %}
+
+<div id="product-list" class="product-grid">
+    {% for product in products %}
+    <div class="product-card product-row">
+        <a href="{% url 'category_or_product' product.slug %}" class="product-link">
+            <div class="product-image-container">
+                <img src="{{ product|get_product_image }}" alt="{{ product|get_product_alt_text }}" class="product-image" />
+            </div>
+            <span class="product-info">
+              <h2 class="product-title">{{ product.name }}</h2>
+              <span class="product-price">
+                {% if product.discount_price %}
+                    <span class="old-price">{{ product.price }} zł</span>
+                    <span class="discount-price">{{ product.discount_price }} zł</span>
+                {% else %}
+                    {{ product.price }} zł
+                {% endif %}
+              </span>
+            </span>
+        </a>
+    </div>
+    {% empty %}
+    <div class="no-products">{% trans 'No products found.' %}</div>
+    {% endfor %}
+</div> 

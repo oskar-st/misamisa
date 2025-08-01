@@ -12,9 +12,9 @@
         
         <!-- Main Content -->
         <div class="shop-content">
-            <div id="product-list-container" data-view="{{ request.GET.view|default:'grid' }}">
+            <div id="product-list-container">
                 {% include 'shop/pagination_bar.html' with show_view_toggle=True %}
-                <div id="product-list" class="product-grid">
+                <div id="product-list" class="product-{{ current_view|default:'grid' }}" data-view="{{ current_view|default:'grid' }}">
                     {% for product in products %}
                     <div class="product-card product-row">
                         <a href="{% url 'category_or_product' product.slug %}" class="product-link">
@@ -44,20 +44,4 @@
     </div>
 </div>
 
-<script>
-function changeCategory(categorySlug) {
-    if (categorySlug) {
-        // Use htmx to navigate to category
-        htmx.ajax('GET', '/' + categorySlug + '/', {
-            target: '#main-content',
-            swap: 'innerHTML'
-        });
-    } else {
-        // Navigate to main shop page
-        htmx.ajax('GET', '{% url "shop:public_product_list" %}', {
-            target: '#main-content',
-            swap: 'innerHTML'
-        });
-    }
-}
-</script> 
+ 

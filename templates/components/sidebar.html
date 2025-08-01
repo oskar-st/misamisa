@@ -17,11 +17,10 @@
                 <a href="{% url 'shop:public_product_list' %}" 
                    class="category-link {% if not category %}active{% endif %}"
                    hx-get="{% url 'shop:public_product_list' %}"
-                   hx-target="#main-content"
-                   hx-push-url="true"
-                   hx-swap="innerHTML"
-                   hx-indicator="#loading-indicator"
-                   hx-preserve-scroll="true">
+                   hx-target="#product-list-container"
+                   hx-push-url="false"
+                   hx-swap="outerHTML"
+                   hx-indicator="#loading-indicator">
                     {% trans 'All Products' %}
                 </a>
             </li>
@@ -32,11 +31,10 @@
                     <a href="{% url 'category_or_product' slug=root_category.slug %}" 
                        class="category-link {% if category and category.pk == root_category.pk %}active{% endif %}"
                        hx-get="{% url 'category_or_product' slug=root_category.slug %}"
-                       hx-target="#main-content"
-                       hx-push-url="true"
-                       hx-swap="innerHTML"
-                       hx-indicator="#loading-indicator"
-                       hx-preserve-scroll="true">
+                       hx-target="#product-list-container"
+                       hx-push-url="false"
+                       hx-swap="outerHTML"
+                       hx-indicator="#loading-indicator">
                         {{ root_category.name }}
                     </a>
                     
@@ -46,7 +44,12 @@
                             {% for subcategory in root_category.children.all|dictsort:"name" %}
                                 <li class="category-item">
                                     <a href="{% url 'category_or_product' slug=subcategory.slug %}" 
-                                       class="category-link {% if category and category.pk == subcategory.pk %}active{% endif %}">
+                                       class="category-link {% if category and category.pk == subcategory.pk %}active{% endif %}"
+                                       hx-get="{% url 'category_or_product' slug=subcategory.slug %}"
+                                       hx-target="#product-list-container"
+                                       hx-push-url="false"
+                                       hx-swap="outerHTML"
+                                       hx-indicator="#loading-indicator">
                                         {{ subcategory.name }}
                                     </a>
                                     
@@ -56,33 +59,30 @@
                                             {% for subsubcategory in subcategory.children.all|dictsort:"name" %}
                                                 <li class="category-item">
                                                     <a href="{% url 'category_or_product' slug=subsubcategory.slug %}" 
-                                                       class="category-link {% if category and category.pk == subsubcategory.pk %}active{% endif %}">
+                                                       class="category-link {% if category and category.pk == subsubcategory.pk %}active{% endif %}"
+                                                       hx-get="{% url 'category_or_product' slug=subsubcategory.slug %}"
+                                                       hx-target="#product-list-container"
+                                                       hx-push-url="false"
+                                                       hx-swap="outerHTML"
+                                                       hx-indicator="#loading-indicator">
                                                         {{ subsubcategory.name }}
                                                     </a>
                                                     
                                                     <!-- Fourth level categories -->
                                                     {% if subsubcategory.children.all %}
                                                         <ul class="subcategory-list">
-                                                            {% for fourthcategory in subsubcategory.children.all|dictsort:"name" %}
+                                                            {% for subsubsubcategory in subsubcategory.children.all|dictsort:"name" %}
                                                                 <li class="category-item">
-                                                                    <a href="{% url 'category_or_product' slug=fourthcategory.slug %}" 
-                                                                       class="category-link {% if category and category.pk == fourthcategory.pk %}active{% endif %}">
-                                                                        {{ fourthcategory.name }}
+                                                                    <a href="{% url 'category_or_product' slug=subsubsubcategory.slug %}" 
+                                                                       class="category-link {% if category and category.pk == subsubsubcategory.pk %}active{% endif %}"
+                                                                       hx-get="{% url 'category_or_product' slug=subsubsubcategory.slug %}?view={{ current_view|default:'grid' }}"
+                                                                       hx-target="#product-list-container"
+                                                                       hx-push-url="true"
+                                                                       hx-swap="outerHTML"
+                                                                       hx-indicator="#loading-indicator"
+                                                                       hx-preserve-scroll="true">
+                                                                        {{ subsubsubcategory.name }}
                                                                     </a>
-                                                                    
-                                                                    <!-- Fifth level categories -->
-                                                                    {% if fourthcategory.children.all %}
-                                                                        <ul class="subcategory-list">
-                                                                            {% for fifthcategory in fourthcategory.children.all|dictsort:"name" %}
-                                                                                <li class="category-item">
-                                                                                    <a href="{% url 'category_or_product' slug=fifthcategory.slug %}" 
-                                                                                       class="category-link {% if category and category.pk == fifthcategory.pk %}active{% endif %}">
-                                                                                        {{ fifthcategory.name }}
-                                                                                    </a>
-                                                                                </li>
-                                                                            {% endfor %}
-                                                                        </ul>
-                                                                    {% endif %}
                                                                 </li>
                                                             {% endfor %}
                                                         </ul>
@@ -99,36 +99,11 @@
             {% endfor %}
         </ul>
     </div>
-    
-    <!-- Product Filters - Placeholder for Future Implementation -->
+
+    <!-- Filters Section -->
     <div class="sidebar-filters">
         <h3>{% trans 'Filters' %}</h3>
-        
-        <!-- Temporary category selector (will be replaced by better filters) -->
-        <div class="category-filter-form">
-            <label for="category-select">{% trans 'Category' %}:</label>
-            <select name="kategoria" id="category-select" onchange="changeCategory(this.value)">
-                <option value="">{% trans 'All' %}</option>
-                {% for cat in categories %}
-                    <option value="{{ cat.slug }}" {% if category and cat == category %}selected{% endif %}>{{ cat.name }}</option>
-                {% endfor %}
-            </select>
-            <input type="hidden" name="view" id="view-mode-input" value="{{ request.GET.view|default:'grid' }}">
-        </div>
-        
-        <!-- 
-        Future filter sections will go here, such as:
-        - Price range slider
-        - Brand checkboxes
-        - Product attributes (size, color, etc.)
-        - In stock / availability
-        - Rating filter
-        - Sort options
-        -->
-        
-        <div class="filters-placeholder">
-            {% trans 'Additional product filters will be added here in future updates' %}
-        </div>
+        <!-- Add filter options here -->
     </div>
     </aside>
 </div> 

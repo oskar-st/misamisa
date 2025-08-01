@@ -2,7 +2,7 @@
 {% load i18n static shop_extras %}
 
 {% block content %}
-<div class="main-container">
+<div class="main-container shop-page">
     <!-- BREADCRUMBS -->
     {% if breadcrumbs %}
         {% include 'components/breadcrumbs.html' %}
@@ -14,9 +14,9 @@
         
         <!-- Main Content -->
         <div class="shop-content">
-            <div id="product-list-container" data-view="{{ request.GET.view|default:'grid' }}">
+            <div id="product-list-container">
                 {% include 'shop/pagination_bar.html' with show_view_toggle=True %}
-                <div id="product-list" class="product-list-grid product-grid">
+                <div id="product-list" class="product-grid">
                     {% for product in products %}
                     <div class="product-card product-row">
                         <a href="{% url 'category_or_product' product.slug %}" class="product-link">
@@ -46,15 +46,5 @@
     </div>
 </div>
 
-<script>
-function changeCategory(categorySlug) {
-    if (categorySlug) {
-        // Redirect to flat category URL
-        window.location.href = '/' + categorySlug + '/';
-    } else {
-        // Redirect to main shop page
-        window.location.href = '{% url "shop:public_product_list" %}';
-    }
-}
-</script>
+
 {% endblock %} 

@@ -133,6 +133,9 @@ def product_list_public(request, category_slug=None):
         ))
     ).order_by('name')[:10]  # Limit to first 10 top-level categories
     
+    # Get view preference from headers (preferred), URL parameter (fallback), then default to 'grid'
+    current_view = request.headers.get('X-View-Preference') or request.GET.get('view', 'grid')
+    
     context = {
         'categories': categories,
         'category': category,
@@ -141,12 +144,20 @@ def product_list_public(request, category_slug=None):
         'title': title,
         'breadcrumbs': breadcrumbs,
         'sidebar_categories': sidebar_categories,
+        'current_view': current_view,  # Add current view to context
     }
     
-    # For htmx requests, return just the main content with minimal overhead
+    # For htmx requests, return appropriate content
     if request.headers.get('HX-Request'):
-        print(f"HTMX request detected for: {request.path}")
-        return render(request, 'shop/product_list_content.html', context)
+        # Check HTMX target to determine what template to return
+        hx_target = request.headers.get('X-HX-Target', '')
+        
+        if hx_target == '#main-content':
+            # Top menu navigation - return full shop layout without base template
+            return render(request, 'shop/product_list_content.html', context)
+        else:
+            # Sidebar navigation - return just the product list container
+            return render(request, 'shop/product_list_container.html', context)
     
     return render(request, 'shop/product_list.html', context)
 

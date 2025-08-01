@@ -14,13 +14,12 @@ function enforceSinglePrimary() {
     });
 }
 
+// Initialize admin functionality
 function initializeAdmin() {
     enforceSinglePrimary();
     
     // For dynamically added inlines
     document.body.addEventListener('formset:added', enforceSinglePrimary);
-    
-    console.log('Admin functionality initialized');
 }
 
 // Export for use in main.js

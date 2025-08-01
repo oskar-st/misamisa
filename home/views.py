@@ -15,7 +15,20 @@ from shop.cart_utils import sync_cart_on_logout, sync_cart_on_login
 
 def homepage(request):
     news_items = News.objects.all()
-    context = {"news_items": news_items}
+    
+    # Get view from URL parameter, then session, then default to 'grid' (consistent with shop views)
+    current_view = request.GET.get('view')
+    if current_view:
+        # If view parameter is provided, update session
+        request.session['preferred_view'] = current_view
+    else:
+        # If no view parameter, use session value or default to 'grid'
+        current_view = request.session.get('preferred_view', 'grid')
+    
+    context = {
+        "news_items": news_items,
+        "current_view": current_view,  # Add current view for top menu
+    }
     
     # Clear login success flag after it's been shown
     if 'show_login_success' in request.session:
@@ -195,29 +208,59 @@ def resend_verification_email(request):
     return render(request, 'registration/resend_verification.html')
 
 def contact_view(request):
-    """Contact page view"""
-    context = {'title': _('Contact Us')}
+    # Get view from URL parameter, then session, then default to 'grid' (consistent with shop views)
+    current_view = request.GET.get('view')
+    if current_view:
+        # If view parameter is provided, update session
+        request.session['preferred_view'] = current_view
+    else:
+        # If no view parameter, use session value or default to 'grid'
+        current_view = request.session.get('preferred_view', 'grid')
+    
+    context = {
+        'title': _('Contact'),
+        'current_view': current_view,  # Add current view for top menu
+    }
     if request.headers.get('HX-Request'):
         return render(request, 'contact_content.html', context)
+    
     return render(request, 'contact.html', context)
 
 def about_view(request):
     """About page view"""
-    context = {'title': _('About Us')}
+    # Get view from URL parameter, then session, then default to 'grid' (consistent with shop views)
+    current_view = request.GET.get('view')
+    if current_view:
+        # If view parameter is provided, update session
+        request.session['preferred_view'] = current_view
+    else:
+        # If no view parameter, use session value or default to 'grid'
+        current_view = request.session.get('preferred_view', 'grid')
+    
+    context = {
+        'title': _('About Us'),
+        'current_view': current_view,  # Add current view for top menu
+    }
     if request.headers.get('HX-Request'):
         return render(request, 'about_content.html', context)
     return render(request, 'about.html', context)
 
 def terms_view(request):
     """Terms of Service page view"""
-    context = {'title': _('Terms of Service')}
+    context = {
+        'title': _('Terms of Service'),
+        'current_view': request.GET.get('view', 'grid'),  # Add current view for top menu
+    }
     if request.headers.get('HX-Request'):
         return render(request, 'terms_content.html', context)
     return render(request, 'terms.html', context)
 
 def privacy_view(request):
     """Privacy Policy page view"""
-    context = {'title': _('Privacy Policy')}
+    context = {
+        'title': _('Privacy Policy'),
+        'current_view': request.GET.get('view', 'grid'),  # Add current view for top menu
+    }
     if request.headers.get('HX-Request'):
         return render(request, 'privacy_content.html', context)
     return render(request, 'privacy.html', context)

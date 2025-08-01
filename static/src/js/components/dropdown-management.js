@@ -55,11 +55,6 @@ function setupDropdownBehavior() {
 
                 // Now open the current dropdown
                 trigger.classList.add(config.showClass);
-
-                // Debug logging for subcategory canvas
-                if (config.dropdown === '.subcategory-canvas') {
-                    console.log('Showing subcategory dropdown:', timerId);
-                }
             }
             
             function startHideTimer() {
@@ -71,30 +66,15 @@ function setupDropdownBehavior() {
                 const timeout = setTimeout(() => {
                     trigger.classList.remove(config.showClass);
                     activeTimers.delete(timerId);
-                    
-                    // Debug logging for subcategory canvas
-                    if (config.dropdown === '.subcategory-canvas') {
-                        console.log('Hiding subcategory dropdown:', timerId);
-                    }
                 }, 300); // 300ms delay
                 
                 activeTimers.set(timerId, timeout);
-                
-                // Debug logging for subcategory canvas
-                if (config.dropdown === '.subcategory-canvas') {
-                    console.log('Started hide timer for subcategory dropdown:', timerId);
-                }
             }
             
             function cancelHide() {
                 if (activeTimers.has(timerId)) {
                     clearTimeout(activeTimers.get(timerId));
                     activeTimers.delete(timerId);
-                    
-                    // Debug logging for subcategory canvas
-                    if (config.dropdown === '.subcategory-canvas') {
-                        console.log('Cancelled hide timer for subcategory dropdown:', timerId);
-                    }
                 }
             }
             

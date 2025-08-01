@@ -19,7 +19,6 @@ function initializeForms() {
             
             if (!isValid) {
                 e.preventDefault();
-                console.log('Form validation failed');
             }
         });
     });
@@ -41,6 +40,12 @@ function initializeForms() {
             }
         });
     });
+}
+
+// Form validation function
+function validateForm(form) {
+  // Form validation logic
+  return true;
 }
 
 // Export for use in main.js
