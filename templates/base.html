@@ -89,11 +89,11 @@
   {% include 'components/category_menu.html' %}
 
   <!-- MAIN CONTENT TARGET -->
-  <div id="main-content" 
-       hx-indicator="#loading-indicator">
+  <main id="main-content" 
+        hx-indicator="#loading-indicator">
     {% block content %}
     {% endblock %}
-  </div>
+  </main>
 
   <!-- FOOTER -->
   <footer>
