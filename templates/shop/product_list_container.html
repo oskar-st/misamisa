@@ -1,6 +1,11 @@
 {% load i18n static shop_extras %}
 
-<div id="product-list-container">
+<!-- DEBUG: Template rendering info -->
+<!-- Category: {{ category|default:'NULL' }} -->
+<!-- Category slug: {{ category.slug|default:'NO-SLUG' }} -->
+<!-- Category name: {{ category.name|default:'NO-NAME' }} -->
+
+<div id="product-list-container" data-current-category="{% if category %}{{ category.slug }}{% else %}all{% endif %}" data-debug-category="{{ category|default:'NONE' }}" data-debug-slug="{{ category.slug|default:'NO-SLUG' }}">
     {% include 'shop/pagination_bar.html' with show_view_toggle=True %}
     <div id="product-list" class="product-{{ current_view|default:'grid' }}" data-view="{{ current_view|default:'grid' }}">
         {% for product in products %}

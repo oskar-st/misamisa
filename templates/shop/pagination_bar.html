@@ -36,7 +36,7 @@
                     </span>
                 {% endif %}
                 <form class="pagination-jump-form" onsubmit="return false;">
-                    <input type="text" inputmode="numeric" pattern="[0-9]*" min="1" max="{{ num_pages }}" value="{{ page }}" class="pagination-jump-input page-num{% if num_pages == 1 %} single{% endif %}" id="pagination-jump-input" autocomplete="off" />
+                    <input type="text" inputmode="numeric" pattern="[0-9]*" min="1" max="{{ num_pages }}" value="{{ page }}" class="pagination-jump-input page-num{% if num_pages == 1 %} single{% endif %}" id="pagination-jump-input-{% if show_view_toggle %}top{% else %}bottom{% endif %}" autocomplete="off" />
                     <button type="submit" style="display:none"></button>
                     <span class="pagination-total">z {{ num_pages }}</span>
                 </form>

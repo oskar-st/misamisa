@@ -103,7 +103,37 @@
     <!-- Filters Section -->
     <div class="sidebar-filters">
         <h3>{% trans 'Filters' %}</h3>
-        <!-- Add filter options here -->
+        
+        <!-- Category Filter -->
+        <div class="filter-section">
+            <div class="category-filter-form">
+                <label for="category-filter">{% trans 'Filter by Category' %}</label>
+                <select id="category-filter" name="category" 
+                        hx-get="{% url 'shop:public_product_list' %}"
+                        hx-target="#product-list-container"
+                        hx-swap="outerHTML"
+                        hx-trigger="change"
+                        hx-indicator="#loading-indicator"
+                        hx-vals='{"view": "{{ current_view|default:'grid' }}"}'>
+                    <option value="">{% trans 'All Categories' %}</option>
+                    {% for cat in sidebar_categories %}
+                        <option value="{{ cat.slug }}" {% if category and category.slug == cat.slug %}selected{% endif %}>
+                            {{ cat.name }}
+                        </option>
+                        {% for subcat in cat.children.all %}
+                            <option value="{{ subcat.slug }}" {% if category and category.slug == subcat.slug %}selected{% endif %}>
+                                &nbsp;&nbsp;{{ subcat.name }}
+                            </option>
+                            {% for subsubcat in subcat.children.all %}
+                                <option value="{{ subsubcat.slug }}" {% if category and category.slug == subsubcat.slug %}selected{% endif %}>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;{{ subsubcat.name }}
+                                </option>
+                            {% endfor %}
+                        {% endfor %}
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
     </div>
     </aside>
 </div> 

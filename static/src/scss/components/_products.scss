@@ -10,7 +10,7 @@
 
 .view-toggle button {
   margin-left: 0.5rem;
-  padding: 0.5rem 1rem;
+  padding: 0.35rem 0.6rem;
   background-color: var(--button-bg);
   color: var(--button-text);
   border: 1px solid var(--card-border);
@@ -161,12 +161,12 @@
   background: var(--card-bg);
   border: 1.5px solid var(--card-border);
   border-radius: 6px;
-  padding: 0.5em 0.9em;
+  padding: 0.35em 0.6em;
   cursor: pointer !important;
   transition: border-color 0.2s, background 0.2s, color 0.2s;
   display: flex;
   align-items: center;
-  font-size: 1.2em;
+  font-size: 1em;
   color: var(--text-color);
   opacity: 1;
 }

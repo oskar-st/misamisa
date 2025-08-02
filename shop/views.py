@@ -152,6 +152,12 @@ def product_list_public(request, category_slug=None):
         # Check HTMX target to determine what template to return
         hx_target = request.headers.get('X-HX-Target', '')
         
+        # Debug logging for HTMX requests
+        print(f"🎯 HTMX Request - Category slug: {category_slug}")
+        print(f"🎯 HTMX Request - Category object: {category}")
+        print(f"🎯 HTMX Request - HX-Target: {hx_target}")
+        print(f"🎯 HTMX Request - Context category: {context.get('category')}")
+        
         if hx_target == '#main-content':
             # Top menu navigation - return full shop layout without base template
             return render(request, 'shop/product_list_content.html', context)

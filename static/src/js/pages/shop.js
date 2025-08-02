@@ -84,12 +84,32 @@ function switchView(newView) {
   viewToggleDebounceTimer = setTimeout(() => {
     isViewToggling = true;
     
-    // Get current URL without view parameters
-    const currentUrl = new URL(window.location.href);
-    currentUrl.searchParams.delete('view'); // Remove view parameter if it exists
+    // Get current category from container data attributes
+    const productListContainer = document.getElementById('product-list-container');
+    let targetUrl;
+    
+    if (productListContainer) {
+      const currentCategory = productListContainer.dataset.currentCategory || productListContainer.getAttribute('data-current-category');
+      
+      if (currentCategory && currentCategory !== 'all') {
+        // We're in a specific category - use category URL
+        targetUrl = `/${currentCategory}/`;
+        console.log(`🎯 View toggle for category: ${currentCategory}`);
+      } else {
+        // We're in "All Products" view - use shop URL
+        targetUrl = '/sklep/';
+        console.log(`🎯 View toggle for all products`);
+      }
+    } else {
+      // Fallback to current URL
+      const currentUrl = new URL(window.location.href);
+      currentUrl.searchParams.delete('view');
+      targetUrl = currentUrl.toString();
+      console.log(`🎯 View toggle fallback to current URL: ${targetUrl}`);
+    }
     
     // Use HTMX to fetch new content with view preference in headers
-    htmx.ajax('GET', currentUrl.toString(), {
+    htmx.ajax('GET', targetUrl, {
       target: '#product-list-container',
       swap: 'outerHTML',
       headers: {
@@ -171,26 +191,121 @@ document.addEventListener('htmx:configRequest', function(event) {
 
 // Update sidebar active states based on current URL
 function updateSidebarActiveStates() {
-  const currentPath = window.location.pathname;
+  // Get current category from the product list container data attribute
+  const productListContainer = document.getElementById('product-list-container');
   
-  // Remove all active classes from ALL sidebar and menu links
-  const allLinks = document.querySelectorAll('.category-link, .category-menu-link, .sidebar-categories a, .category-menu a');
+  // Try multiple ways to get the category
+  let currentCategory = null;
+  if (productListContainer) {
+    // Try dataset first (preferred)
+    currentCategory = productListContainer.dataset.currentCategory;
+    
+    // Fallback to getAttribute
+    if (!currentCategory) {
+      currentCategory = productListContainer.getAttribute('data-current-category');
+    }
+    
+    // If still null, check if the container was just swapped
+    if (!currentCategory) {
+      console.log('⚠️ No category found in attributes, checking HTML...');
+      const outerHTML = productListContainer.outerHTML.substring(0, 200);
+      console.log('🔍 Container HTML start:', outerHTML);
+    }
+  }
   
-  allLinks.forEach(link => {
+  console.log(`🎯 Updating sidebar active states for category: ${currentCategory}`);
+  console.log(`🔍 Product container exists:`, !!productListContainer);
+  console.log(`🔍 Dataset:`, productListContainer ? productListContainer.dataset : 'No container');
+  console.log(`🔍 All attributes:`, productListContainer ? productListContainer.attributes : 'No container');
+  
+  // Remove ALL active classes from sidebar links (including server-rendered ones)
+  const allSidebarLinks = document.querySelectorAll('.sidebar-categories .category-link');
+  console.log(`🔍 Found ${allSidebarLinks.length} sidebar links to process`);
+  
+  allSidebarLinks.forEach((link, index) => {
+    const wasActive = link.classList.contains('active');
+    link.classList.remove('active');
+    if (wasActive) {
+      console.log(`🧹 [${index}] Removed active from: "${link.textContent.trim()}" (${link.href})`);
+    }
+  });
+  
+  // Also remove from menu links
+  const allMenuLinks = document.querySelectorAll('.category-menu-link, .category-menu a');
+  allMenuLinks.forEach(link => {
     link.classList.remove('active');
   });
   
-  // Find and activate the matching links
-  allLinks.forEach(link => {
-    try {
-      const linkPath = new URL(link.href).pathname;
-      if (linkPath === currentPath) {
-        link.classList.add('active');
+  // Find and activate the matching links based on category
+  if (currentCategory) {
+    if (currentCategory === 'all') {
+      // Activate "All Products" link - look for the specific link in sidebar
+      allSidebarLinks.forEach((link, index) => {
+        try {
+          const linkUrl = new URL(link.href);
+          const urlSlug = linkUrl.pathname.replace(/^\/+|\/+$/g, '');
+          
+          // Check if this is the "All Products" link (typically "sklep" or "shop")
+          if (urlSlug === 'sklep' || urlSlug === 'shop' || link.textContent.trim().includes('All Products')) {
+            link.classList.add('active');
+            console.log(`✅ [${index}] Activated "All Products" link: "${link.textContent.trim()}" (URL: ${linkUrl.pathname})`);
+          }
+        } catch (error) {
+          console.warn(`❌ [${index}] Error processing "All Products" link: ${error.message}`);
+        }
+      });
+      
+      // Update category dropdown
+      const categoryDropdown = document.getElementById('category-filter');
+      if (categoryDropdown) {
+        categoryDropdown.value = '';
       }
-    } catch (error) {
-      // Silently handle invalid links
+    } else {
+      // Activate category-specific links - check ALL sidebar links
+      let activatedCount = 0;
+      allSidebarLinks.forEach((link, index) => {
+        try {
+          const linkUrl = new URL(link.href);
+          // Extract slug from URL path - format is /<slug>/ or /<slug>
+          const urlSlug = linkUrl.pathname.replace(/^\/+|\/+$/g, ''); // Remove leading/trailing slashes
+          
+          console.log(`🔍 [${index}] Checking link: "${link.textContent.trim()}" | URL slug: "${urlSlug}" | Current: "${currentCategory}"`);
+          
+          // Exact match for category slug
+          if (urlSlug === currentCategory) {
+            link.classList.add('active');
+            activatedCount++;
+            console.log(`✅ [${index}] Activated link for category: ${currentCategory} - "${link.textContent.trim()}" (URL: ${linkUrl.pathname})`);
+          }
+        } catch (error) {
+          console.warn(`❌ [${index}] Error processing link: ${error.message}`);
+        }
+      });
+      
+      console.log(`📊 Total links activated: ${activatedCount}`);
+      
+      // Update category dropdown
+      const categoryDropdown = document.getElementById('category-filter');
+      if (categoryDropdown) {
+        categoryDropdown.value = currentCategory;
+      }
     }
-  });
+  } else {
+    console.log('⚠️ No current category found, using fallback URL matching');
+    // Fallback to URL-based matching
+    const currentPath = window.location.pathname;
+    allSidebarLinks.forEach(link => {
+      try {
+        const linkPath = new URL(link.href).pathname;
+        if (linkPath === currentPath) {
+          link.classList.add('active');
+          console.log(`✅ Activated link via URL matching: ${link.textContent.trim()}`);
+        }
+      } catch (error) {
+        // Silently handle invalid links
+      }
+    });
+  }
 }
 
 // Listen for HTMX after-swap events to update button states and reinitialize
@@ -201,12 +316,14 @@ document.addEventListener('htmx:afterSwap', function(event) {
     isViewToggling = false;
     isPaginationJumping = false;
     
+    console.log('🎯 HTMX afterSwap detected, target:', event.target.id);
+    
     // Small delay to ensure DOM is ready after swap
     setTimeout(() => {
       // Re-initialize ALL shop functionality after container swap
       initializeShop(); // This calls both setupPaginationJump() and initializeViewToggle()
       
-      // Update sidebar active states after navigation
+      // Update sidebar active states after navigation (no extra delay needed for outerHTML)
       updateSidebarActiveStates();
     }, 50);
   }
@@ -244,19 +361,24 @@ let paginationListenersAttached = false;
 let isPaginationJumping = false;
 
 function setupPaginationJump() {
-  const jumpInput = document.getElementById('pagination-jump-input');
+  // Setup both top and bottom pagination inputs
+  const topInput = document.getElementById('pagination-jump-input-top');
+  const bottomInput = document.getElementById('pagination-jump-input-bottom');
   
-  if (jumpInput) {
+  // Function to setup a single pagination input
+  function setupSingleInput(input, position) {
+    if (!input) return;
+    
     // Check if listeners are already attached to this specific element
-    if (jumpInput.dataset.listenersAttached === 'true') {
+    if (input.dataset.listenersAttached === 'true') {
       return;
     }
     
     // Mark this element as having listeners
-    jumpInput.dataset.listenersAttached = 'true';
+    input.dataset.listenersAttached = 'true';
     
-    // Create the event handler inline to avoid scope issues
-    jumpInput.addEventListener('keypress', function(e) {
+    // Create the event handler
+    input.addEventListener('keypress', function(e) {
       if (e.key === 'Enter') {
         e.preventDefault();
         
@@ -275,6 +397,12 @@ function setupPaginationJump() {
         }
         
         isPaginationJumping = true;
+        
+        // Sync the value to the other pagination input
+        const otherInput = position === 'top' ? bottomInput : topInput;
+        if (otherInput) {
+          otherInput.value = page;
+        }
         
         // Build URL for HTMX request
         const url = new URL(window.location);
@@ -298,7 +426,10 @@ function setupPaginationJump() {
       }
     });
   }
-  // Note: No error logging when pagination input not found - it's normal for pages with few items
+  
+  // Setup both inputs
+  setupSingleInput(topInput, 'top');
+  setupSingleInput(bottomInput, 'bottom');
 }
 
 // Export for use in main.js
