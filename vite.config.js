@@ -16,7 +16,7 @@ export default defineConfig({
       output: {
         entryFileNames: 'js/[name].js',
         assetFileNames: (assetInfo) => {
-          if (assetInfo.name && assetInfo.name.endsWith('.css')) {
+          if (assetInfo.names?.[0]?.endsWith('.css')) {
             return 'css/[name].css'; // ensure .css extension
           }
           return 'assets/[name]';
