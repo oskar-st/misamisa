@@ -68,25 +68,10 @@
                                                         {{ subsubcategory.name }}
                                                     </a>
                                                     
-                                                    <!-- Fourth level categories -->
-                                                    {% if subsubcategory.children.all %}
-                                                        <ul class="subcategory-list">
-                                                            {% for subsubsubcategory in subsubcategory.children.all|dictsort:"name" %}
-                                                                <li class="category-item">
-                                                                    <a href="{% url 'category_or_product' slug=subsubsubcategory.slug %}" 
-                                                                       class="category-link {% if category and category.pk == subsubsubcategory.pk %}active{% endif %}"
-                                                                       hx-get="{% url 'category_or_product' slug=subsubsubcategory.slug %}?view={{ current_view|default:'grid' }}"
-                                                                       hx-target="#product-list-container"
-                                                                       hx-push-url="true"
-                                                                       hx-swap="outerHTML"
-                                                                       hx-indicator="#loading-indicator"
-                                                                       hx-preserve-scroll="true">
-                                                                        {{ subsubsubcategory.name }}
-                                                                    </a>
-                                                                </li>
-                                                            {% endfor %}
-                                                        </ul>
-                                                    {% endif %}
+                                                    {% comment %}
+                                                    <!-- Removed fourth level categories for better UX and accessibility -->
+                                                    <!-- Deep categories will be shown as product filters or on category pages -->
+                                                    {% endcomment %}
                                                 </li>
                                             {% endfor %}
                                         </ul>

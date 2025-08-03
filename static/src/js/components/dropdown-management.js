@@ -18,16 +18,8 @@ function setupDropdownBehavior() {
             dropdown: '.subcategory-canvas',
             showClass: 'dropdown-show'
         },
-        {
-            trigger: '.third-level-item.has-children',
-            dropdown: '.fourth-level-canvas',
-            showClass: 'dropdown-show'
-        },
-        {
-            trigger: '.fourth-level-item.has-children',
-            dropdown: '.fifth-level-canvas',
-            showClass: 'dropdown-show'
-        }
+        // Removed 4th and 5th level dropdowns for better UX and accessibility
+        // Navigation now supports maximum 3 levels for optimal user experience
     ];
 
     // Store all active timers globally to prevent conflicts
