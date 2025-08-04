@@ -21,9 +21,9 @@
                        class="subcategory-link category-link"
                        {% if request.resolver_match.url_name == 'public_product_list' or request.resolver_match.url_name == 'category_or_product' %}
                        hx-get="{% url 'category_or_product' slug=subcat.slug %}?view={{ current_view|default:'grid' }}"
-                       hx-target="#product-list-container"
+                       hx-target="#main-content"
                        hx-push-url="true"
-                       hx-swap="outerHTML"
+                       hx-swap="innerHTML"
                        hx-indicator="#loading-indicator"
                        hx-preserve-scroll="true"
                        {% endif %}>
@@ -38,18 +38,14 @@
                                  class="third-level-link category-link"
                                  {% if request.resolver_match.url_name == 'public_product_list' or request.resolver_match.url_name == 'category_or_product' %}
                                  hx-get="{% url 'category_or_product' slug=subsubcat.slug %}?view={{ current_view|default:'grid' }}"
-                                 hx-target="#product-list-container"
+                                 hx-target="#main-content"
                                  hx-push-url="true"
-                                 hx-swap="outerHTML"
+                                 hx-swap="innerHTML"
                                  hx-indicator="#loading-indicator"
                                  hx-preserve-scroll="true"
                                  {% endif %}>
                                  {{ subsubcat.name }}
                               </a>
-                              {% comment %}
-                              <!-- Removed 4th and 5th level navigation for better UX and accessibility -->
-                              <!-- Deep categories will be shown as product filters or on category pages -->
-                              {% endcomment %}
                             </li>
                           {% endfor %}
                         </ul>
@@ -64,4 +60,4 @@
       {% endfor %}
     </ul>
   </div>
-</nav> 
+</nav>

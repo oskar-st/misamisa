@@ -1,0 +1,1 @@
+function c(){const e=document.querySelectorAll('input[type="checkbox"][name$="-is_primary"]');e.forEach(function(n){n.addEventListener("change",function(){this.checked&&e.forEach(function(i){i!==n&&(i.checked=!1)})})})}function t(){c(),document.body.addEventListener("formset:added",c)}export{t as initializeAdmin};

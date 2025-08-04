@@ -14,59 +14,32 @@
         <ul class="category-list">
             <!-- All Products Link -->
             <li class="category-item">
-                <a href="{% url 'shop:public_product_list' %}" 
-                   class="category-link {% if not category %}active{% endif %}"
-                   hx-get="{% url 'shop:public_product_list' %}"
-                   hx-target="#main-content"
-                   hx-push-url="true"
-                   hx-swap="innerHTML"
-                   hx-indicator="#loading-indicator">
-                    {% trans 'All Products' %}
-                </a>
+                {% include 'components/htmx_link.html' with url=all_products_url text="All Products"|trans classes="category-link {% if not category %}active{% endif %}" target='#product-list-container' swap='outerHTML' push_url=False %}
             </li>
             
             <!-- Root Categories -->
             {% for root_category in sidebar_categories %}
                 <li class="category-item">
-                    <a href="{% url 'category_or_product' slug=root_category.slug %}" 
-                       class="category-link {% if category and category.pk == root_category.pk %}active{% endif %}"
-                       hx-get="{% url 'category_or_product' slug=root_category.slug %}"
-                       hx-target="#main-content"
-                       hx-push-url="true"
-                       hx-swap="innerHTML"
-                       hx-indicator="#loading-indicator">
-                        {{ root_category.name }}
-                    </a>
+                    {% include 'components/htmx_link.html' with url=root_category.get_absolute_url text=root_category.name classes="category-link {% if category and category.pk == root_category.pk %}active{% endif %}" target='#product-list-container' swap='outerHTML' push_url=False %}
                     
                     <!-- Subcategories -->
                     {% if root_category.children.all %}
                         <ul class="subcategory-list">
                             {% for subcategory in root_category.children.all|dictsort:"name" %}
                                 <li class="category-item">
-                                    <a href="{% url 'category_or_product' slug=subcategory.slug %}" 
-                                       class="category-link {% if category and category.pk == subcategory.pk %}active{% endif %}"
-                                       hx-get="{% url 'category_or_product' slug=subcategory.slug %}"
-                                       hx-target="#main-content"
-                                       hx-push-url="true"
-                                       hx-swap="innerHTML"
-                                       hx-indicator="#loading-indicator">
-                                        {{ subcategory.name }}
-                                    </a>
+                                    {% include 'components/htmx_link.html' with url=subcategory.get_absolute_url text=subcategory.name classes="category-link {% if category and category.pk == subcategory.pk %}active{% endif %}" target='#product-list-container' swap='outerHTML' push_url=False %}
                                     
                                     <!-- Third level categories -->
                                     {% if subcategory.children.all %}
                                         <ul class="subcategory-list">
                                             {% for subsubcategory in subcategory.children.all|dictsort:"name" %}
                                                 <li class="category-item">
-                                                    <a href="{% url 'category_or_product' slug=subsubcategory.slug %}" 
-                                                       class="category-link {% if category and category.pk == subsubcategory.pk %}active{% endif %}"
-                                                       hx-get="{% url 'category_or_product' slug=subsubcategory.slug %}"
-                                                       hx-target="#main-content"
-                                                       hx-push-url="true"
-                                                       hx-swap="innerHTML"
-                                                       hx-indicator="#loading-indicator">
-                                                        {{ subsubcategory.name }}
-                                                    </a>
+                                                    {% include 'components/htmx_link.html' with url=subsubcategory.get_absolute_url text=subsubcategory.name classes="category-link {% if category and category.pk == subsubcategory.pk %}active{% endif %}" target='#product-list-container' swap='outerHTML' push_url=False %}
+                                                    
+                                                    {% comment %}
+                                                    <!-- Removed fourth level categories for better UX and accessibility -->
+                                                    <!-- Deep categories will be shown as product filters or on category pages -->
+                                                    {% endcomment %}
                                                 </li>
                                             {% endfor %}
                                         </ul>
@@ -90,8 +63,8 @@
                 <label for="category-filter">{% trans 'Filter by Category' %}</label>
                 <select id="category-filter" name="category" 
                         hx-get="{% url 'shop:public_product_list' %}"
-                        hx-target="#main-content"
-                        hx-swap="innerHTML"
+                        hx-target="#product-list-container"
+                        hx-swap="outerHTML"
                         hx-trigger="change"
                         hx-indicator="#loading-indicator"
                         hx-vals='{"view": "{{ current_view|default:'grid' }}"}'>
@@ -116,4 +89,4 @@
         </div>
     </div>
     </aside>
-</div>
+</div> 

@@ -1,0 +1,171 @@
+// Centralized HTMX Event Manager
+// Consolidates all HTMX event handling into a single, manageable system
+
+import { showLoginMessage, showLogoutMessage } from './notifications.js';
+
+class HTMXManager {
+  constructor() {
+    this.viewPreference = this.getViewPreference();
+    this.initializeEventHandlers();
+  }
+
+  // Get view preference from localStorage
+  getViewPreference() {
+    return localStorage.getItem('shopViewPreference') || 'grid';
+  }
+
+  // Save view preference to localStorage
+  saveViewPreference(view) {
+    localStorage.setItem('shopViewPreference', view);
+    this.viewPreference = view;
+  }
+
+  // Initialize all HTMX event handlers
+  initializeEventHandlers() {
+    // Request configuration - add headers and modify URLs
+    document.addEventListener('htmx:configRequest', this.handleConfigRequest.bind(this));
+    
+    // Before swap - prepare for content changes
+    document.addEventListener('htmx:beforeSwap', this.handleBeforeSwap.bind(this));
+    
+    // After swap - cleanup and reinitialize
+    document.addEventListener('htmx:afterSwap', this.handleAfterSwap.bind(this));
+    
+    // Error handling
+    document.addEventListener('htmx:responseError', this.handleResponseError.bind(this));
+    document.addEventListener('htmx:sendError', this.handleSendError.bind(this));
+    
+    // Login success check on page load
+    document.addEventListener('DOMContentLoaded', this.checkLoginSuccess.bind(this));
+  }
+
+  // Handle request configuration
+  handleConfigRequest(event) {
+    // Add view preference header to all requests
+    if (!event.detail.headers) {
+      event.detail.headers = {};
+    }
+    
+    // Only add view preference if it's not already set manually
+    if (!event.detail.headers['X-View-Preference']) {
+      event.detail.headers['X-View-Preference'] = this.viewPreference;
+    }
+    
+    // Add target information for Django template selection (only if not manually set)
+    if (!event.detail.headers['X-HX-Target']) {
+      const triggerElement = event.detail.elt;
+      if (triggerElement) {
+        const hxTarget = triggerElement.getAttribute('hx-target');
+        if (hxTarget) {
+          event.detail.headers['X-HX-Target'] = hxTarget;
+        }
+      }
+    }
+    
+    // DISABLED: No sidebar URL manipulation - let sidebar work naturally
+    // Sidebar navigation should preserve clean URLs
+  }
+
+  // Handle before swap events
+  handleBeforeSwap(event) {
+    // Add swapping class to prevent transitions
+    const mainContent = document.getElementById('main-content');
+    if (mainContent) {
+      mainContent.classList.add('htmx-swapping');
+    }
+  }
+
+  // Handle after swap events
+  handleAfterSwap(event) {
+    // Handle logout success for user menu
+    if (event.detail.target.id === 'user-menu-dropdown') {
+      showLogoutMessage();
+    }
+    
+    // Remove swapping class
+    const mainContent = document.getElementById('main-content');
+    if (mainContent) {
+      mainContent.classList.remove('htmx-swapping');
+    }
+    
+    // Reinitialize components for new content
+    this.reinitializeComponents(event.detail.target);
+  }
+
+  // Handle response errors
+  handleResponseError(event) {
+    console.error('HTMX Response Error:', event.detail);
+    // Add user-friendly error handling here
+  }
+
+  // Handle send errors
+  handleSendError(event) {
+    console.error('HTMX Send Error:', event.detail);
+    // Add user-friendly error handling here
+  }
+
+  // Check for login success notification
+  checkLoginSuccess() {
+    const showLoginSuccess = document.body.getAttribute('data-show-login');
+    if (showLoginSuccess === 'true') {
+      showLoginMessage();
+    }
+  }
+
+  // Get current view from DOM (for shop pages only)
+  getCurrentViewFromDOM() {
+    const productList = document.getElementById('product-list');
+    if (productList) {
+      if (productList.classList.contains('product-list')) {
+        return 'list';
+      } else if (productList.classList.contains('product-grid')) {
+        return 'grid';
+      }
+    }
+    return this.viewPreference; // Fallback to localStorage preference
+  }
+
+  // Reinitialize components after HTMX swaps
+  reinitializeComponents(target) {
+    // Reinitialize dropdowns if new dropdown elements were added
+    if (target.querySelector('.user-menu, .category-menu-item.has-dropdown')) {
+      // Trigger dropdown reinitialization
+      const dropdownEvent = new CustomEvent('htmx:reinitialize-dropdowns', {
+        detail: { target }
+      });
+      document.dispatchEvent(dropdownEvent);
+    }
+    
+    // Reinitialize shop functionality if shop elements were added
+    if (target.querySelector('.shop-page, #product-list-container')) {
+      // Trigger shop reinitialization
+      const shopEvent = new CustomEvent('htmx:reinitialize-shop', {
+        detail: { target }
+      });
+      document.dispatchEvent(shopEvent);
+    }
+    
+    // Reinitialize forms if form elements were added
+    if (target.querySelector('form[data-validate], input[required]')) {
+      // Trigger form reinitialization
+      const formEvent = new CustomEvent('htmx:reinitialize-forms', {
+        detail: { target }
+      });
+      document.dispatchEvent(formEvent);
+    }
+  }
+
+  // Public method to update view preference
+  updateViewPreference(view) {
+    this.saveViewPreference(view);
+    
+    // Dispatch event to notify other components
+    const viewChangeEvent = new CustomEvent('htmx:view-preference-changed', {
+      detail: { view }
+    });
+    document.dispatchEvent(viewChangeEvent);
+  }
+}
+
+// Export the HTMXManager class
+export { HTMXManager };

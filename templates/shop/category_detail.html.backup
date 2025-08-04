@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
-{% load i18n static shop_extras %}
+{% load i18n static %}
 
 {% block content %}
-<div class="main-container shop-page">
+<div class="main-container">
     <div class="shop-layout">
         <!-- Sidebar -->
         {% include 'components/sidebar.html' %}
@@ -16,8 +16,7 @@
             
             {% if products %}
                 <div id="product-list-container">
-                    {% include 'shop/pagination_bar.html' with show_view_toggle=False %}
-                    <div id="product-list" class="product-grid">
+                    <div id="product-list">
                         {% for product in products %}
                         <div class="product-card product-row">
                             <a href="{% url 'category_or_product' product.slug %}" class="product-link">
@@ -45,7 +44,6 @@
                         <div class="no-products">{% trans 'No products found in this category.' %}</div>
                         {% endfor %}
                     </div>
-                    {% include 'shop/pagination_bar.html' with show_view_toggle=False %}
                 </div>
             {% else %}
                 <div class="no-products">{% trans 'No products found in this category.' %}</div>
@@ -57,4 +55,6 @@
         </div>
     </div>
 </div>
-{% endblock %}
+
+
+{% endblock %} 

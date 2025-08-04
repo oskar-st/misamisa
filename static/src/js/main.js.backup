@@ -40,9 +40,6 @@ document.addEventListener('DOMContentLoaded', function() {
   // Initialize HTMX manager first
   htmxManager = new HTMXManager();
   
-  // Export for global access
-  window.htmxManager = htmxManager;
-  
   // Initialize core components
   initializeDropdowns();
   initializeTabs();
@@ -92,3 +89,6 @@ function setupReinitializationHandlers() {
     initializeForms();
   });
 }
+
+// Export for global access if needed
+window.htmxManager = htmxManager;
