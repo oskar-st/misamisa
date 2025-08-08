@@ -175,6 +175,56 @@ header {
   fill: none;
 }
 
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--card-border);
+  margin-bottom: 0.5rem;
+}
+
+.user-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--accent-color);
+  color: var(--button-text);
+}
+
+.user-avatar svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  fill: none;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.user-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-color);
+}
+
+.user-email {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.menu-divider {
+  height: 1px;
+  background: var(--card-border);
+  margin: 0.5rem 0;
+}
+
 .user-menu-divider {
   height: 1px;
   background: var(--card-border);
@@ -223,6 +273,70 @@ header {
   background: transparent;
   border: 1px solid var(--card-border);
   justify-content: center;
+}
+
+/* Dropdown theme toggle specific styles */
+.theme-toggle-dropdown {
+  justify-content: space-between !important;
+}
+
+.theme-toggle-dropdown .theme-toggle-switch {
+  margin-left: auto;
+  background: none !important;
+  border: none;
+  padding: 0;
+  box-shadow: none !important;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  outline: none;
+}
+
+.theme-toggle-dropdown .theme-toggle-track {
+  position: relative;
+  width: 32px;
+  height: 18px;
+  background: var(--card-bg);
+  border: 1.5px solid var(--card-border);
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.theme-toggle-dropdown .theme-toggle-thumb {
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  width: 14px;
+  height: 14px;
+  background: #ffb300;  /* Same golden orange as main toggle OFF state */
+  border-radius: 50%;
+  transition: left 0.25s cubic-bezier(0.4, 1.6, 0.6, 1), background 0.2s;
+}
+
+.theme-toggle-dropdown.active .theme-toggle-thumb {
+  left: 15px;
+  background: linear-gradient(135deg, #444, #bbb);  /* Same gray as main toggle ON state */
+}
+
+.theme-toggle-dropdown.active .theme-toggle-track {
+  background: #1a1a1a;  /* Dark like Twitch */
+  border-color: #1a1a1a;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: 4px;
+}
+
+.theme-toggle-dropdown.active .theme-toggle-track::before {
+  content: "✓";
+  font-size: 8px;
+  color: white;
+  font-weight: bold;
+  z-index: 1;
 }
 
 .dropdown-btn-secondary.dropdown-menu-item:hover {

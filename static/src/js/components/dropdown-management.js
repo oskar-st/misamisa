@@ -108,11 +108,8 @@ document.addEventListener('DOMContentLoaded', setupDropdownBehavior);
 // Reinitialize after HTMX swaps
 document.addEventListener('htmx:afterSwap', function() {
     setTimeout(setupDropdownBehavior, 50);
-    setTimeout(() => {
-        if (typeof initializeDropdownThemeToggle === 'function') {
-            initializeDropdownThemeToggle();
-        }
-    }, 50);
+    // Remove dropdown theme toggle initialization from here
+    // It's handled in main.js to prevent duplicates
 });
 
 // Export for use in main.js

@@ -15,6 +15,12 @@ export function initializeThemeToggle() {
     function setTheme(theme) {
         html.setAttribute('data-theme', theme);
         localStorage.setItem('theme', theme);
+        
+        // Dispatch a custom event so other theme toggles can listen and update
+        document.dispatchEvent(new CustomEvent('themeChanged', { 
+            detail: { theme: theme } 
+        }));
+        
         // Optionally update toggle UI (icon, etc.)
         if (toggleBtn) {
             toggleBtn.setAttribute('aria-pressed', theme === 'dark');
@@ -32,6 +38,13 @@ export function initializeThemeToggle() {
         const current = html.getAttribute('data-theme') || getPreferredTheme();
         const next = current === 'dark' ? 'light' : 'dark';
         setTheme(next);
+        
+        // Force synchronization after a short delay
+        setTimeout(() => {
+            if (typeof window.forceThemeSync === 'function') {
+                window.forceThemeSync();
+            }
+        }, 50);
     }
 
     // Initialize

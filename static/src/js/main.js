@@ -7,7 +7,7 @@ import { initializeDropdowns } from './components/dropdown.js';
 import { initializeTabs } from './components/tabs.js';
 import { initializeForms } from './components/forms.js';
 import { initializeThemeToggle } from './components/theme-toggle.js';
-import { initializeUserMenu } from './components/user-menu.js';
+import { initializeUserMenu, forceThemeSync } from './components/user-menu.js';
 import './components/dropdown-management.js';
 import './components/notifications.js';
 
@@ -49,6 +49,9 @@ document.addEventListener('DOMContentLoaded', function() {
   initializeForms();
   initializeThemeToggle();
   initializeUserMenu();
+  
+  // Export sync function to window for cross-component access
+  window.forceThemeSync = forceThemeSync;
   
   // Initialize page-specific functionality dynamically
   initializePageComponents();
