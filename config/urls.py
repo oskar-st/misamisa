@@ -117,24 +117,18 @@ def category_or_product_view(request, slug):
     """Handle both category and product URLs dynamically."""
     from shop.models import Category, Product
     
-    print(f"category_or_product_view called for slug: {slug}")
-    print(f"HTMX request: {request.headers.get('HX-Request')}")
-    
     # First check if it's a category
     try:
         category = Category.objects.get(slug=slug, is_active=True)
-        print(f"Found category: {category.name}")
         return product_list_public(request, category_slug=slug)
     except Category.DoesNotExist:
         # If not a category, check if it's a product
         try:
             product = Product.objects.get(slug=slug, is_active=True)
-            print(f"Found product: {product.name}")
             return product_detail_public(request, slug=slug)
         except Product.DoesNotExist:
             # If neither exists, raise 404
             from django.http import Http404
-            print(f"Neither category nor product found for slug: {slug}")
             raise Http404("Page not found")
 
 urlpatterns = [
