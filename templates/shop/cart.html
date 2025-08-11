@@ -52,9 +52,9 @@
                         </button>
                     </div>
                 </td>
-                <td class="bold item-subtotal" data-product-id="{{ item.product.id }}">{{ item.subtotal }} zł</td>
+                <td class="bold item-subtotal" data-product-id="{{ item.product.id }}" data-price="{{ item.price }}">{{ item.subtotal }} zł</td>
                 <td>
-                    <button type="button" class="cta-btn btn-sm remove-btn" onclick="removeFromCart({{ item.product.id }})">{% trans 'Remove' %}</button>
+                    <button type="button" class="cta-btn btn-sm remove-btn" data-cart-remove="{{ item.product.id }}">{% trans 'Remove' %}</button>
                 </td>
             </tr>
             {% endfor %}
@@ -87,154 +87,22 @@ function validateQuantity(input, maxStock) {
     input.value = value;
 }
 
+// Legacy function - now handled by CartManager automatically
 function updateCartQuantity(productId, change, maxStock, newValue = null) {
-    let quantity;
-    if (newValue !== null) {
-        // Direct input change
-        quantity = parseInt(newValue) || 1;
-    } else {
-        // Button click (+ or -)
-        const input = document.getElementById(`cart-qty-${productId}`);
-        const currentValue = parseInt(input.value) || 1;
-        quantity = Math.max(1, Math.min(maxStock, currentValue + change));
+    // CartManager handles this automatically via event listeners
+    // This function exists for backward compatibility only
+    if (window.cartManager) {
+        window.cartManager.updateCartQuantity(productId, change, maxStock, newValue);
     }
-    
-    // Update input value immediately for better UX
-    const input = document.getElementById(`cart-qty-${productId}`);
-    input.value = quantity;
-    
-    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-    
-    // Send AJAX request
-    fetch('{% url "shop:update_cart_ajax" %}', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': csrfToken
-        },
-        body: JSON.stringify({
-            product_id: productId,
-            quantity: quantity,
-            action: 'update'
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Update subtotal for this item
-            const itemSubtotal = document.querySelector(`.item-subtotal[data-product-id="${productId}"]`);
-            if (itemSubtotal) {
-                const item = data.cart_items.find(item => item.product_id == productId);
-                if (item) {
-                    itemSubtotal.textContent = item.subtotal.toFixed(2) + ' zł';
-                }
-            }
-            
-            // Update total
-            const cartTotalElement = document.getElementById('cart-total');
-            if (cartTotalElement) {
-                cartTotalElement.textContent = data.total.toFixed(2);
-            }
-            
-            // Update cart badge in header
-            const cartBadge = document.querySelector('.cart-badge');
-            if (cartBadge) {
-                cartBadge.textContent = data.cart_count;
-                if (data.cart_count === 0) {
-                    cartBadge.style.display = 'none';
-                } else {
-                    cartBadge.style.display = 'flex';
-                }
-            }
-            
-            // Update cart total in header
-            const cartTotal = document.querySelector('.cart-total');
-            if (cartTotal) {
-                cartTotal.textContent = data.total.toFixed(2) + ' zł';
-            }
-            
-            // If quantity is 0, remove the row
-            if (quantity === 0) {
-                const row = document.querySelector(`tr[data-product-id="${productId}"]`);
-                if (row) {
-                    row.remove();
-                }
-                
-                // Check if cart is empty
-                if (data.cart_count === 0) {
-                    location.reload(); // Reload to show empty cart message
-                }
-            }
-        } else {
-            console.error('Error updating cart:', data.error);
-            alert('Error updating cart. Please try again.');
-        }
-    })
-    .catch(error => {
-        console.error('Fetch error:', error);
-        alert('Error updating cart. Please try again.');
-    });
 }
 
+// Legacy function - now handled by CartManager automatically  
 function removeFromCart(productId) {
-    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-    
-    fetch('{% url "shop:update_cart_ajax" %}', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': csrfToken
-        },
-        body: JSON.stringify({
-            product_id: productId,
-            action: 'remove'
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Remove the row
-            const row = document.querySelector(`tr[data-product-id="${productId}"]`);
-            if (row) {
-                row.remove();
-            }
-            
-            // Update total
-            const cartTotalElement = document.getElementById('cart-total');
-            if (cartTotalElement) {
-                cartTotalElement.textContent = data.total.toFixed(2);
-            }
-            
-            // Update cart badge in header
-            const cartBadge = document.querySelector('.cart-badge');
-            if (cartBadge) {
-                cartBadge.textContent = data.cart_count;
-                if (data.cart_count === 0) {
-                    cartBadge.style.display = 'none';
-                } else {
-                    cartBadge.style.display = 'flex';
-                }
-            }
-            
-            // Update cart total in header
-            const cartTotal = document.querySelector('.cart-total');
-            if (cartTotal) {
-                cartTotal.textContent = data.total.toFixed(2) + ' zł';
-            }
-            
-            // Check if cart is empty
-            if (data.cart_count === 0) {
-                location.reload(); // Reload to show empty cart message
-            }
-        } else {
-            console.error('Error removing item:', data.error);
-            alert('Error removing item. Please try again.');
-        }
-    })
-    .catch(error => {
-        console.error('Fetch error:', error);
-        alert('Error removing item. Please try again.');
-    });
+    // CartManager handles this automatically via event listeners
+    // This function exists for backward compatibility only
+    if (window.cartManager) {
+        window.cartManager.removeFromCart(productId);
+    }
 }
 </script>
 {% endblock %} 

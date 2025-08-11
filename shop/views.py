@@ -9,6 +9,7 @@ from accounts.models import Address, CustomUser
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
+from django.db import transaction
 import json
 from django.contrib import messages
 from django.urls import reverse
@@ -601,5 +602,130 @@ def update_cart_ajax(request):
         
     except (json.JSONDecodeError, ValueError) as e:
         return JsonResponse({'success': False, 'error': 'Invalid data'}, status=400)
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+
+@require_POST
+@csrf_exempt
+def update_cart_batch(request):
+    """Batched cart operations endpoint - processes multiple operations in one request"""
+    try:
+        data = json.loads(request.body)
+        operations = data.get('ops', [])
+        client_rev = data.get('client_rev', 0)
+        
+        if not operations:
+            return JsonResponse({'success': False, 'error': 'No operations provided'}, status=400)
+        
+        cart = request.session.get('cart', {})
+        notices = []
+        
+        # Process all operations in one transaction
+        with transaction.atomic():
+            # Get all affected products in one query
+            product_ids = [str(op.get('product_id')) for op in operations if op.get('product_id')]
+            products = {str(p.id): p for p in Product.objects.filter(id__in=product_ids, is_active=True)}
+            
+            for op in operations:
+                product_id = str(op.get('product_id'))
+                action = op.get('action', 'update')
+                
+                # Skip if product doesn't exist
+                if product_id not in products:
+                    notices.append({
+                        'product_id': product_id,
+                        'type': 'error',
+                        'message': _('Product not found')
+                    })
+                    continue
+                
+                product = products[product_id]
+                
+                if action == 'update':
+                    quantity = int(op.get('quantity', 1))
+                    
+                    if quantity > 0:
+                        # Validate quantity against stock
+                        original_qty = quantity
+                        if quantity > product.stock:
+                            quantity = product.stock
+                            notices.append({
+                                'product_id': product_id,
+                                'type': 'stock_adjustment',
+                                'message': _('Quantity adjusted to available stock: %(stock)s') % {'stock': product.stock},
+                                'adjusted_quantity': quantity
+                            })
+                        
+                        cart[product_id] = quantity
+                    else:
+                        # Remove if quantity is 0 or negative
+                        cart.pop(product_id, None)
+                        notices.append({
+                            'product_id': product_id,
+                            'type': 'removed',
+                            'message': _('Item removed from cart')
+                        })
+                
+                elif action == 'remove':
+                    cart.pop(product_id, None)
+                    notices.append({
+                        'product_id': product_id,
+                        'type': 'removed',
+                        'message': _('Item removed from cart')
+                    })
+        
+        # Validate entire cart after all changes
+        if request.user.is_authenticated:
+            cart, changes_made, change_messages = validate_and_clean_cart(request.user, cart)
+            if change_messages:
+                for msg in change_messages:
+                    notices.append({
+                        'type': 'validation',
+                        'message': str(msg)
+                    })
+        
+        request.session['cart'] = cart
+        
+        # Sync cart to database for authenticated users
+        if request.user.is_authenticated:
+            save_cart_to_database(request.user, cart)
+        
+        # Prepare response with canonical cart state
+        product_ids = list(cart.keys())
+        products = Product.objects.filter(id__in=product_ids, is_active=True)
+        cart_items = []
+        total = 0
+        
+        for product in products:
+            qty = cart.get(str(product.id), 0)
+            price = product.discount_price or product.price
+            subtotal = price * qty
+            total += subtotal
+            cart_items.append({
+                'product_id': product.id,
+                'quantity': qty,
+                'price': float(price),
+                'subtotal': float(subtotal),
+                'name': product.name,
+                'stock': product.stock
+            })
+        
+        return JsonResponse({
+            'success': True,
+            'cart': {
+                'items': cart_items,
+                'total': float(total),
+                'count': sum(cart.values())
+            },
+            'server_rev': client_rev + 1,
+            'notices': notices,
+            'total': float(total),
+            'cart_count': sum(cart.values()),
+            'message': _('Cart updated successfully')
+        })
+        
+    except (json.JSONDecodeError, ValueError) as e:
+        return JsonResponse({'success': False, 'error': _('Invalid data format')}, status=400)
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=500)

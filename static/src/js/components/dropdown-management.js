@@ -87,15 +87,20 @@ function setupDropdownBehavior() {
                 
                 // Add new listeners
                 dropdown.addEventListener('mouseenter', cancelHide);
-                dropdown.addEventListener('mouseleave', startHideTimer);
+                dropdown.addEventListener('mouseleave', (e) => {
+                    // Only hide if we're actually leaving the dropdown area
+                    // Check if the mouse is moving to a related target that's still within the dropdown
+                    if (!dropdown.contains(e.relatedTarget)) {
+                        startHideTimer();
+                    }
+                });
                 
-                // Add event listeners to all child elements to prevent hiding
-                const childElements = dropdown.querySelectorAll('*');
+                // Add event listeners to important child elements, but exclude theme toggle elements
+                const childElements = dropdown.querySelectorAll('*:not(.theme-toggle-switch):not(.theme-toggle-track):not(.theme-toggle-thumb)');
                 childElements.forEach(child => {
                     child.removeEventListener('mouseenter', cancelHide);
-                    child.removeEventListener('mouseleave', startHideTimer);
                     child.addEventListener('mouseenter', cancelHide);
-                    child.addEventListener('mouseleave', startHideTimer);
+                    // Don't add mouseleave listeners to child elements to prevent premature hiding
                 });
             }
         });

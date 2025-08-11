@@ -8,6 +8,7 @@ import { initializeTabs } from './components/tabs.js';
 import { initializeForms } from './components/forms.js';
 import { initializeThemeToggle } from './components/theme-toggle.js';
 import { initializeUserMenu, forceThemeSync } from './components/user-menu.js';
+import CartManager from './components/cart-manager.js';
 import './components/dropdown-management.js';
 import './components/notifications.js';
 
@@ -34,14 +35,19 @@ const pageInitializers = {
 
 // Global HTMX manager instance
 let htmxManager;
+let cartManager;
 
 // Initialize frontend functionality
 document.addEventListener('DOMContentLoaded', function() {
   // Initialize HTMX manager first
   htmxManager = new HTMXManager();
   
+  // Initialize cart manager
+  cartManager = new CartManager();
+  
   // Export for global access
   window.htmxManager = htmxManager;
+  window.cartManager = cartManager;
   
   // Initialize core components
   initializeDropdowns();
