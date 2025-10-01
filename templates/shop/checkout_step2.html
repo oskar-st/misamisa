@@ -1,0 +1,169 @@
+{% extends 'shop/checkout_base.html' %}
+{% load i18n static %}
+
+{% block title %}{% trans 'Dostawa i płatność' %}{% endblock %}
+
+{% block checkout_content %}
+<h1>{% trans 'Dostawa i płatność' %}</h1>
+
+<div class="checkout-step2-content">
+  <div class="checkout-form-section">
+    <form method="post" id="shipping-payment-form">
+      {% csrf_token %}
+
+      <div class="form-section">
+        <h3>{% trans 'Sposób dostawy' %}</h3>
+        <div class="shipping-methods">
+          {% for sm in form.shipping_method.field.queryset %}
+          <div class="shipping-method-option">
+            <input type="radio" name="shipping_method" id="shipping_{{ sm.id }}" value="{{ sm.id }}" {% if forloop.first %}checked{% endif %} required>
+            <label for="shipping_{{ sm.id }}" class="shipping-method-label">
+              <div class="shipping-method-info">
+                <div class="shipping-icon"><i class="fas fa-truck"></i></div>
+                <div class="shipping-details">
+                  <h4>{{ sm.name }}</h4>
+                  <p>{% trans 'Dostawa w' %} {{ sm.estimated_days }} {% trans 'dni' %} - {{ sm.price }} zł</p>
+                </div>
+              </div>
+            </label>
+          </div>
+          {% empty %}
+          <div class="alert alert-warning">{% trans 'Brak dostępnych metod dostawy.' %}</div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>{% trans 'Kupujesz jako' %}</h3>
+        <div class="buyer-type-options">
+          <div class="buyer-type-option">
+            <input type="radio" name="buyer_type" id="buyer_private" value="private" checked>
+            <label for="buyer_private" class="buyer-type-label"><i class="fas fa-user"></i> {% trans 'Osoba prywatna' %}</label>
+          </div>
+          <div class="buyer-type-option">
+            <input type="radio" name="buyer_type" id="buyer_company" value="company">
+            <label for="buyer_company" class="buyer-type-label"><i class="fas fa-building"></i> {% trans 'Firma' %}</label>
+          </div>
+        </div>
+      </div>
+
+      <div id="private-address-form" class="address-form">
+        <h4>{% trans 'Adres dostawy' %}</h4>
+        <div class="form-row">
+          <div class="form-group">{{ form.shipping_full_name.label_tag }} {{ form.shipping_full_name }}</div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">{{ form.shipping_street.label_tag }} {{ form.shipping_street }}</div>
+        </div>
+        <div class="form-row">
+          <div class="form-group form-group-half">{{ form.shipping_postal_code.label_tag }} {{ form.shipping_postal_code }}</div>
+          <div class="form-group form-group-half">{{ form.shipping_city.label_tag }} {{ form.shipping_city }}</div>
+        </div>
+        <div class="form-row">
+          <div class="form-group form-group-half">{{ form.shipping_phone.label_tag }} {{ form.shipping_phone }}</div>
+          <div class="form-group form-group-half">{{ form.shipping_email.label_tag }} {{ form.shipping_email }}</div>
+        </div>
+      </div>
+
+      <div id="company-address-form" class="address-form" style="display:none;">
+        <h4>{% trans 'Firmowe dane do faktury' %}</h4>
+        <div class="form-row"><div class="form-group">{{ form.invoice_company_name.label_tag }} {{ form.invoice_company_name }}</div></div>
+        <div class="form-row"><div class="form-group">{{ form.invoice_vat_id.label_tag }} {{ form.invoice_vat_id }}</div></div>
+        <div class="form-row"><div class="form-group">{{ form.invoice_street.label_tag }} {{ form.invoice_street }}</div></div>
+        <div class="form-row">
+          <div class="form-group form-group-half">{{ form.invoice_postal_code.label_tag }} {{ form.invoice_postal_code }}</div>
+          <div class="form-group form-group-half">{{ form.invoice_city.label_tag }} {{ form.invoice_city }}</div>
+        </div>
+        <div class="form-row"><div class="form-group"><label class="checkbox-group">{{ form.delivery_same_as_invoice }} {{ form.delivery_same_as_invoice.label }}</label></div></div>
+        <div id="delivery-address-fields" style="display:none;">
+          <h5>{% trans 'Adres dostawy' %}</h5>
+          <div class="form-row"><div class="form-group">{{ form.delivery_full_name.label_tag }} {{ form.delivery_full_name }}</div></div>
+          <div class="form-row"><div class="form-group">{{ form.delivery_street.label_tag }} {{ form.delivery_street }}</div></div>
+          <div class="form-row">
+            <div class="form-group form-group-half">{{ form.delivery_postal_code.label_tag }} {{ form.delivery_postal_code }}</div>
+            <div class="form-group form-group-half">{{ form.delivery_city.label_tag }} {{ form.delivery_city }}</div>
+          </div>
+          <div class="form-row">
+            <div class="form-group form-group-half">{{ form.delivery_phone.label_tag }} {{ form.delivery_phone }}</div>
+            <div class="form-group form-group-half">{{ form.delivery_email.label_tag }} {{ form.delivery_email }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>{% trans 'Płatność' %}</h3>
+        <div class="payment-methods">
+          {% for pm in payment_methods %}
+          <div class="payment-method-option">
+            <input type="radio" name="payment_method" id="payment_{{ pm.code }}" value="{{ pm.code }}" {% if forloop.first %}checked{% endif %} required>
+            <label for="payment_{{ pm.code }}" class="payment-method-label">
+              <div class="payment-method-info">
+                <div class="payment-icon" style="color: {{ pm.color }}"><i class="{{ pm.icon }}"></i></div>
+                <div class="payment-details"><h4>{{ pm.name }}</h4><p>{{ pm.description }}</p></div>
+              </div>
+            </label>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <a href="{% url 'cart_view' %}" class="cta-btn btn-secondary"><i class="fas fa-arrow-left"></i> {% trans 'Powrót do koszyka' %}</a>
+        <button type="submit" class="cta-btn btn-primary">{% trans 'Przejdź do podsumowania' %} <i class="fas fa-arrow-right"></i></button>
+      </div>
+    </form>
+  </div>
+
+  <div class="order-summary-sidebar">
+    <div class="order-summary">
+      <h3>{% trans 'Twoje zamówienie' %}</h3>
+      <div class="order-items">
+        {% for item in cart_items %}
+        <div class="order-item">
+          <div class="item-details">
+            <h4>{{ item.product.name }}</h4>
+            <div class="item-info"><span class="quantity">{{ item.quantity }} szt.</span><span class="price">{{ item.subtotal }} zł</span></div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      <div class="order-total">
+        <div class="total-row"><span>{% trans 'Koszyk' %}:</span><span>{{ subtotal }} zł</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  const privateRadio = document.getElementById('buyer_private');
+  const companyRadio = document.getElementById('buyer_company');
+  const privateForm = document.getElementById('private-address-form');
+  const companyForm = document.getElementById('company-address-form');
+  const deliverySame = document.getElementById('id_delivery_same_as_invoice');
+  const deliveryFields = document.getElementById('delivery-address-fields');
+
+  function toggleBuyer(){
+    if (privateRadio && privateRadio.checked){
+      privateForm.style.display = 'block';
+      companyForm.style.display = 'none';
+    } else {
+      privateForm.style.display = 'none';
+      companyForm.style.display = 'block';
+    }
+  }
+  function toggleDelivery(){
+    if (!deliverySame) return;
+    deliveryFields.style.display = deliverySame.checked ? 'none' : 'block';
+  }
+  if (privateRadio) privateRadio.addEventListener('change', toggleBuyer);
+  if (companyRadio) companyRadio.addEventListener('change', toggleBuyer);
+  if (deliverySame) deliverySame.addEventListener('change', toggleDelivery);
+  toggleBuyer();
+  toggleDelivery();
+});
+</script>
+{% endblock %}
+
+

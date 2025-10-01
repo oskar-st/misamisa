@@ -14,6 +14,7 @@ import './components/notifications.js';
 
 // Import page-specific functionality
 import { initializeShop } from './pages/shop.js';
+import { initialize as initializeCheckout } from './pages/checkout.js';
 
 // Page initializers map for dynamic loading
 const pageInitializers = {
@@ -30,7 +31,8 @@ const pageInitializers = {
   'contact-page': () => {
     // Contact page specific functionality can be added here
     console.log('Contact page initialized');
-  }
+  },
+  'checkout-page': () => initializeCheckout(),
 };
 
 // Global HTMX manager instance

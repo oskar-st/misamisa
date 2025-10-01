@@ -8,7 +8,7 @@ from django.urls import URLResolver, URLPattern
 from django.http import Http404, JsonResponse
 from home.views import homepage, register_view, login_view, logout_view, profile_view, verify_email, resend_verification_email, contact_view, about_view, terms_view, privacy_view
 from .admin import admin_site
-from shop.views import product_list_public, product_detail_public, cart_view, checkout, place_order, order_success
+from shop.views import product_list_public, product_detail_public, cart_view, checkout, place_order, order_success, checkout_step2_shipping_payment, checkout_step3_summary
 import os
 import json
 from pathlib import Path
@@ -142,7 +142,8 @@ urlpatterns = [
     path('modules/', include('modules.urls', namespace='modules')),
     path('', include('accounts.urls', namespace='accounts')),  # Include accounts URLs
     path('cart/', cart_view, name='cart_view'),
-    path('checkout/', checkout, name='checkout_view'),
+    path('checkout/', checkout_step2_shipping_payment, name='checkout_step2_shipping_payment'),
+    path('checkout/summary/', checkout_step3_summary, name='checkout_step3_summary'),
     path('checkout/success/', order_success, name='checkout_success'),
     path('place-order/', place_order, name='place_order'),
     path('success/', order_success, name='order_success'),

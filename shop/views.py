@@ -18,6 +18,7 @@ from django.db.models import Q, Prefetch
 from modules.manager import module_manager
 from django.conf import settings
 from .cart_utils import save_cart_to_database, validate_and_clean_cart, get_cart_change_messages
+from .forms import CheckoutShippingPaymentForm, OrderSummaryForm
 
 
 def get_cart_items(request):
@@ -379,6 +380,120 @@ def checkout(request):
     
     return render(request, 'shop/checkout.html', context)
 
+@login_required
+def checkout_step2_shipping_payment(request):
+    """Step 2: Shipping & Payment."""
+    cart_items = get_cart_items(request)
+    if not cart_items:
+        messages.error(request, _('Your cart is empty.'))
+        return redirect('cart_view')
+
+    subtotal = sum(item['subtotal'] for item in cart_items)
+
+    if request.method == 'POST':
+        form = CheckoutShippingPaymentForm(request.POST, user=request.user)
+        if form.is_valid():
+            data = {
+                'shipping_method_id': form.cleaned_data['shipping_method'].id,
+                'buyer_type': form.cleaned_data['buyer_type'],
+                'payment_method': form.cleaned_data['payment_method'],
+            }
+            if data['buyer_type'] == 'private':
+                data.update({
+                    'shipping_full_name': form.cleaned_data['shipping_full_name'],
+                    'shipping_street': form.cleaned_data['shipping_street'],
+                    'shipping_postal_code': form.cleaned_data['shipping_postal_code'],
+                    'shipping_city': form.cleaned_data['shipping_city'],
+                    'shipping_phone': form.cleaned_data['shipping_phone'],
+                    'shipping_email': form.cleaned_data['shipping_email'],
+                })
+            else:
+                data.update({
+                    'invoice_vat_id': form.cleaned_data.get('invoice_vat_id', ''),
+                    'invoice_company_name': form.cleaned_data['invoice_company_name'],
+                    'invoice_street': form.cleaned_data['invoice_street'],
+                    'invoice_postal_code': form.cleaned_data['invoice_postal_code'],
+                    'invoice_city': form.cleaned_data['invoice_city'],
+                    'delivery_same_as_invoice': form.cleaned_data.get('delivery_same_as_invoice', True),
+                })
+                if not data['delivery_same_as_invoice']:
+                    data.update({
+                        'delivery_full_name': form.cleaned_data['delivery_full_name'],
+                        'delivery_street': form.cleaned_data['delivery_street'],
+                        'delivery_postal_code': form.cleaned_data['delivery_postal_code'],
+                        'delivery_city': form.cleaned_data['delivery_city'],
+                        'delivery_phone': form.cleaned_data['delivery_phone'],
+                        'delivery_email': form.cleaned_data['delivery_email'],
+                    })
+            request.session['checkout_data'] = data
+            return redirect('checkout_step3_summary')
+    else:
+        form = CheckoutShippingPaymentForm(user=request.user)
+
+    payment_methods = []
+    for module_name, module in module_manager.get_payment_modules().items():
+        if module.is_installed and module.is_enabled:
+            payment_methods.append({
+                'code': module_name,
+                'name': getattr(module, 'display_name', module_name.title()),
+                'description': getattr(module, 'description', ''),
+                'color': getattr(module, 'color', '#007bff'),
+                'icon': getattr(module, 'icon', 'fas fa-credit-card'),
+            })
+
+    context = {
+        'form': form,
+        'cart_items': cart_items,
+        'subtotal': subtotal,
+        'payment_methods': payment_methods,
+        'step': 2,
+    }
+    return render(request, 'shop/checkout_step2.html', context)
+
+@login_required
+def checkout_step3_summary(request):
+    """Step 3: Order Summary."""
+    checkout_data = request.session.get('checkout_data')
+    if not checkout_data:
+        messages.error(request, _('Missing checkout data.'))
+        return redirect('checkout_step2_shipping_payment')
+
+    cart_items = get_cart_items(request)
+    if not cart_items:
+        messages.error(request, _('Your cart is empty.'))
+        return redirect('cart_view')
+
+    shipping_method = get_object_or_404(ShippingMethod, id=checkout_data['shipping_method_id'])
+    subtotal = sum(item['subtotal'] for item in cart_items)
+    shipping_cost = shipping_method.price
+    total = subtotal + shipping_cost
+
+    payment_modules = module_manager.get_payment_modules()
+    pm_code = checkout_data['payment_method']
+    payment_module = payment_modules.get(pm_code)
+    payment_method_name = getattr(payment_module, 'display_name', pm_code.title()) if payment_module else pm_code
+
+    summary_form = OrderSummaryForm(request.POST or None)
+    if request.method == 'POST' and summary_form.is_valid():
+        # Send required fields to place_order
+        request.POST = request.POST.copy()
+        request.POST['payment_method'] = pm_code
+        request.POST['customer_name'] = request.user.get_full_name() or request.user.email
+        request.POST['customer_email'] = request.user.email
+        return place_order(request)
+
+    context = {
+        'checkout_data': checkout_data,
+        'cart_items': cart_items,
+        'subtotal': subtotal,
+        'shipping_method': shipping_method,
+        'shipping_cost': shipping_cost,
+        'total': total,
+        'payment_method_name': payment_method_name,
+        'summary_form': summary_form,
+        'step': 3,
+    }
+    return render(request, 'shop/checkout_step3.html', context)
 def place_order(request):
     """Simple order placement with modular payment processing."""
     if request.method == 'POST':
@@ -397,13 +512,13 @@ def place_order(request):
         
         if not customer_name or not customer_email:
             messages.error(request, 'Please provide your name and email address.')
-            return redirect('checkout_view')
+            return redirect('checkout_step2_shipping_payment')
         
         # Get selected payment method
         payment_method_code = request.POST.get('payment_method')
         if not payment_method_code:
             messages.error(request, 'Please select a payment method.')
-            return redirect('checkout_view')
+            return redirect('checkout_step2_shipping_payment')
         
         # Get payment module
         payment_modules = module_manager.get_payment_modules()
@@ -411,7 +526,7 @@ def place_order(request):
         
         if not payment_module:
             messages.error(request, 'Selected payment method is not available.')
-            return redirect('checkout_view')
+            return redirect('checkout_step2_shipping_payment')
         
         # Prepare payment data with customer information
         payment_data = {
@@ -426,7 +541,7 @@ def place_order(request):
             form = payment_module.get_payment_form()(request.POST)
             if not form.is_valid():
                 messages.error(request, 'Please correct the payment information.')
-                return redirect('checkout_view')
+                return redirect('checkout_step2_shipping_payment')
             payment_data.update(form.cleaned_data)
         
         # Validate payment data with module
@@ -434,14 +549,14 @@ def place_order(request):
         if validation_errors:
             for error in validation_errors:
                 messages.error(request, error)
-            return redirect('checkout_view')
+            return redirect('checkout_step2_shipping_payment')
         
         # Process payment
         payment_result = payment_module.process_payment(request, payment_data)
         
         if not payment_result.get('success'):
             messages.error(request, payment_result.get('message', 'Payment processing failed.'))
-            return redirect('checkout_view')
+            return redirect('checkout_step2_shipping_payment')
         
         # Create order with customer information
         order = Order.objects.create(
@@ -475,7 +590,7 @@ def place_order(request):
         # Redirect to success page
         return redirect('order_success', order_id=order.id)
     
-    return redirect('checkout_view')
+    return redirect('checkout_step2_shipping_payment')
 
 def order_success(request, order_id=None):
     """Order success page view."""

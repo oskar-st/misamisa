@@ -1,0 +1,117 @@
+{% extends 'shop/checkout_base.html' %}
+{% load i18n static %}
+
+{% block title %}{% trans 'Podsumowanie' %}{% endblock %}
+
+{% block checkout_content %}
+<h1>{% trans 'Podsumowanie' %}</h1>
+
+<div class="checkout-step3-content">
+  <div class="order-review-section">
+    <div class="summary-section">
+      <h3>{% trans 'Sposób i termin dostawy' %}</h3>
+      <div class="summary-content">
+        <div class="delivery-method"><strong>{{ shipping_method.name }}</strong> <span class="delivery-time">({{ shipping_method.estimated_days }} {% trans 'dni' %})</span> <span class="delivery-cost">{{ shipping_cost }} zł</span></div>
+      </div>
+      <a class="edit-btn" href="{% url 'checkout_step2_shipping_payment' %}"><i class="fas fa-edit"></i> {% trans 'Zmień' %}</a>
+    </div>
+
+    <div class="summary-section">
+      <h3>{% trans 'Kupujesz jako' %}</h3>
+      <div class="summary-content">
+        {% if checkout_data.buyer_type == 'private' %}
+          <strong>{% trans 'Osoba prywatna' %}</strong>
+        {% else %}
+          <strong>{% trans 'Firma' %}</strong>
+        {% endif %}
+      </div>
+      <a class="edit-btn" href="{% url 'checkout_step2_shipping_payment' %}"><i class="fas fa-edit"></i> {% trans 'Zmień' %}</a>
+    </div>
+
+    <div class="summary-section">
+      <h3>{% trans 'Adres dostawy' %}</h3>
+      <div class="summary-content">
+        {% if checkout_data.buyer_type == 'private' %}
+          <div class="address-info">
+            <strong>{{ checkout_data.shipping_full_name }}</strong><br>
+            {{ checkout_data.shipping_street }}<br>
+            {{ checkout_data.shipping_postal_code }} {{ checkout_data.shipping_city }}<br>
+            {{ checkout_data.shipping_phone }}<br>
+            {{ checkout_data.shipping_email }}
+          </div>
+        {% else %}
+          {% if checkout_data.delivery_same_as_invoice %}
+            <div class="address-info">
+              <strong>{{ checkout_data.invoice_company_name }}</strong><br>
+              {{ checkout_data.invoice_street }}<br>
+              {{ checkout_data.invoice_postal_code }} {{ checkout_data.invoice_city }}
+            </div>
+          {% else %}
+            <div class="address-info">
+              <strong>{{ checkout_data.delivery_full_name }}</strong><br>
+              {{ checkout_data.delivery_street }}<br>
+              {{ checkout_data.delivery_postal_code }} {{ checkout_data.delivery_city }}<br>
+              {{ checkout_data.delivery_phone }}<br>
+              {{ checkout_data.delivery_email }}
+            </div>
+          {% endif %}
+        {% endif %}
+      </div>
+      <a class="edit-btn" href="{% url 'checkout_step2_shipping_payment' %}"><i class="fas fa-edit"></i> {% trans 'Zmień' %}</a>
+    </div>
+
+    <div class="summary-section">
+      <h3>{% trans 'Płatność' %}</h3>
+      <div class="summary-content"><strong>{{ payment_method_name }}</strong></div>
+      <a class="edit-btn" href="{% url 'checkout_step2_shipping_payment' %}"><i class="fas fa-edit"></i> {% trans 'Zmień' %}</a>
+    </div>
+
+    <div class="summary-section">
+      <h3>{% trans 'Komentarz do zamówienia' %}</h3>
+      <div class="summary-content">
+        <form method="post" id="order-summary-form">
+          {% csrf_token %}
+          <label class="checkbox-group">{{ summary_form.want_to_add_comment }} {{ summary_form.want_to_add_comment.label }}</label>
+          <div id="comment-field" style="display:none;">{{ summary_form.order_comment }}</div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="order-summary-sidebar">
+    <div class="order-summary">
+      <h3>{% trans 'Produkty i usługi' %}</h3>
+      <div class="order-items">
+        {% for item in cart_items %}
+        <div class="order-item">
+          <div class="item-details">
+            <h4>{{ item.product.name }}</h4>
+            <div class="item-info"><span class="quantity">{{ item.quantity }} szt.</span><span class="price">{{ item.subtotal }} zł</span></div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      <div class="order-total">
+        <div class="total-row"><span>{% trans 'Koszyk' %}:</span><span>{{ subtotal }} zł</span></div>
+        <div class="total-row"><span>{% trans 'Dostawa i płatność' %}:</span><span>{{ shipping_cost }} zł</span></div>
+        <div class="total-row total-final"><strong><span>{% trans 'Do zapłaty' %}:</span><span>{{ total }} zł</span></strong></div>
+      </div>
+      <div class="checkout-actions">
+        <button type="submit" form="order-summary-form" class="cta-btn btn-primary btn-large">{% trans 'Kupuję i płacę' %} <i class="fas fa-arrow-right"></i></button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  const toggle = document.getElementById('id_want_to_add_comment');
+  const field = document.getElementById('comment-field');
+  function sync(){ if (toggle) field.style.display = toggle.checked ? 'block' : 'none'; }
+  if (toggle){ toggle.addEventListener('change', sync); sync(); }
+});
+</script>
+{% endblock %}
+
+

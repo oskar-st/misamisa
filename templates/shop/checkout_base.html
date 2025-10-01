@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% load i18n static %}
+
+{% block content %}
+<div class="main-container">
+    {% block checkout_content %}{% endblock %}
+</div>
+
+<!-- Hidden checkout navigation template -->
+<div id="checkout-nav-template" style="display: none;">
+    <div class="checkout-progress">
+        <div class="progress-steps" data-step="{{ step }}">
+            <div class="progress-step {% if step == 1 %}active{% elif step > 1 %}completed{% else %}future{% endif %}">
+                {% if step > 1 %}
+                    <a href="{% url 'cart_view' %}" class="step-link">
+                        <div class="step-circle">✓</div>
+                        <span class="step-label">{% trans 'Koszyk' %}</span>
+                    </a>
+                {% else %}
+                    <div class="step-circle">1</div>
+                    <span class="step-label">{% trans 'Koszyk' %}</span>
+                {% endif %}
+            </div>
+            
+            <div class="progress-step {% if step == 2 %}active{% elif step > 2 %}completed{% else %}future{% endif %}">
+                {% if step > 2 %}
+                    <a href="{% url 'checkout_step2_shipping_payment' %}" class="step-link">
+                        <div class="step-circle">✓</div>
+                        <span class="step-label">{% trans 'Dostawa i płatność' %}</span>
+                    </a>
+                {% elif step == 3 %}
+                    <a href="{% url 'checkout_step2_shipping_payment' %}" class="step-link">
+                        <div class="step-circle">2</div>
+                        <span class="step-label">{% trans 'Dostawa i płatność' %}</span>
+                    </a>
+                {% else %}
+                    <div class="step-circle">2</div>
+                    <span class="step-label">{% trans 'Dostawa i płatność' %}</span>
+                {% endif %}
+            </div>
+            
+            <div class="progress-step {% if step == 3 %}active{% elif step > 3 %}completed{% else %}future{% endif %}">
+                <div class="step-circle">3</div>
+                <span class="step-label">{% trans 'Podsumowanie' %}</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Initialize checkout page immediately
+document.addEventListener('DOMContentLoaded', function() {
+    // Add checkout-page class to body
+    document.body.classList.add('checkout-page');
+    
+    // Move checkout navigation to header
+    const headerInner = document.querySelector('.site-header .header-inner');
+    const template = document.getElementById('checkout-nav-template');
+    
+    if (headerInner && template) {
+        const checkoutNav = template.querySelector('.checkout-progress').cloneNode(true);
+        headerInner.appendChild(checkoutNav);
+        console.log('Checkout navigation added to header');
+    }
+});
+</script>
+{% endblock %}

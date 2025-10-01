@@ -64,7 +64,7 @@
         <strong>{% trans 'Total' %}: <span id="cart-total">{{ total }}</span> zł</strong>
     </div>
     <div class="cart-checkout-row">
-        <a href="/checkout/" class="cta-btn btn-primary checkout-btn shop-link">{% trans 'Proceed to checkout' %}</a>
+        <a href="{% url 'checkout_step2_shipping_payment' %}" class="cta-btn btn-primary checkout-btn shop-link">{% trans 'Dostawa i płatność' %}</a>
     </div>
     {% else %}
     <div class="empty-cart-msg">{% trans 'Your cart is empty.' %}</div>

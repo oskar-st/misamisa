@@ -1,99 +1,358 @@
-// =============================================================================
-// CHECKOUT PAGE
-// =============================================================================
-// Checkout process page specific styles
+// Checkout page specific styles
 
-.checkout-content {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-  margin-top: 2rem;
+// ONLY affect checkout pages - don't break other pages
+body.checkout-page {
+  // Ensure proper page background like cart page
+  background-color: var(--background-color);
+  
+  .header-center,
+  .header-right {
+    display: none !important;
+  }
+  
+  .category-menu {
+    display: none !important;
+  }
+  
+  // Put navigation inline with logo in header - USE EXACT SAME HEIGHT AS CART PAGE (92px total)
+  .site-header {
+    min-height: 92px !important; // Match cart page total height (header + category menu)
+  }
+  
+  .site-header .header-inner {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    position: relative !important;
+    padding: 0.5rem 2rem !important; // Same padding as cart page header
+    min-height: 92px !important; // Ensure full height
+  }
+  
+  // Ensure main-container works exactly like cart page with proper text colors
+  .main-container {
+    max-width: 1200px;
+    margin: 0.4rem auto;
+    padding: 0.5rem 2rem 2rem 2rem;
+    background-color: var(--page-bg);
+    border-radius: 8px;
+    color: var(--text-color);
+    
+    // Fix text readability
+    h1, h2, h3, h4, h5, h6 {
+      color: var(--text-color);
+    }
+    
+    p, span, div, label {
+      color: var(--text-color);
+    }
+    
+    // Fix form elements
+    input, select, textarea {
+      background-color: var(--input-bg);
+      color: var(--text-color);
+      border: 1px solid var(--card-border);
+    }
+    
+    // Checkout form structure and styling
+    .checkout-step2-content,
+    .checkout-step3-content {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 2rem;
+      margin-top: 0;
+    }
+
+    .checkout-form-section {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .form-section {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+
+      h3 {
+        margin: 0 0 1.5rem 0;
+        color: var(--text-color);
+        border-bottom: 2px solid var(--accent-color);
+        padding-bottom: 0.5rem;
+      }
+    }
+
+    .shipping-methods,
+    .payment-methods {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .shipping-method-option,
+    .payment-method-option {
+      input[type="radio"] {
+        display: none;
+      }
+    }
+
+    .shipping-method-label,
+    .payment-method-label {
+      display: block;
+      background: var(--page-bg);
+      border: 2px solid var(--card-border);
+      border-radius: 8px;
+      padding: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+
+      &:hover {
+        border-color: var(--accent-color);
+      }
+    }
+
+    input[type="radio"]:checked + .shipping-method-label,
+    input[type="radio"]:checked + .payment-method-label {
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 2px rgba(255, 165, 0, 0.2);
+    }
+
+    .shipping-method-info,
+    .payment-method-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .shipping-icon,
+    .payment-icon {
+      font-size: 1.5rem;
+      color: var(--accent-color);
+    }
+
+    .shipping-details,
+    .payment-details {
+      flex: 1;
+
+      h4 {
+        margin: 0;
+        font-size: 1rem;
+        color: var(--text-color);
+      }
+
+      p {
+        margin: 0;
+        font-size: 0.85rem;
+        color: var(--hero-text);
+      }
+    }
+
+    .buyer-type-options {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .buyer-type-option {
+      flex: 1;
+      input[type="radio"] {
+        display: none;
+      }
+    }
+
+    .buyer-type-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      background: var(--page-bg);
+      border: 2px solid var(--card-border);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: var(--hero-text);
+      font-weight: 500;
+
+      &:hover {
+        border-color: var(--accent-color);
+      }
+    }
+
+    input[type="radio"]:checked + .buyer-type-label {
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 2px rgba(255, 165, 0, 0.2);
+      color: var(--text-color);
+    }
+
+    // Order Summary Sidebar
+    .order-summary-sidebar {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      position: sticky;
+      top: 2rem;
+      max-height: fit-content;
+
+      h2, h3 {
+        margin: 0 0 1.5rem 0;
+        color: var(--text-color);
+        border-bottom: 2px solid var(--accent-color);
+        padding-bottom: 0.5rem;
+        font-size: 1.5rem;
+      }
+    }
+  }
+  
+  // Ensure main-content has proper background
+  #main-content {
+    background-color: var(--background-color);
+  }
+
+  // Checkout progress navigation - positioned in header - ONLY on checkout pages
+  /* === Compact, aligned 3-step progress === */
+  .checkout-progress {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    --circle: 30px;                 /* circle size */
+    --bd: 2px;                      /* circle border thickness */
+    --track-h: 2px;                 /* line thickness */
+    --gap: clamp(60px, 12vw, 180px); /* much wider spacing between steps */
+    --track-color: var(--card-border);
+    --track-done: var(--accent-color);
+  }
+
+  .checkout-progress .progress-steps {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--gap);
+  }
+
+  /* Line 1: between step 1 and step 2 */
+  .checkout-progress .progress-step:nth-child(2)::before {
+    content: "";
+    position: absolute;
+    left: calc(-1 * var(--gap) + 8px);
+    width: calc(var(--gap) - 16px);
+    top: calc(var(--circle) / 2);
+    height: var(--track-h);
+    z-index: 0;
+    background: var(--track-color);
+  }
+
+  /* Line 2: between step 2 and step 3 */
+  .checkout-progress .progress-step:nth-child(3)::before {
+    content: "";
+    position: absolute;
+    left: calc(-1 * var(--gap) + 8px);
+    width: calc(var(--gap) - 16px);
+    top: calc(var(--circle) / 2);
+    height: var(--track-h);
+    z-index: 0;
+    background: var(--track-color);
+  }
+
+  /* Color the lines based on progress */
+  .checkout-progress .progress-steps[data-step="2"] .progress-step:nth-child(2)::before,
+  .checkout-progress .progress-steps[data-step="3"] .progress-step:nth-child(2)::before {
+    background: var(--track-done);
+  }
+
+  .checkout-progress .progress-steps[data-step="3"] .progress-step:nth-child(3)::before {
+    background: var(--track-done);
+  }
+  
+  /* Each step is only as wide as the circle; label doesn't affect width */
+  .checkout-progress .progress-step {
+    position: relative;
+    z-index: 1;
+    flex: 0 0 var(--circle);   /* just circle width */
+    inline-size: var(--circle);
+    display: grid;
+    place-items: center;
+  }
+
+  /* Keep link/non-link wrappers from changing layout */
+  .checkout-progress .progress-step .step-link { 
+    display: contents; 
+  }
+
+  /* Circle above the line */
+  .checkout-progress .step-circle {
+    width: var(--circle);
+    height: var(--circle);
+    border: var(--bd) solid var(--card-border);
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+    background: var(--card-bg);
+    color: var(--hero-text);
+    z-index: 2;
+  }
+
+  /* Label: single line, centered under its circle */
+  .checkout-progress .step-label {
+    font-size: 0.9rem;
+    color: var(--hero-text);
+    font-weight: 500;
+    position: absolute;
+    top: calc(var(--circle) + 0.6rem);
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;   /* ← no wrapping */
+    line-height: 1.1;
+    text-align: center;
+    max-width: none;
+  }
+
+  // Colors for states
+  .checkout-progress .progress-step.active .step-circle,
+  .checkout-progress .progress-step.completed .step-circle {
+    border-color: var(--track-done);
+    background: var(--track-done);
+    color: #fff;
+  }
+  
+  .checkout-progress .progress-step.active .step-label,
+  .checkout-progress .progress-step.completed .step-label {
+    color: var(--track-done);
+    font-weight: 600;
+  }
+  
+  // Active step glow
+  .checkout-progress .progress-step.active .step-circle {
+    box-shadow: 0 0 0 4px rgba(255, 165, 0, 0.2);
+  }
+
+  // Optional: dim future circles
+  .checkout-progress .progress-step.future .step-circle {
+    opacity: 0.7;
+  }
+
+  /* Optional: smaller screens */
+  @media (max-width: 640px) {
+    .checkout-progress { 
+      --gap: clamp(40px, 8vw, 100px); 
+    }
+    
+    .checkout-progress .step-label { 
+      font-size: 0.8rem; 
+    }
+    
+    .checkout-progress .step-circle { 
+      font-size: 0.75rem; 
+    }
+  }
 }
-
-.order-summary {
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
-  border-radius: 8px;
-  padding: 1.5rem;
-}
-
-.order-summary h3 {
-  margin: 0 0 1.5rem 0;
-  color: var(--text-color);
-  border-bottom: 2px solid var(--accent-color);
-  padding-bottom: 0.5rem;
-}
-
-.order-items {
-  margin-bottom: 1.5rem;
-}
-
-.order-item {
-  background: var(--page-bg);
-  border: 1px solid var(--card-border);
-  border-radius: 4px;
-  padding: 1rem;
-  margin-bottom: 1rem;
-}
-
-.order-item:last-child {
-  margin-bottom: 0;
-}
-
-.order-item h4 {
-  margin: 0 0 0.5rem 0;
-  color: var(--text-color);
-}
-
-.item-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  color: var(--hero-text);
-  font-size: 0.9rem;
-}
-
-.order-total {
-  border-top: 2px solid var(--card-border);
-  padding-top: 1rem;
-  text-align: right;
-}
-
-.order-total h4 {
-  margin: 0;
-  color: var(--text-color);
-  font-size: 1.2rem;
-}
-
-.customer-info-section {
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
-  border-radius: 8px;
-  padding: 1.5rem;
-}
-
-.customer-info-section h3 {
-  margin: 0 0 1.5rem 0;
-  color: var(--text-color);
-  border-bottom: 2px solid var(--accent-color);
-  padding-bottom: 0.5rem;
-}
-
-.customer-form {
-  margin-bottom: 2rem;
-}
-
-.payment-section {
-  margin-bottom: 2rem;
-}
-
-.payment-section h3 {
-  margin: 0 0 1.5rem 0;
-  color: var(--text-color);
-  border-bottom: 2px solid var(--accent-color);
-  padding-bottom: 0.5rem;
-}
-
-.payment-methods {
-  margin-bottom: 2rem;
-} 
