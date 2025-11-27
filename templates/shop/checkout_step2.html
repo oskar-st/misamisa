@@ -47,46 +47,132 @@
         </div>
       </div>
 
-      <div id="private-address-form" class="address-form">
+      <div id="private-address-form" class="form-section address-form-section">
         <h4>{% trans 'Adres dostawy' %}</h4>
-        <div class="form-row">
-          <div class="form-group">{{ form.shipping_full_name.label_tag }} {{ form.shipping_full_name }}</div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">{{ form.shipping_street.label_tag }} {{ form.shipping_street }}</div>
-        </div>
-        <div class="form-row">
-          <div class="form-group form-group-half">{{ form.shipping_postal_code.label_tag }} {{ form.shipping_postal_code }}</div>
-          <div class="form-group form-group-half">{{ form.shipping_city.label_tag }} {{ form.shipping_city }}</div>
-        </div>
-        <div class="form-row">
-          <div class="form-group form-group-half">{{ form.shipping_phone.label_tag }} {{ form.shipping_phone }}</div>
-          <div class="form-group form-group-half">{{ form.shipping_email.label_tag }} {{ form.shipping_email }}</div>
-        </div>
+        
+        {% if shipping_addresses_count > 0 %}
+          <!-- Address Selection -->
+          <div class="address-selection-section">
+            <div class="form-row">
+              <div class="form-group">
+                {{ form.selected_shipping_address.label_tag }}
+                {{ form.selected_shipping_address }}
+              </div>
+            </div>
+            
+            <div class="address-options">
+              <a href="{% url 'accounts:addresses' %}" class="btn btn-link btn-sm" target="_blank">
+                <i class="fas fa-plus"></i> {% trans 'Add new shipping address' %}
+              </a>
+            </div>
+          </div>
+        {% else %}
+          <!-- No saved addresses - show link to add addresses -->
+          <div class="no-addresses-message">
+            <p class="text-muted">{% trans 'You have no saved shipping addresses.' %}</p>
+            <a href="{% url 'accounts:addresses' %}" class="btn btn-primary btn-sm" target="_blank">
+              <i class="fas fa-plus"></i> {% trans 'Add your first shipping address' %}
+            </a>
+            <p class="text-muted mt-2">{% trans 'Or enter address details below:' %}</p>
+          </div>
+          
+          <!-- Manual Address Form -->
+          <div id="manual-shipping-form" class="manual-address-form">
+            <div class="form-row">
+              <div class="form-group">{{ form.shipping_full_name.label_tag }} {{ form.shipping_full_name }}</div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">{{ form.shipping_street.label_tag }} {{ form.shipping_street }}</div>
+            </div>
+            <div class="form-row">
+              <div class="form-group form-group-half">{{ form.shipping_postal_code.label_tag }} {{ form.shipping_postal_code }}</div>
+              <div class="form-group form-group-half">{{ form.shipping_city.label_tag }} {{ form.shipping_city }}</div>
+            </div>
+            <div class="form-row">
+              <div class="form-group form-group-half">{{ form.shipping_phone.label_tag }} {{ form.shipping_phone }}</div>
+              <div class="form-group form-group-half">{{ form.shipping_email.label_tag }} {{ form.shipping_email }}</div>
+            </div>
+          </div>
+        {% endif %}
       </div>
 
-      <div id="company-address-form" class="address-form" style="display:none;">
-        <h4>{% trans 'Firmowe dane do faktury' %}</h4>
-        <div class="form-row"><div class="form-group">{{ form.invoice_company_name.label_tag }} {{ form.invoice_company_name }}</div></div>
-        <div class="form-row"><div class="form-group">{{ form.invoice_vat_id.label_tag }} {{ form.invoice_vat_id }}</div></div>
-        <div class="form-row"><div class="form-group">{{ form.invoice_street.label_tag }} {{ form.invoice_street }}</div></div>
-        <div class="form-row">
-          <div class="form-group form-group-half">{{ form.invoice_postal_code.label_tag }} {{ form.invoice_postal_code }}</div>
-          <div class="form-group form-group-half">{{ form.invoice_city.label_tag }} {{ form.invoice_city }}</div>
+      <div id="company-address-form" class="company-address-stack" style="display:none;">
+        <div class="form-section address-form-section">
+          <h4>{% trans 'Firmowe dane do faktury' %}</h4>
+          
+          {% if invoice_details_count > 0 %}
+            <!-- Invoice Details Selection -->
+            <div class="address-selection-section">
+              <div class="form-row">
+                <div class="form-group">
+                  {{ form.selected_invoice_details.label_tag }}
+                  {{ form.selected_invoice_details }}
+                </div>
+              </div>
+              
+              <div class="address-options">
+                <a href="{% url 'accounts:addresses' %}" class="btn btn-link btn-sm" target="_blank">
+                  <i class="fas fa-plus"></i> {% trans 'Add new invoice details' %}
+                </a>
+              </div>
+            </div>
+          {% else %}
+            <!-- No saved invoice details - show link to add -->
+            <div class="no-addresses-message">
+              <p class="text-muted">{% trans 'You have no saved invoice details.' %}</p>
+              <a href="{% url 'accounts:addresses' %}" class="btn btn-primary btn-sm" target="_blank">
+                <i class="fas fa-plus"></i> {% trans 'Add your first invoice details' %}
+              </a>
+              <p class="text-muted mt-2">{% trans 'Or enter invoice details below:' %}</p>
+            </div>
+            
+            <!-- Manual Invoice Form -->
+            <div id="manual-invoice-form" class="manual-address-form">
+              <div class="form-row"><div class="form-group">{{ form.invoice_company_name.label_tag }} {{ form.invoice_company_name }}</div></div>
+              <div class="form-row"><div class="form-group">{{ form.invoice_vat_id.label_tag }} {{ form.invoice_vat_id }}</div></div>
+              <div class="form-row"><div class="form-group">{{ form.invoice_street.label_tag }} {{ form.invoice_street }}</div></div>
+              <div class="form-row">
+                <div class="form-group form-group-half">{{ form.invoice_postal_code.label_tag }} {{ form.invoice_postal_code }}</div>
+                <div class="form-group form-group-half">{{ form.invoice_city.label_tag }} {{ form.invoice_city }}</div>
+              </div>
+            </div>
+          {% endif %}
         </div>
-        <div class="form-row"><div class="form-group"><label class="checkbox-group">{{ form.delivery_same_as_invoice }} {{ form.delivery_same_as_invoice.label }}</label></div></div>
-        <div id="delivery-address-fields" style="display:none;">
-          <h5>{% trans 'Adres dostawy' %}</h5>
-          <div class="form-row"><div class="form-group">{{ form.delivery_full_name.label_tag }} {{ form.delivery_full_name }}</div></div>
-          <div class="form-row"><div class="form-group">{{ form.delivery_street.label_tag }} {{ form.delivery_street }}</div></div>
-          <div class="form-row">
-            <div class="form-group form-group-half">{{ form.delivery_postal_code.label_tag }} {{ form.delivery_postal_code }}</div>
-            <div class="form-group form-group-half">{{ form.delivery_city.label_tag }} {{ form.delivery_city }}</div>
-          </div>
-          <div class="form-row">
-            <div class="form-group form-group-half">{{ form.delivery_phone.label_tag }} {{ form.delivery_phone }}</div>
-            <div class="form-group form-group-half">{{ form.delivery_email.label_tag }} {{ form.delivery_email }}</div>
-          </div>
+        
+        <div class="form-section address-form-section company-delivery-card">
+          <h4>{% trans 'Adres dostawy' %}</h4>
+          
+          {% if shipping_addresses_count > 0 %}
+            <div class="delivery-section">
+              <div class="form-row">
+                <div class="form-group">
+                  {{ form.selected_delivery_address.label_tag }}
+                  {{ form.selected_delivery_address }}
+                </div>
+              </div>
+              
+              <p class="text-muted small">{% trans 'Leave empty to use invoice address' %}</p>
+              
+              <div class="address-options">
+                <a href="{% url 'accounts:addresses' %}" class="btn btn-link btn-sm" target="_blank">
+                  <i class="fas fa-plus"></i> {% trans 'Add new shipping address' %}
+                </a>
+              </div>
+            </div>
+          {% else %}
+            <div id="manual-delivery-form" class="manual-address-form">
+              <div class="form-row"><div class="form-group">{{ form.delivery_full_name.label_tag }} {{ form.delivery_full_name }}</div></div>
+              <div class="form-row"><div class="form-group">{{ form.delivery_street.label_tag }} {{ form.delivery_street }}</div></div>
+              <div class="form-row">
+                <div class="form-group form-group-half">{{ form.delivery_postal_code.label_tag }} {{ form.delivery_postal_code }}</div>
+                <div class="form-group form-group-half">{{ form.delivery_city.label_tag }} {{ form.delivery_city }}</div>
+              </div>
+              <div class="form-row">
+                <div class="form-group form-group-half">{{ form.delivery_phone.label_tag }} {{ form.delivery_phone }}</div>
+                <div class="form-group form-group-half">{{ form.delivery_email.label_tag }} {{ form.delivery_email }}</div>
+              </div>
+            </div>
+          {% endif %}
         </div>
       </div>
 
@@ -141,9 +227,7 @@ document.addEventListener('DOMContentLoaded', function(){
   const companyRadio = document.getElementById('buyer_company');
   const privateForm = document.getElementById('private-address-form');
   const companyForm = document.getElementById('company-address-form');
-  const deliverySame = document.getElementById('id_delivery_same_as_invoice');
-  const deliveryFields = document.getElementById('delivery-address-fields');
-
+  
   function toggleBuyer(){
     if (privateRadio && privateRadio.checked){
       privateForm.style.display = 'block';
@@ -153,15 +237,14 @@ document.addEventListener('DOMContentLoaded', function(){
       companyForm.style.display = 'block';
     }
   }
-  function toggleDelivery(){
-    if (!deliverySame) return;
-    deliveryFields.style.display = deliverySame.checked ? 'none' : 'block';
-  }
+  
+  // Event listeners
   if (privateRadio) privateRadio.addEventListener('change', toggleBuyer);
   if (companyRadio) companyRadio.addEventListener('change', toggleBuyer);
-  if (deliverySame) deliverySame.addEventListener('change', toggleDelivery);
+  
+  // Initial state
   toggleBuyer();
-  toggleDelivery();
+  // Manual delivery form only visible when no saved addresses, so no toggle needed
 });
 </script>
 {% endblock %}

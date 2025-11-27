@@ -30,6 +30,10 @@
   --select-hover-bg: #f2ede4;
   --option-bg: #ffffff;
   
+  --input-bg: #ffffff;
+  --input-border: #ddd;
+  --input-focus-border: #cc6600;
+  
   --shadow-sm: rgba(0,0,0,0.05);
   --shadow-md: rgba(129, 10, 10, 0.05);
   
@@ -67,6 +71,10 @@ html[data-theme=dark] {
   --select-bg: #3a3a3a;
   --select-hover-bg: #2e2e2e;
   --option-bg: #3a3a3a;
+  
+  --input-bg: #3a3a3a;
+  --input-border: #555;
+  --input-focus-border: #ff9d2d;
  
   --shadow-sm: rgba(255,255,255,0.05);
   --shadow-md: rgba(255,255,255,0.1);

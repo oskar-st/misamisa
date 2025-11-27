@@ -6,8 +6,13 @@ export function initialize() {
     // Add checkout-page class to body for styling
     document.body.classList.add('checkout-page');
     
-    // Preserve dark theme
-    document.documentElement.setAttribute('data-theme', 'dark');
+    // Respect the current global theme - don't override it
+    // Listen for theme changes to ensure checkout stays in sync
+    document.addEventListener('themeChanged', function(event) {
+        console.log('Checkout page: Theme changed to', event.detail.theme);
+        // The theme is already applied to document.documentElement by the theme toggle
+        // No additional action needed - CSS variables will handle the styling
+    });
     
     // Move checkout navigation to header inline with logo
     const headerInner = document.querySelector('.site-header .header-inner');

@@ -99,17 +99,7 @@
   margin-bottom: 1rem;
 }
 
-.alert-warning {
-  background-color: #fff3cd;
-  border: 1px solid #ffeaa7;
-  color: #856404;
-}
-
-[data-theme=dark] .alert-warning {
-  background-color: #3d3d00;
-  border-color: #666600;
-  color: #ffeb3b;
-}
+// Alert styles moved to components/_forms.scss for consistency
 
 @media (max-width: 768px) {
   .checkout-content {

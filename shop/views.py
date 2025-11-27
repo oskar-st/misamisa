@@ -399,32 +399,81 @@ def checkout_step2_shipping_payment(request):
                 'payment_method': form.cleaned_data['payment_method'],
             }
             if data['buyer_type'] == 'private':
-                data.update({
-                    'shipping_full_name': form.cleaned_data['shipping_full_name'],
-                    'shipping_street': form.cleaned_data['shipping_street'],
-                    'shipping_postal_code': form.cleaned_data['shipping_postal_code'],
-                    'shipping_city': form.cleaned_data['shipping_city'],
-                    'shipping_phone': form.cleaned_data['shipping_phone'],
-                    'shipping_email': form.cleaned_data['shipping_email'],
-                })
-            else:
-                data.update({
-                    'invoice_vat_id': form.cleaned_data.get('invoice_vat_id', ''),
-                    'invoice_company_name': form.cleaned_data['invoice_company_name'],
-                    'invoice_street': form.cleaned_data['invoice_street'],
-                    'invoice_postal_code': form.cleaned_data['invoice_postal_code'],
-                    'invoice_city': form.cleaned_data['invoice_city'],
-                    'delivery_same_as_invoice': form.cleaned_data.get('delivery_same_as_invoice', True),
-                })
-                if not data['delivery_same_as_invoice']:
+                # Handle address selection for private buyers
+                selected_address = form.cleaned_data.get('selected_shipping_address')
+                
+                if selected_address:
+                    # Use selected saved address
                     data.update({
-                        'delivery_full_name': form.cleaned_data['delivery_full_name'],
-                        'delivery_street': form.cleaned_data['delivery_street'],
-                        'delivery_postal_code': form.cleaned_data['delivery_postal_code'],
-                        'delivery_city': form.cleaned_data['delivery_city'],
-                        'delivery_phone': form.cleaned_data['delivery_phone'],
-                        'delivery_email': form.cleaned_data['delivery_email'],
+                        'shipping_full_name': selected_address.full_name,
+                        'shipping_street': selected_address.street,
+                        'shipping_postal_code': selected_address.postal_code,
+                        'shipping_city': selected_address.city,
+                        'shipping_phone': selected_address.phone,
+                        'shipping_email': selected_address.email,
+                        'selected_shipping_address_id': selected_address.id,
                     })
+                else:
+                    # Use manually entered address (only available when no saved addresses)
+                    data.update({
+                        'shipping_full_name': form.cleaned_data['shipping_full_name'],
+                        'shipping_street': form.cleaned_data['shipping_street'],
+                        'shipping_postal_code': form.cleaned_data['shipping_postal_code'],
+                        'shipping_city': form.cleaned_data['shipping_city'],
+                        'shipping_phone': form.cleaned_data['shipping_phone'],
+                        'shipping_email': form.cleaned_data['shipping_email'],
+                    })
+            else:
+                # Handle invoice details selection for company buyers
+                selected_invoice = form.cleaned_data.get('selected_invoice_details')
+                
+                if selected_invoice:
+                    # Use selected saved invoice details
+                    data.update({
+                        'invoice_vat_id': selected_invoice.vat_id or '',
+                        'invoice_company_name': selected_invoice.full_name_or_company,
+                        'invoice_street': selected_invoice.street,
+                        'invoice_postal_code': selected_invoice.postal_code,
+                        'invoice_city': selected_invoice.city,
+                        'selected_invoice_details_id': selected_invoice.id,
+                    })
+                else:
+                    # Use manually entered invoice details
+                    data.update({
+                        'invoice_vat_id': form.cleaned_data.get('invoice_vat_id', ''),
+                        'invoice_company_name': form.cleaned_data['invoice_company_name'],
+                        'invoice_street': form.cleaned_data['invoice_street'],
+                        'invoice_postal_code': form.cleaned_data['invoice_postal_code'],
+                        'invoice_city': form.cleaned_data['invoice_city'],
+                    })
+                
+                delivery_same = form.cleaned_data.get('delivery_same_as_invoice', True)
+                data['delivery_same_as_invoice'] = delivery_same
+                
+                # Handle delivery address for companies
+                if not delivery_same:
+                    selected_delivery = form.cleaned_data.get('selected_delivery_address')
+                    if selected_delivery:
+                        # Use selected shipping address for delivery
+                        data.update({
+                            'delivery_full_name': selected_delivery.full_name,
+                            'delivery_street': selected_delivery.street,
+                            'delivery_postal_code': selected_delivery.postal_code,
+                            'delivery_city': selected_delivery.city,
+                            'delivery_phone': selected_delivery.phone,
+                            'delivery_email': selected_delivery.email,
+                            'selected_delivery_address_id': selected_delivery.id,
+                        })
+                    else:
+                        # Use manually entered delivery address
+                        data.update({
+                            'delivery_full_name': form.cleaned_data['delivery_full_name'],
+                            'delivery_street': form.cleaned_data['delivery_street'],
+                            'delivery_postal_code': form.cleaned_data['delivery_postal_code'],
+                            'delivery_city': form.cleaned_data['delivery_city'],
+                            'delivery_phone': form.cleaned_data['delivery_phone'],
+                            'delivery_email': form.cleaned_data['delivery_email'],
+                        })
             request.session['checkout_data'] = data
             return redirect('checkout_step3_summary')
     else:
@@ -441,11 +490,21 @@ def checkout_step2_shipping_payment(request):
                 'icon': getattr(module, 'icon', 'fas fa-credit-card'),
             })
 
+    # Get user's saved addresses for template context
+    shipping_addresses_count = 0
+    invoice_details_count = 0
+    if request.user.is_authenticated:
+        from accounts.models import ShippingAddress, InvoiceDetails
+        shipping_addresses_count = ShippingAddress.objects.filter(user=request.user).count()
+        invoice_details_count = InvoiceDetails.objects.filter(user=request.user).count()
+
     context = {
         'form': form,
         'cart_items': cart_items,
         'subtotal': subtotal,
         'payment_methods': payment_methods,
+        'shipping_addresses_count': shipping_addresses_count,
+        'invoice_details_count': invoice_details_count,
         'step': 2,
     }
     return render(request, 'shop/checkout_step2.html', context)

@@ -1,0 +1,33 @@
+{
+    "name": "bank_wire_payment",
+    "version": "2.0.16",
+    "description": "Bank Wire Transfer Payment Module - Accept payments via bank wire transfer",
+    "author": "System Admin",
+    "type": "payment",
+    "dependencies": [],
+    "requires_python": ">=3.8",
+    "install_requires": [],
+    "templates": [
+        "payment_form.html",
+        "payment_success.html",
+        "payment_error.html",
+        "admin/config.html"
+    ],
+    "static_files": [],
+    "admin_config": true,
+    "migrations": false,
+    "urls": {
+        "payment_form": "payment_form/",
+        "payment_process": "payment_process/",
+        "payment_success": "payment_success/",
+        "payment_error": "payment_error/"
+    },
+    "settings": {
+        "bank_name": "",
+        "account_holder": "",
+        "account_number": "",
+        "iban": "",
+        "swift_code": "",
+        "additional_info": ""
+    }
+} 

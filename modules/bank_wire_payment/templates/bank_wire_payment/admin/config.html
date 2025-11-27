@@ -1,0 +1,194 @@
+{% extends 'admin/base_site.html' %}
+{% load static %}
+
+{% block title %}Bank Wire Payment Configuration{% endblock %}
+
+{% block extrahead %}
+<style>
+.config-form {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: var(--primary-fg);
+}
+
+.form-group input[type="text"],
+.form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--hairline-color);
+    border-radius: 4px;
+    background: var(--primary);
+    color: var(--primary-fg);
+}
+
+.form-group input[type="text"]:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--link-fg);
+    box-shadow: 0 0 0 2px rgba(103, 114, 229, 0.2);
+}
+
+.form-group .help-text {
+    font-size: 12px;
+    color: var(--secondary-fg);
+    margin-top: 5px;
+}
+
+.btn-save {
+    background-color: var(--button-bg);
+    color: var(--button-fg);
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-save:hover {
+    background-color: var(--button-hover-bg);
+}
+
+.bank-info {
+    background: var(--message-success-bg);
+    border: 1px solid var(--message-success-border);
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.bank-info h3 {
+    margin-top: 0;
+    color: var(--message-success-fg);
+}
+
+.alert {
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+}
+
+.alert-info {
+    background: var(--message-info-bg);
+    border: 1px solid var(--message-info-border);
+    color: var(--message-info-fg);
+}
+
+.alert-warning {
+    background: var(--message-warning-bg);
+    border: 1px solid var(--message-warning-border);
+    color: var(--message-warning-fg);
+}
+
+.alert ul {
+    margin-bottom: 0;
+}
+
+.alert li {
+    margin-bottom: 5px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="config-form">
+    <h1>Bank Wire Payment Configuration</h1>
+    
+    <div class="bank-info">
+        <h3><i class="fas fa-university"></i> Bank Wire Transfer</h3>
+        <p>Configure your bank account details below. These will be displayed to customers when they choose bank wire payment.</p>
+    </div>
+
+    <div class="alert alert-info">
+        <h5><i class="fas fa-info-circle"></i> Configuration Instructions</h5>
+        <p>Configure your bank account details below. These will be displayed to customers when they choose bank wire payment.</p>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="bank_name">Bank Name *</label>
+            <input type="text" id="bank_name" name="bank_name" 
+                   value="{{ config.bank_name|default:'' }}" required>
+            <div class="help-text">The name of your bank</div>
+        </div>
+
+        <div class="form-group">
+            <label for="account_holder">Account Holder *</label>
+            <input type="text" id="account_holder" name="account_holder" 
+                   value="{{ config.account_holder|default:'' }}" required>
+            <div class="help-text">The name on the bank account</div>
+        </div>
+
+        <div class="form-group">
+            <label for="account_number">Account Number</label>
+            <input type="text" id="account_number" name="account_number" 
+                   value="{{ config.account_number|default:'' }}">
+            <div class="help-text">Your bank account number</div>
+        </div>
+
+        <div class="form-group">
+            <label for="iban">IBAN</label>
+            <input type="text" id="iban" name="iban" 
+                   value="{{ config.iban|default:'' }}">
+            <div class="help-text">International Bank Account Number</div>
+        </div>
+
+        <div class="form-group">
+            <label for="swift_code">SWIFT/BIC Code</label>
+            <input type="text" id="swift_code" name="swift_code" 
+                   value="{{ config.swift_code|default:'' }}">
+            <div class="help-text">Bank's SWIFT or BIC code for international transfers</div>
+        </div>
+
+        <div class="form-group">
+            <label for="additional_info">Additional Information</label>
+            <textarea id="additional_info" name="additional_info" rows="3">{{ config.additional_info|default:'' }}</textarea>
+            <div class="help-text">Any additional instructions for customers</div>
+        </div>
+
+        <div class="alert alert-warning">
+            <h6><i class="fas fa-exclamation-triangle"></i> Important Notes</h6>
+            <ul>
+                <li>Bank Name and Account Holder are required fields</li>
+                <li>Provide either Account Number or IBAN (or both)</li>
+                <li>SWIFT/BIC code is recommended for international transfers</li>
+                <li>Test the configuration before enabling the module</li>
+            </ul>
+        </div>
+
+        <div class="form-group">
+            <button type="submit" class="btn-save">
+                <i class="fas fa-save"></i> Save Configuration
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+// Auto-format IBAN input
+document.getElementById('iban').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\s/g, '').toUpperCase();
+    if (value.length > 0) {
+        value = value.match(/.{1,4}/g).join(' ');
+    }
+    e.target.value = value;
+});
+
+// Auto-format SWIFT code
+document.getElementById('swift_code').addEventListener('input', function(e) {
+    e.target.value = e.target.value.toUpperCase();
+});
+</script>
+{% endblock %} 

@@ -1,0 +1,99 @@
+<div class="bank-wire-payment-form">
+    <div class="alert alert-info">
+        <h5><i class="fas fa-info-circle me-2"></i>Payment Instructions</h5>
+        <p class="mb-0">
+            Please transfer the payment to the following bank account. 
+            Your order will be processed once the payment is received.
+        </p>
+    </div>
+
+    <div class="bank-details mb-4">
+        <h5><i class="fas fa-university me-2"></i>Bank Account Details</h5>
+        <div class="row">
+            <div class="col-md-6">
+                <p><strong>Bank Name:</strong><br>{{ bank_details.bank_name }}</p>
+                <p><strong>Account Holder:</strong><br>{{ bank_details.account_holder }}</p>
+                {% if bank_details.account_number %}
+                <p><strong>Account Number:</strong><br>{{ bank_details.account_number }}</p>
+                {% endif %}
+            </div>
+            <div class="col-md-6">
+                {% if bank_details.iban %}
+                <p><strong>IBAN:</strong><br>{{ bank_details.iban }}</p>
+                {% endif %}
+                {% if bank_details.swift_code %}
+                <p><strong>SWIFT/BIC:</strong><br>{{ bank_details.swift_code }}</p>
+                {% endif %}
+            </div>
+        </div>
+        {% if bank_details.additional_info %}
+        <div class="mt-3">
+            <p><strong>Additional Information:</strong><br>{{ bank_details.additional_info }}</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" id="confirm_payment" name="confirm_payment" required>
+        <label class="form-check-label" for="confirm_payment">
+            I confirm that I will make the bank wire transfer
+        </label>
+    </div>
+
+    <div class="payment-note">
+        <p><strong>Note:</strong> Please include your order reference in the payment description when making the transfer.</p>
+    </div>
+</div>
+
+<style>
+.bank-wire-payment-form {
+    padding: 1rem;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 4px;
+}
+
+.bank-wire-payment-form .alert {
+    background: rgba(13, 202, 240, 0.1);
+    border: 1px solid rgba(13, 202, 240, 0.2);
+    color: var(--text-color);
+}
+
+.bank-wire-payment-form .bank-details {
+    background: var(--page-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 4px;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+.bank-wire-payment-form .bank-details h5 {
+    color: var(--text-color);
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--card-border);
+    padding-bottom: 0.5rem;
+}
+
+.bank-wire-payment-form .bank-details p {
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+}
+
+.bank-wire-payment-form .bank-details strong {
+    color: var(--accent-color);
+}
+
+.payment-note {
+    background: rgba(255, 193, 7, 0.1);
+    border: 1px solid rgba(255, 193, 7, 0.2);
+    border-radius: 4px;
+    padding: 0.75rem;
+    margin-top: 1rem;
+}
+
+.payment-note p {
+    margin: 0;
+    color: var(--text-color);
+    font-size: 0.9rem;
+}
+</style> 
