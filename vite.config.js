@@ -10,14 +10,13 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'static/src/js/main.js'),
-        mainStyle: resolve(__dirname, 'static/src/scss/main.scss'), 
         adminStyle: resolve(__dirname, 'static/src/scss/admin.scss'),
       },
       output: {
         entryFileNames: 'js/[name].js',
         assetFileNames: (assetInfo) => {
           if (assetInfo.names?.[0]?.endsWith('.css')) {
-            return 'css/[name].css'; // ensure .css extension
+            return 'css/[name].css';
           }
           return 'assets/[name]';
         },
@@ -26,17 +25,12 @@ export default defineConfig({
   },
   plugins: [
     viteStaticCopy({
-      targets: [
-        // Example: copy images or fonts if needed
-        // { src: 'static/assets/images', dest: 'assets' },
-      ],
+      targets: [],
     }),
   ],
   css: {
     preprocessorOptions: {
-      scss: {
-        // Additional SCSS options if needed
-      },
+      scss: {},
     },
   },
-}); 
+});

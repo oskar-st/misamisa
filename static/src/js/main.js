@@ -1,6 +1,9 @@
 // Main JavaScript entry point for frontend
 // Centralized initialization system with dynamic loading
 
+// --- Import main SCSS for Vite ---
+import '../scss/main.scss';  // <-- add this at the top
+
 // Import core components
 import { HTMXManager } from './components/htmx-manager.js';
 import { initializeDropdowns } from './components/dropdown.js';
@@ -20,18 +23,9 @@ import { initialize as initializeCheckout } from './pages/checkout.js';
 const pageInitializers = {
   'shop-page': () => initializeShop(),
   'admin-page': () => import('./admin/productimage_single_primary.js').then(m => m.initializeAdmin?.()),
-  'home-page': () => {
-    // Homepage specific functionality can be added here
-    console.log('Home page initialized');
-  },
-  'products-page': () => {
-    // Products page specific functionality can be added here
-    console.log('Products page initialized');
-  },
-  'contact-page': () => {
-    // Contact page specific functionality can be added here
-    console.log('Contact page initialized');
-  },
+  'home-page': () => { console.log('Home page initialized'); },
+  'products-page': () => { console.log('Products page initialized'); },
+  'contact-page': () => { console.log('Contact page initialized'); },
   'checkout-page': () => initializeCheckout(),
 };
 
@@ -88,18 +82,7 @@ function initializePageComponents() {
 
 // Set up handlers for component reinitialization after HTMX swaps
 function setupReinitializationHandlers() {
-  // Reinitialize dropdowns after HTMX content changes
-  document.addEventListener('htmx:reinitialize-dropdowns', function(event) {
-    initializeDropdowns();
-  });
-  
-  // Reinitialize shop functionality after HTMX content changes
-  document.addEventListener('htmx:reinitialize-shop', function(event) {
-    initializeShop();
-  });
-  
-  // Reinitialize forms after HTMX content changes
-  document.addEventListener('htmx:reinitialize-forms', function(event) {
-    initializeForms();
-  });
+  document.addEventListener('htmx:reinitialize-dropdowns', () => initializeDropdowns());
+  document.addEventListener('htmx:reinitialize-shop', () => initializeShop());
+  document.addEventListener('htmx:reinitialize-forms', () => initializeForms());
 }
