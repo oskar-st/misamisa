@@ -60,6 +60,10 @@
               </div>
             </div>
             
+            <div id="shipping-address-error" class="error-message" style="display:none;">
+              <span>{% trans 'Wybierz adres dostawy, aby przejść do podsumowania.' %}</span>
+            </div>
+            
             <div class="address-options">
               <a href="{% url 'accounts:addresses' %}" class="btn btn-link btn-sm" target="_blank">
                 <i class="fas fa-plus"></i> {% trans 'Add new shipping address' %}
@@ -108,6 +112,10 @@
                   {{ form.selected_invoice_details.label_tag }}
                   {{ form.selected_invoice_details }}
                 </div>
+              </div>
+              
+              <div id="invoice-address-error" class="error-message" style="display:none;">
+                <span>{% trans 'Wybierz dane do faktury, aby przejść do podsumowania.' %}</span>
               </div>
               
               <div class="address-options">

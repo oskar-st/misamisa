@@ -1,0 +1,50 @@
+1. order commnent box - fixed size, not that ppl can drag it an play with whole website stretching
+2. checkout kupuje i place button - padding
+3. removbe the functionality of adding address in checkout "live", just the link to /addresses should be visible
+4. add front page according to gpt:
+Perfect! For a cookie shop homepage, the goal is to make it visually appealing, interactive, and “tasty” at first glance. Right now, your JS usage is low, so most interactions are probably basic HTML/CSS. Here’s how we can enhance it, using your current stack:
+
+1. Layout & Screen Usage
+
+Full-width hero section: Yes, use the full width for a big, beautiful hero image of your cookies or a cozy cookie scene. This gives immediate visual impact.
+
+Grid product display: Below the hero, a responsive 3–4 column grid works great. Include hover effects (like slight zoom, shadow, or “Add to Cart” button appearing).
+
+Featured sections: “Best sellers,” “New arrivals,” or “Special offers” in cards or sliders.
+
+2. Interactive Features (JavaScript Boost)
+
+Image sliders / carousels: For hero banners or featured cookies.
+
+Quick add-to-cart buttons: Hover effect + JS pop-up confirming the item was added.
+
+Filter & sort: Let users filter by flavor, dietary preference (vegan, keto, gluten-free), or price.
+
+Lazy loading / infinite scroll: Load more products as users scroll down to improve performance.
+
+3. Engaging Micro-Interactions
+
+Hover animations: CSS + JS for playful animations when hovering on cookie cards.
+
+Popup modals: For newsletter signups or special discounts.
+
+Cart preview: Slide-in cart summary from the side when items are added.
+
+4. Styling & Atmosphere
+
+Warm colors: browns, creams, pastel accents.
+
+Rounded edges for product cards → “soft” and inviting feel.
+
+Use SCSS variables for consistent theme and easier tweaking.
+
+Light background textures: wood, paper, or kitchen-style patterns.
+
+5. Optional Fun Features (More JS)
+
+Interactive cookie builder: Let users choose toppings or flavors visually.
+
+Cookie countdown / limited-time offers: Small JS timer can boost sales urgency.
+
+Easter eggs: Small animations when clicking the logo or hero image (playful touch).
+

@@ -1,6 +1,7 @@
 // Checkout page specific styles
 
 // ONLY affect checkout pages - don't break other pages
+
 body.checkout-page {
   // Ensure proper page background like cart page
   background-color: var(--background-color);
@@ -36,6 +37,19 @@ body.checkout-page {
     background-color: var(--page-bg);
     border-radius: 8px;
     color: var(--text-color);
+    // ... inside body.checkout-page .main-container { ... }
+
+    .form-actions {
+      display: flex;        // already true globally, but safe to repeat
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .form-actions .cta-btn.btn-primary {
+      margin-left: auto;    // pushes the yellow button to the right
+    }
+
+// ... rest of existing styles ...
     
     // Fix text readability
     h1, h2, h3, h4, h5, h6 {
@@ -245,6 +259,35 @@ body.checkout-page {
           box-shadow: 0 0 0 2px rgba(255, 165, 0, 0.1);
         }
       }
+      
+      .error-message {
+        background-color: #fff3cd !important;
+        border: 1px solid #ffeaa7 !important;
+        color: #856404 !important;
+        padding: 0.75rem 1rem !important;
+        border-radius: 4px;
+        margin-top: 0.75rem;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+      }
+    }
+    
+    // Error message styling for checkout page (also works outside address-selection-section)
+    .error-message {
+      background-color: #fff3cd !important;
+      border: 1px solid #ffeaa7 !important;
+      color: #856404 !important;
+      padding: 0.75rem 1rem !important;
+      border-radius: 4px;
+      margin-top: 0.75rem;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      
+      [data-theme=dark] & {
+        background-color: #3d3d00 !important;
+        border-color: #666600 !important;
+        color: #ffeb3b !important;
+      }
     }
     
     .address-options {
@@ -405,7 +448,7 @@ body.checkout-page {
       h3 {
         margin: 0 0 1rem 0;
         color: var(--text-color);
-        border-bottom: 2px solid var(--accent-color);
+        border-bottom: 1px solid var(--accent-color);
         padding-bottom: 0.5rem;
       }
       
